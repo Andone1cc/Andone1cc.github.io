@@ -3,17 +3,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2016/10 | Andone1cc</title>
+  <title>浅谈Java中的equals和== | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个代码小白的github">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Andone1cc">
-<meta property="og:url" content="http://yoursite.com/archives/2016/10/index.html">
+  <meta name="description" content="在初学java的时候,常遇到下面的代码:
+`1 String str1 = new String(&amp;quot;hello&amp;quot;);
+ 2 String str2 = new String(&amp;quot;hello&amp;quot;);
+ 3         
+ 4 System.out.println(str1==str2); 
+ 5 System.out.println(str1.equals(s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈Java中的equals和==">
+<meta property="og:url" content="http://yoursite.com/2016/10/29/equals/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="一个代码小白的github">
+<meta property="og:description" content="在初学java的时候,常遇到下面的代码:
+`1 String str1 = new String(&amp;quot;hello&amp;quot;);
+ 2 String str2 = new String(&amp;quot;hello&amp;quot;);
+ 3         
+ 4 System.out.println(str1==str2); 
+ 5 System.out.println(str1.equals(s">
+<meta property="og:updated_time" content="2016-10-29T15:21:49.074Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Andone1cc">
-<meta name="twitter:description" content="一个代码小白的github">
+<meta name="twitter:title" content="浅谈Java中的equals和==">
+<meta name="twitter:description" content="在初学java的时候,常遇到下面的代码:
+`1 String str1 = new String(&amp;quot;hello&amp;quot;);
+ 2 String str2 = new String(&amp;quot;hello&amp;quot;);
+ 3         
+ 4 System.out.println(str1==str2); 
+ 5 System.out.println(str1.equals(s">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -52,7 +68,7 @@
           <li><a class=""
                  href="/index.html">Home</a></li>
         
-          <li><a class="active"
+          <li><a class=""
                  href="/archives/">Archives</a></li>
         
       </ul>
@@ -78,80 +94,86 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          
-  
-  
+          <article id="post-equals" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
     
+  
+    <h1 class="article-title" itemprop="name">
+      浅谈Java中的equals和==
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/10/29/equals/" class="article-date"><time datetime="2016-10-29T15:16:01.844Z" itemprop="datePublished">2016-10-29</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在初学java的时候,常遇到下面的代码:</p>
+<pre><code>`1 String str1 = new String(&quot;hello&quot;);
+ 2 String str2 = new String(&quot;hello&quot;);
+ 3         
+ 4 System.out.println(str1==str2); 
+ 5 System.out.println(str1.equals(str2));`
+</code></pre><a id="more"></a>
+<p>为什么第四行和第五行的输出结果不一样呢？==和equals方法之间的区别是什么？下面我们就先来了解一下==和equals方法的区别之处。</p>
+<h3 id="一、关系操作符”-”到底比较的是什么？"><a href="#一、关系操作符”-”到底比较的是什么？" class="headerlink" title="一、关系操作符”==”到底比较的是什么？"></a>一、关系操作符”==”到底比较的是什么？</h3><blockquote>
+<p>下面这个句话是摘自<code>《Java编程思想》</code>一书中的原话：</p>
+<p>“关系操作符生成的是一个boolean结果，它们计算的是操作数的值之间的关系”。</p>
+</blockquote>
+<p>这句话看似简单，理解起来还是需要细细体会的。说的简单点，==就是用来比较值是否相等。</p>
+
+      
+    </div>
+
     
       
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/10/29/equals/" data-id="ciuvd147500014sn6kh5hft53" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+
+    </footer>
+  </div>
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/29/equals/">浅谈Java中的equals和==</a>
-    </h1>
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
   
+  <li role="presentation">
+    <a href="/2016/10/28/Tree1/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">先序 中序 后序数组两两结合重构二叉树</span>
+    </a>
+  </li>
+  
+  
+</ul>
 
 
-    <div class="article-datetime">
-  <a href="/2016/10/29/equals/" class="archive-article-date"><time datetime="2016-10-29T15:16:01.844Z" itemprop="datePublished">十月 29日</time></a>
-</div>
-
-  </header>
+  
 </article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/28/Tree1/">先序 中序 后序数组两两结合重构二叉树</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/10/28/Tree1/" class="archive-article-date"><time datetime="2016-10-28T12:30:12.762Z" itemprop="datePublished">十月 28日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/10/26/String/">探秘Java中的String、StringBuilder以及StringBuffer</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/10/26/String/" class="archive-article-date"><time datetime="2016-10-26T10:49:39.916Z" itemprop="datePublished">十月 26日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-  
-    </div></section>
-  
 
 
 
