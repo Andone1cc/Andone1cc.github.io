@@ -21,7 +21,7 @@
  3         
  4 System.out.println(str1==str2); 
  5 System.out.println(str1.equals(s">
-<meta property="og:updated_time" content="2016-10-29T15:21:49.074Z">
+<meta property="og:updated_time" content="2016-10-30T03:33:32.124Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈Java中的equals和==">
 <meta name="twitter:description" content="在初学java的时候,常遇到下面的代码:
@@ -133,10 +133,93 @@
 </code></pre><a id="more"></a>
 <p>为什么第四行和第五行的输出结果不一样呢？==和equals方法之间的区别是什么？下面我们就先来了解一下==和equals方法的区别之处。</p>
 <h3 id="一、关系操作符”-”到底比较的是什么？"><a href="#一、关系操作符”-”到底比较的是什么？" class="headerlink" title="一、关系操作符”==”到底比较的是什么？"></a>一、关系操作符”==”到底比较的是什么？</h3><blockquote>
-<p>下面这个句话是摘自<code>《Java编程思想》</code>一书中的原话：</p>
+<p>下面这句话是摘自<code>《Java编程思想》</code>一书中的原话：</p>
 <p>“关系操作符生成的是一个boolean结果，它们计算的是操作数的值之间的关系”。</p>
 </blockquote>
-<p>这句话看似简单，理解起来还是需要细细体会的。说的简单点，==就是用来比较值是否相等。</p>
+<p>这句话看似简单，理解起来还是需要细细体会的。说的简单点，==就是用来比较值是否相等。下面先看几个例子：</p>
+<pre><code>`public static void main(String[] args) {
+    // TODO Auto-generated method stub
+
+    int n=3;
+    int m=3;
+
+    System.out.println(n==m);
+
+    String str = new String(&quot;hello&quot;);
+    String str1 = new String(&quot;hello&quot;);
+    String str2 = new String(&quot;hello&quot;);
+
+    System.out.println(str1==str2);
+
+    str1 = str;
+    str2 = str;
+    System.out.println(str1==str2);
+}`
+</code></pre><p>输出结果为： <code>true  false  true</code></p>
+<p>n==m结果为true,这个容易理解,变量n和变量m存储的值都为3,肯定是相等的。而为什么str1和str2两次比较的结果不同？要理解这个其实只需要理解基本数据类型变量和非基本数据类型变量的区别。</p>
+<p>在java中有8种基本数据类型：</p>
+<p><code>浮点型：float(4 byte), double(8 byte)</code></p>
+<p><code>整型：byte(1 byte), short(2 byte), int(4 byte) , long(8 byte)</code></p>
+<p><code>字符型: char(2 byte)</code></p>
+<p><code>布尔型: boolean(JVM规范没有明确规定其所占的空间大小，仅规定其只能够取字面值&quot;true&quot;和&quot;false&quot;)</code></p>
+<p>对于这8种基本数据类型的变量，变量直接存储的是“值”，因此在用关系操作符==来进行比较时，比较的就是 “值” 本身。要注意浮点型和整型都是有符号类型的，而char是无符号类型的（char类型取值范围为0~2^16-1)。</p>
+<p>也就是说比如：</p>
+<p>　　int n=3;</p>
+<p>　　int m=3;　</p>
+<p>　　变量n和变量m都是直接存储的”3”这个数值，所以用==比较的时候结果是true。</p>
+<p>而对于非基本数据类型的变量，在一些书籍中称作为 引用类型的变量。比如上面的str1就是引用类型的变量，引用类型的变量存储的并不是 “值”本身，而是于其关联的对象在内存中的地址。比如下面这行代码：</p>
+<p>　　String str1;</p>
+<p>　　这句话声明了一个引用类型的变量，此时它并没有和任何对象关联。</p>
+<p>而通过new String(“hello”)来产生一个对象（也称作为类String的一个实例），并将这个对象和str1进行绑定：</p>
+<p>　　str1= new String(“hello”);</p>
+<p>　　那么str1指向了一个对象（很多地方也把str1称作为对象的引用），此时变量str1中存储的是它指向的对象在内存中的存储地址，并不是“值”本身，也就是说并不是直接存储的字符串”hello”。这里面的引用和C/C++中的指针很类似。</p>
+<p>因此在用==对str1和str2进行第一次比较时，得到的结果是false。因此它们分别指向的是不同的对象，也就是说它们实际存储的内存地址不同。</p>
+<p>而在第二次比较时，都让str1和str2指向了str指向的对象，那么得到的结果毫无疑问是true。</p>
+<h3 id="二、equals比较的又是什么？"><a href="#二、equals比较的又是什么？" class="headerlink" title="二、equals比较的又是什么？"></a>二、equals比较的又是什么？</h3><p>equals方法是基类Object中的方法，因此对于所有的继承于Object的类都会有该方法。为了更直观地理解equals方法的作用，直接看<code>Object类中equals方法的实现</code>。</p>
+<pre><code>` public boolean equals(Object obj) {
+   return (this == obj);
+ }`
+</code></pre><p>很显然，在Object类中，equals方法是用来比较两个对象的引用是否相等，即是否指向同一个对象。</p>
+<p>为什么下面的代码输出会是true呢？</p>
+<pre><code>` public static void main(String[] args) {
+    // TODO Auto-generated method stub
+
+    String str1 = new String(&quot;hello&quot;);
+    String str2 = new String(&quot;hello&quot;);
+
+    System.out.println(str1.equals(str2));
+}`
+</code></pre><p>要知道究竟，可以看一下<code>String类的equals方法的具体实现</code>.</p>
+<pre><code>` public boolean equals(Object anObject) {
+    if (this == anObject) {
+        return true;
+    }
+    if (anObject instanceof String) {
+        String anotherString = (String) anObject;
+        int n = value.length;
+        if (n == anotherString.value.length) {
+            char v1[] = value;
+            char v2[] = anotherString.value;
+            int i = 0;
+            while (n-- != 0) {
+                if (v1[i] != v2[i])
+                        return false;
+                i++;
+            }
+            return true;
+        }
+    }
+    return false;
+}`
+</code></pre><p>可以看出，<code>String类对equals方法进行了重写，用来比较指向的字符串对象所存储的字符串是否相等。</code></p>
+<p>其他的一些类诸如Double，Date，Integer等，都对equals方法进行了重写用来比较指向的对象所存储的内容是否相等。</p>
+<p><br></p>
+<p>【总结一下】</p>
+<p>1）对于==，如果作用于基本数据类型的变量，则直接比较其存储的 “值”是否相等；</p>
+<p>   如果作用于引用类型的变量，则比较的是所指向的对象的地址。</p>
+<p>2）对于equals方法，注意：equals方法不能作用于基本数据类型的变量。</p>
+<p>   如果没有对equals方法进行重写，则比较的是引用类型的变量所指向的对象的地址；</p>
+<p>   诸如String、Date等类对equals方法进行了重写的话，比较的是所指向的对象的内容。</p>
 
       
     </div>
@@ -147,7 +230,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/10/29/equals/" data-id="ciuvzk1bp0000hon6b7rmb6if" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/10/29/equals/" data-id="ciuw31x2v00005sn6jrnbgsyj" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
