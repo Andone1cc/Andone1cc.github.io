@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java中的static关键字解析 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Java中的static关键字解析static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中的static关键字解析">
+<meta property="og:url" content="http://yoursite.com/2016/11/01/static关键字/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="Java中的static关键字解析static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。">
+<meta property="og:image" content="http://images.cnitblog.com/i/288799/201406/201612439117678.jpg">
+<meta property="og:updated_time" content="2016-11-01T15:15:02.127Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java中的static关键字解析">
+<meta name="twitter:description" content="Java中的static关键字解析static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。">
+<meta name="twitter:image" content="http://images.cnitblog.com/i/288799/201406/201612439117678.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-static关键字" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      Java中的static关键字解析
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/01/static关键字/" class="article-date"><time datetime="2016-11-01T15:08:59.313Z" itemprop="datePublished">2016-11-01</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Java中的static关键字解析"><a href="#Java中的static关键字解析" class="headerlink" title="Java中的static关键字解析"></a>Java中的static关键字解析</h3><p>static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。</p>
+<a id="more"></a>
+<h3 id="一、static关键字的用途"><a href="#一、static关键字的用途" class="headerlink" title="一、static关键字的用途"></a>一、static关键字的用途</h3><p>在《Java编程思想》P86页有这样一段话：</p>
+<blockquote>
+<p>“static方法就是没有this的方法。在static方法内部不能调用非静态方法，反过来是可以的。而且可以在没有创建任何对象的前提下，仅仅通过类本身来调用static方法。这实际上正是static方法的主要用途。”</p>
+</blockquote>
+<p>段话虽然只是说明了static方法的特殊之处，但是可以看出static关键字的基本作用，简而言之，一句话来描述就是：</p>
+<p><code>方便在没有创建对象的情况下来进行调用（方法/变量）。</code></p>
+<p>很显然，被static关键字修饰的方法或者变量不需要依赖于对象来进行访问，只要类被加载了，就可以通过类名去进行访问。</p>
+<p>static可以用来修饰类的成员方法、类的成员变量，另外可以编写static代码块来<code>优化程序性能</code>。</p>
+<p>1）static方法</p>
+<p>　　static方法一般称作静态方法，由于静态方法不依赖于任何对象就可以进行访问，因此对于静态方法来说，是没有this的，因为它不依附于任何对象，既然都没有对象，就谈不上this了。并且由于这个特性，在静态方法中不能访问类的非静态成员变量和非静态成员方法，因为非静态成员方法/变量都是必须依赖具体的对象才能够被调用。</p>
+<p>　　但是要注意的是，虽然在静态方法中不能访问非静态成员方法和非静态成员变量，但是在非静态成员方法中是可以访问静态成员方法/变量的。举个简单的例子：</p>
+<p><img src="http://images.cnitblog.com/i/288799/201406/201612439117678.jpg" alt=""></p>
+<p>在上面的代码中，由于print2方法是独立于对象存在的，可以直接用过类名调用。假如说可以在静态方法中访问非静态方法/变量的话，那么如果在main方法中有下面一条语句：</p>
+<p>　　MyObject.print2();</p>
+<p>　　此时对象都没有，str2根本就不存在，所以就会产生矛盾了。同样对于方法也是一样，由于你无法预知在print1方法中是否访问了非静态成员变量，所以也禁止在静态成员方法中访问非静态成员方法。</p>
+<p>　　而对于非静态成员方法，它访问静态成员方法/变量显然是毫无限制的。</p>
+<p>　　因此，如果说想在不创建对象的情况下调用某个方法，就可以将这个方法设置为static。我们最常见的static方法就是main方法，至于为什么main方法必须是static的，现在就很清楚了。因为程序在执行main方法的时候没有创建任何对象，因此只有通过类名来访问。</p>
+<p>　　<code>另外记住，即使没有显示地声明为static，类的构造器实际上也是静态方法。</code></p>
+<p>2）static变量</p>
+<p>　　static变量也称作静态变量，静态变量和非静态变量的区别是：静态变量被所有的对象所共享，在内存中只有一个副本，它当且仅当在类初次加载时会被初始化。而非静态变量是对象所拥有的，在创建对象的时候被初始化，存在多个副本，各个对象拥有的副本互不影响。</p>
+<p>　　static成员变量的初始化顺序按照定义的顺序进行初始化。</p>
+<p>3）static代码块</p>
+<p>　　static关键字还有一个比较关键的作用就是 用来形成静态代码块以优化程序性能。static块可以置于类中的任何地方，类中可以有多个static块。在类初次被加载的时候，会按照static块的顺序来执行每个static块，并且只会执行一次。</p>
+<p>　　为什么说static块可以用来优化程序性能，是因为它的特性:只会在类加载的时候执行一次。下面看个例子:</p>
+<pre><code>`class Person{
+     private Date birthDate;
+
+    public Person(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    boolean isBornBoomer() {
+        Date startDate = Date.valueOf(&quot;1946&quot;);
+        Date endDate = Date.valueOf(&quot;1964&quot;);
+        return birthDate.compareTo(startDate)&gt;=0 &amp;&amp; birthDate.compareTo(endDate) &lt; 0;
+    }
+}`
+</code></pre><p>　isBornBoomer是用来这个人是否是1946-1964年出生的，而每次isBornBoomer被调用的时候，都会生成startDate和birthDate两个对象，造成了空间浪费，如果改成这样效率会更好：</p>
+<pre><code>`class Person{
+     private Date birthDate;
+    private static Date startDate,endDate;
+    static{
+        startDate = Date.valueOf(&quot;1946&quot;);
+        endDate = Date.valueOf(&quot;1964&quot;);
+    }
+
+    public Person(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    boolean isBornBoomer() {
+        return birthDate.compareTo(startDate)&gt;=0 &amp;&amp; birthDate.compareTo(endDate) &lt; 0;
+    }
+}`
+</code></pre><p><code>`因此，很多时候会将一些只需要进行一次的初始化操作都放在static代码块中进行。</code></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/01/static关键字/" data-id="ciuzn0i8b0006tsn6ge1xtcwm" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/10/31/接口和抽象类/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">深入理解Java的接口和抽象类</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-static关键字" data-title="Java中的static关键字解析" data-url="http://yoursite.com/2016/11/01/static关键字/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">8</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">8</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/01/static关键字/">Java中的static关键字解析</a>
+        </li>
+      
+        <li>
+          <a href="/2016/10/31/接口和抽象类/">深入理解Java的接口和抽象类</a>
+        </li>
+      
+        <li>
+          <a href="/2016/10/30/类与继承/">Java:类与继承</a>
+        </li>
+      
+        <li>
+          <a href="/2016/10/30/对象和引用/">浅谈Java中的对象和引用</a>
+        </li>
+      
+        <li>
+          <a href="/2016/10/30/垃圾回收机制/">Java垃圾回收机制</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
