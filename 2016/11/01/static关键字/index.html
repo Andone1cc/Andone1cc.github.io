@@ -12,7 +12,8 @@
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="Java中的static关键字解析static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。">
 <meta property="og:image" content="http://images.cnitblog.com/i/288799/201406/201612439117678.jpg">
-<meta property="og:updated_time" content="2016-11-01T15:15:02.127Z">
+<meta property="og:image" content="http://images.cnitblog.com/i/288799/201406/201658474265949.jpg">
+<meta property="og:updated_time" content="2016-11-02T02:23:25.302Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java中的static关键字解析">
 <meta name="twitter:description" content="Java中的static关键字解析static关键字是我们在编写代码和阅读代码时碰到的比较难以理解的一个关键字，也是各大公司的面试官喜欢在面试时问到的知识点之一。下面就先讲述一下static关键字的用法和平常容易误解的地方，最后列举了一些面试笔试中常见的关于static的考题。">
@@ -168,6 +169,115 @@
     }
 }`
 </code></pre><p><code>`因此，很多时候会将一些只需要进行一次的初始化操作都放在static代码块中进行。</code></p>
+<h3 id="二、static关键字的误区"><a href="#二、static关键字的误区" class="headerlink" title="二、static关键字的误区"></a>二、static关键字的误区</h3><p>1.static关键字会改变类中成员的访问权限吗？</p>
+<p>初学的时候会将java中的static与C/C++中的static关键字的功能混淆。在这里只需要记住一点：与C/C++中的static不同，Java中的static关键字不会影响到变量或者方法的作用域。在Java中能够影响到访问权限的只有private、public、protected（包括包访问权限）这几个关键字。看下面的例子就明白了：</p>
+<p><img src="http://images.cnitblog.com/i/288799/201406/201658474265949.jpg" alt=""></p>
+<p>提示错误”Person.age 不可视”，这说明static关键字并不会改变变量和方法的访问权限。</p>
+<p>2.能通过this访问静态成员变量吗？</p>
+<p>虽然对于静态方法来说没有this，那么在非静态方法中能够通过this访问静态成员变量吗？先看下面的一个例子，这段代码输出的结果是什么？</p>
+<pre><code>`public class Main {　　
+     static int value = 33;
+
+     public static void main(String[] args) throws Exception{
+        new Main().printValue();
+    }
+
+    private void printValue(){
+        int value = 3;
+        System.out.println(this.value);
+    }
+}`
+</code></pre><p>输出结果：<code>3</code></p>
+<p>这里面主要考察队this和static的理解。this代表什么？this代表当前对象，那么通过new Main()来调用printValue的话，当前对象就是通过new Main()生成的对象。而static变量是被对象所享有的，因此在printValue中的this.value的值毫无疑问是33。在printValue方法内部的value是局部变量，根本不可能与this关联，所以输出结果是33。在这里永远要记住一点：静态成员变量虽然独立于对象，但是不代表不可以通过对象去访问，所有的静态方法和静态变量都可以通过对象访问（只要访问权限足够）。</p>
+<p>3.static能作用于局部变量么？</p>
+<p>在C/C++中static是可以作用域局部变量的，但是在Java中切记：<code>static是不允许用来修饰局部变量。</code>不要问为什么，这是Java语法的规定。</p>
+<h3 id="三、常见的笔试面试题"><a href="#三、常见的笔试面试题" class="headerlink" title="三、常见的笔试面试题"></a>三、常见的笔试面试题</h3><p>下面列举一些面试笔试中经常遇到的关于static关键字的题目，仅供参考，如有补充欢迎下方留言。</p>
+<p>1.下面这段代码的输出结果是什么？</p>
+<pre><code>`public class Test extends Base{
+
+    static{
+        System.out.println(&quot;test static&quot;);
+    }
+
+    public Test(){
+        System.out.println(&quot;test constructor&quot;);
+    }
+
+    public static void main(String[] args) {
+        new Test();
+    }
+}
+
+class Base{
+
+    static{
+        System.out.println(&quot;base static&quot;);
+    }
+
+    public Base(){
+        System.out.println(&quot;base constructor&quot;);
+    }
+}`
+</code></pre><p>输出结果：<br>        <code>base static</code><br>        <code>test static</code><br>        <code>base constructor</code><br>        <code>test constructor</code></p>
+<p>至于为什么是这个结果，我们先不讨论，先来想一下这段代码具体的执行过程，在执行开始，先要寻找到main方法，因为main方法是程序的入口，但是在执行main方法之前，必须先加载Test类，而在加载Test类的时候发现Test类继承自Base类，因此会转去先加载Base类，在加载Base类的时候，发现有static块，便执行了static块。在Base类加载完成之后，便继续加载Test类，然后发现Test类中也有static块，便执行static块。在加载完所需的类之后，便开始执行main方法。在main方法中执行new Test()的时候会先调用父类的构造器，然后再调用自身的构造器。因此，便出现了上面的输出结果。</p>
+<p>2.这段代码的输出结果是什么？</p>
+<pre><code>`public class Test {
+    Person person = new Person(&quot;Test&quot;);
+    static{
+        System.out.println(&quot;test static&quot;);
+    }
+
+    public Test() {
+        System.out.println(&quot;test constructor&quot;);
+    }
+
+    public static void main(String[] args) {
+        new MyClass();
+    }
+}
+
+class Person{
+    static{
+        System.out.println(&quot;person static&quot;);
+    }
+    public Person(String str) {
+        System.out.println(&quot;person &quot;+str);
+    }
+}
+
+
+class MyClass extends Test {
+    Person person = new Person(&quot;MyClass&quot;);
+    static{
+        System.out.println(&quot;myclass static&quot;);
+    }
+
+    public MyClass() {
+        System.out.println(&quot;myclass constructor&quot;);
+    }
+}`
+</code></pre><p>输出结果：<br>        <code>test static</code><br>        <code>myclass static</code><br>        <code>person static</code><br>        <code>person Test</code><br>        <code>test constructor</code><br>        <code>person MyClass</code><br>        <code>myclass constructor</code></p>
+<p>类似地，我们还是来想一下这段代码的具体执行过程。首先加载Test类，因此会执行Test类中的static块。接着执行new MyClass()，而MyClass类还没有被加载，因此需要加载MyClass类。在加载MyClass类的时候，发现MyClass类继承自Test类，但是由于Test类已经被加载了，所以只需要加载MyClass类，那么就会执行MyClass类的中的static块。在加载完之后，就通过构造器来生成对象。而在生成对象的时候，必须先初始化父类的成员变量，因此会执行Test中的Person person = new Person()，而Person类还没有被加载过，因此会先加载Person类并执行Person类中的static块，接着执行父类的构造器，完成了父类的初始化，然后就来初始化自身了，因此会接着执行MyClass中的Person person = new Person()，最后执行MyClass的构造器。</p>
+<p>3.这段代码的输出结果是什么？</p>
+<pre><code>`public class Test {
+
+    static{
+        System.out.println(&quot;test static 1&quot;);
+    }
+    public static void main(String[] args) {
+
+    }
+
+    static{
+        System.out.println(&quot;test static 2&quot;);
+    }
+}`
+</code></pre><p>输出结果：<br>        <code>test static 1</code><br>        <code>test static 2</code></p>
+<p>虽然在main方法中没有任何语句，但是还是会输出，原因上面已经讲述过了。另外，static块可以出现类中的任何地方（只要不是方法内部，记住，任何方法内部都不行），并且执行是按照static块的顺序执行的。</p>
+<p><br><br>【参考资料】</p>
+<p>《Java编程思想》</p>
+<p><a href="http://lavasoft.blog.51cto.com/62575/18771/" target="_blank" rel="external">http://lavasoft.blog.51cto.com/62575/18771/</a></p>
+<p><a href="http://blog.csdn.net/zhu_apollo/article/details/1888219" target="_blank" rel="external">http://blog.csdn.net/zhu_apollo/article/details/1888219</a></p>
 
       
     </div>
@@ -178,7 +288,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/01/static关键字/" data-id="ciuzn0i8b0006tsn6ge1xtcwm" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/01/static关键字/" data-id="civ0axln9000a8on6qe6mtd4m" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
