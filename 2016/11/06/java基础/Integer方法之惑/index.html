@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Integer.valueOf(String) 方法之惑 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Integer.valueOf(String) 方法之惑最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？
+`System.out.println(Integer.valueOf(&amp;quot;127&amp;quot;)==Integer.valueOf(&amp;quot;127&amp;quot;));
+ System.out.println(Integer.valueOf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Integer.valueOf(String) 方法之惑">
+<meta property="og:url" content="http://yoursite.com/2016/11/06/java基础/Integer方法之惑/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="Integer.valueOf(String) 方法之惑最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？
+`System.out.println(Integer.valueOf(&amp;quot;127&amp;quot;)==Integer.valueOf(&amp;quot;127&amp;quot;));
+ System.out.println(Integer.valueOf">
+<meta property="og:updated_time" content="2016-11-03T13:33:20.872Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Integer.valueOf(String) 方法之惑">
+<meta name="twitter:description" content="Integer.valueOf(String) 方法之惑最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？
+`System.out.println(Integer.valueOf(&amp;quot;127&amp;quot;)==Integer.valueOf(&amp;quot;127&amp;quot;));
+ System.out.println(Integer.valueOf">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java基础/Integer方法之惑" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      Integer.valueOf(String) 方法之惑
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/06/java基础/Integer方法之惑/" class="article-date"><time datetime="2016-11-06T14:17:46.658Z" itemprop="datePublished">2016-11-06</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Integer-valueOf-String-方法之惑"><a href="#Integer-valueOf-String-方法之惑" class="headerlink" title="Integer.valueOf(String) 方法之惑"></a>Integer.valueOf(String) 方法之惑</h3><p>最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？</p>
+<pre><code>`System.out.println(Integer.valueOf(&quot;127&quot;)==Integer.valueOf(&quot;127&quot;));
+ System.out.println(Integer.valueOf(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));
+ System.out.println(Integer.parseInt(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));`
+</code></pre><p>输出结果：<code>true</code> <code>false</code>    <code>true</code></p>
+<a id="more"></a>
+<p>为什么第一个判断返回了true而第二个判断返回了false？127和128有什么我不知道的区别吗？（当然除了127小于128…）</p>
+<p>Integer.valueOf(String)确有一个不同寻常的行为。</p>
+<p><code>valueOf会返回一个Integer（整型）对象，当被处理的字符串在-128和127（包含边界）之间时，返回的对象是预先缓存的。</code>这就是为什么第一行的调用会返回true-127这个整型对象是被缓存的（所以两次valueOf返回的是同一个对象）——第二行的调用返回false是因为128没有被缓存，所以每次调用，都会生成一个新的整型对象，因此两个128整型对象是不同的对象。</p>
+<p>重要的是你要知道在上面的比较中，你实际进行比较的是integer.valueOf返回的对象引用，所以当你比较缓存外的整型对象时，相等的判断不会返回true，就算你传个valueOf的值是相等的也没用。（就像第二行中Integer.valueOf(128)==Integer.valueOf(128))。想让这个判断返回true，你需要使用equals()方法。</p>
+<p><code>parseInt()返回的不是整型对象，而是一个int型基础元素。</code>这就是为什么最后一个判断会返回true，第三行的判断中，在判断相等时，实际比较的是128 == 128，所以它必然是相等的。</p>
+<p>查看一下JDK源代码验证上面的话：</p>
+<pre><code>`    public static Integer valueOf(int i) {
+        if (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    }`
+</code></pre><p>其中high跟low是静态常量,分别为127跟-128</p>
+<pre><code>`private static class IntegerCache {
+    static final int low = -128;
+    static final int high;
+    static final Integer cache[];
+
+    static {
+        // high value may be configured by property
+        int h = 127;
+        String integerCacheHighPropValue =
+            sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);
+        if (integerCacheHighPropValue != null) {
+            try {
+                int i = parseInt(integerCacheHighPropValue);
+                i = Math.max(i, 127);
+                // Maximum array size is Integer.MAX_VALUE
+                h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+            } catch( NumberFormatException nfe) {
+                // If the property cannot be parsed into an int, ignore it.
+            }
+        }
+        high = h;
+
+        cache = new Integer[(high - low) + 1];
+        int j = low;
+        for(int k = 0; k &lt; cache.length; k++)
+            cache[k] = new Integer(j++);
+
+        // range [-128, 127] must be interned (JLS7 5.1.7)
+        assert IntegerCache.high &gt;= 127;
+    }`
+</code></pre><p>第三个表示式比较的是左边的原始int值128与右边新创建的Integer对象。但是因为int和Integer之间比较是没有意义的，所以Java在进行比较前会<code>将Integer自动拆箱</code>，所以最后进行的是int和int值之间的比较。由于128和自己相等，所以返回true。</p>
+<p>解决了上面的疑惑，我们一起再来做做类似的题吧。</p>
+<pre><code>`
+Integer i01 = 59;
+int i02 = 59;
+Integer i03 =Integer.valueOf(59);
+Integer i04 = new Integer(59)。
+以下输出结果为false的是：
+1.System.out.println(i01== i02);    
+2.System.out.println(i01== i03);
+3.System.out.println(i03== i04);
+4.System.out.println(i02== i04);
+`
+</code></pre><p>【解析】</p>
+<p>Integer i01 = 59. 直接赋值数字，java会自动装箱，自动调用Integer.valueOf(59). </p>
+<p>Integer i03 = Integer.valueOf(59).  Integer.valueOf(int i)会返回一个Integer对象，当i在-128~127之间时，会返回缓存中已创建的Integer对象。</p>
+<p>Integer i04 = new Integer(59) 返回一个新的对象。</p>
+<p>所以这道题中，59在-128~127之间，所以前三条语句返回的是同一个对象（在缓存区已创建的对象），而i04使用new新创建了一个新的对象。</p>
+<p>【结果】</p>
+<p>第三条语句输出为false</p>
+<p><br><br>【总结】</p>
+<p>①无论如何，Integer与new Integer不会相等。不会经历拆箱过程。</p>
+<p>②两个都是非new出来的Integer，如果数在-128到127之间，则是true,否则为false </p>
+<p>③两个都是new出来的,都为false </p>
+<p>④int和integer(无论new否)比，都为true，因为会把Integer自动拆箱为int再去比</p>
+<p><br></p>
+<p>【参考资料】</p>
+<p>牛客网 <a href="https://www.nowcoder.com/questionTerminal/bc5da9d0b8444006a776b7cbfba5d250" target="_blank" rel="external">https://www.nowcoder.com/questionTerminal/bc5da9d0b8444006a776b7cbfba5d250</a></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/06/java基础/Integer方法之惑/" data-id="civ6qqbxl0009vsn6qs8sg2ek" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/06/java基础/final关键字/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">浅析Java中的final关键字</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java基础/Integer方法之惑" data-title="Integer.valueOf(String) 方法之惑" data-url="http://yoursite.com/2016/11/06/java基础/Integer方法之惑/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">12</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">11</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/06/java基础/Integer方法之惑/">Integer.valueOf(String) 方法之惑</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/final关键字/">浅析Java中的final关键字</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/equals/">浅谈Java中的equals和==</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/内部l类/">Java内部类详解</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/类与继承/">Java:类与继承</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
