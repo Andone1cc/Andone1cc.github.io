@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入理解Hibernate缓存机制 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="首先我们需要了解Hibernate缓存有什么作用呢？
+Hibernate是一个持久层框架，经常访问物理数据库，为了降低应用程序对物理数据源访问的频次，从而提高应用程序的运行性能。缓存内的数据是对物理数据源中的数据的复制，应用程序在运行时从缓存读写数据，在特定的时刻或事件会同步缓存和物理数据源的数据。
+下面我们分析一下hibernate的缓存机制，包括一级缓存(session级别)、二级缓存(ses">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Hibernate缓存机制">
+<meta property="og:url" content="http://yoursite.com/2016/11/09/java高级/hibernate缓存/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="首先我们需要了解Hibernate缓存有什么作用呢？
+Hibernate是一个持久层框架，经常访问物理数据库，为了降低应用程序对物理数据源访问的频次，从而提高应用程序的运行性能。缓存内的数据是对物理数据源中的数据的复制，应用程序在运行时从缓存读写数据，在特定的时刻或事件会同步缓存和物理数据源的数据。
+下面我们分析一下hibernate的缓存机制，包括一级缓存(session级别)、二级缓存(ses">
+<meta property="og:updated_time" content="2016-11-09T14:03:59.086Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解Hibernate缓存机制">
+<meta name="twitter:description" content="首先我们需要了解Hibernate缓存有什么作用呢？
+Hibernate是一个持久层框架，经常访问物理数据库，为了降低应用程序对物理数据源访问的频次，从而提高应用程序的运行性能。缓存内的数据是对物理数据源中的数据的复制，应用程序在运行时从缓存读写数据，在特定的时刻或事件会同步缓存和物理数据源的数据。
+下面我们分析一下hibernate的缓存机制，包括一级缓存(session级别)、二级缓存(ses">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java高级/hibernate缓存" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解Hibernate缓存机制
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/09/java高级/hibernate缓存/" class="article-date"><time datetime="2016-11-09T13:05:26.453Z" itemprop="datePublished">2016-11-09</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java高级/">java高级</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先我们需要了解Hibernate缓存有什么作用呢？</p>
+<p>Hibernate是一个持久层框架，经常访问物理数据库，<code>为了降低应用程序对物理数据源访问的频次，从而提高应用程序的运行性能。</code>缓存内的数据是对物理数据源中的数据的复制，应用程序在运行时从缓存读写数据，在特定的时刻或事件会同步缓存和物理数据源的数据。</p>
+<p>下面我们分析一下hibernate的缓存机制，包括一级缓存(session级别)、二级缓存(sessionFactory级别)以及查询缓存。</p>
+<a id="more"></a>
+<h3 id="一、一级缓存-session级别"><a href="#一、一级缓存-session级别" class="headerlink" title="一、一级缓存(session级别)"></a>一、一级缓存(session级别)</h3><p>我们来看看hibernate提供的一级缓存：</p>
+<pre><code>`@Test
+public void cache1(){
+    Session session = this.sessionFactory.openSession();
+    /* 查询单条班级记录 */
+    AClazz clazz = session.load(AClazz.class, 1);
+
+    /* 打印班级信息 */
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+
+    /*再次查询单条班级记录 */
+    clazz = session.load(AClazz.class, 1);
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    session.close();
+}`
+
+
+`@Test
+public void cachehql(){
+    Session session = this.sessionFactory.openSession();
+    String hql = &quot;from AClazz &quot; ;
+    Query query = session.createQuery(hql);
+    List&lt;AClazz&gt; clazzList = query.getResultList() ;
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();)
+    {
+        AClazz clazz = (AClazz) iterator.next();
+        this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    }
+
+    /* 第二次查询 */
+    AClazz clazz = session.load(AClazz.class, 1);
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+
+    session.close();
+}`
+</code></pre><p>我们来看看控制台输出：(上面两种情况都会只输出一条sql语句)</p>
+<pre><code>`Hibernate: 
+select
+    aclazz0_.id as id1_0_0_,
+    aclazz0_.name as name2_0_0_,
+    aclazz0_.createTime as createTi3_0_0_ 
+from
+    a_clazz aclazz0_ 
+where
+    aclazz0_.id=?`
+</code></pre><p>我们看到此时hibernate仅仅只会发出一条 sql 语句，因为第一次查询就会将整个的对象查询出来，放到session的一级缓存中去，当我如果需要再次查询班级对象时，此时首先会去缓存中看是否存在该对象，如果存在，则直接从缓存中取出，就不会再发sql了，但是要注意：</p>
+<p><code>1.只有get和load方法适用一级缓存。如果第二次查询使用hql语句,还是会执行两条sql语句。</code></p>
+<pre><code>`@Test
+public void cachehql2()
+{
+    Session session = this.sessionFactory.openSession();
+    String hql = &quot;from AClazz where id = 1 &quot; ;
+    Query query = session.createQuery(hql);
+    AClazz clazz = (AClazz) query.getSingleResult();
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+
+    /* 第二次查询 */
+    query = session.createQuery(hql);
+    clazz = (AClazz) query.getSingleResult();
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as id1_0_,
+        aclazz0_.name as name2_0_,
+        aclazz0_.createTime as createTi3_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=1
+2016-11-09 21:20:48,670 INFO  [main] test.CacheTest (CacheTest.java:95) - 班级对象:id:1,名称:121
+Hibernate: 
+    select
+        aclazz0_.id as id1_0_,
+        aclazz0_.name as name2_0_,
+        aclazz0_.createTime as createTi3_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=1
+2016-11-09 21:20:48,672 INFO  [main] test.CacheTest (CacheTest.java:100) - 班级对象:id:1,名称:121
+`
+</code></pre><p><code>2.hibernate的一级缓存是session级别的，所以如果session关闭后，缓存就没了，此时就会再次发sql去查数据库。</code></p>
+<pre><code>`@Test
+public void cache2(){
+    Session session = this.sessionFactory.openSession();
+    /* 查询单条班级记录 */
+    AClazz clazz = session.load(AClazz.class, 1);
+    /* 打印班级信息 */
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+
+    //session关闭
+    session.close();
+    session = this.sessionFactory.openSession();
+    /*再次 查询单条班级记录 */
+    clazz = session.load(AClazz.class, 1);
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as id1_0_0_,
+        aclazz0_.name as name2_0_0_,
+        aclazz0_.createTime as createTi3_0_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=?
+2016-11-09 21:25:18,926 INFO  [main] test.CacheTest (CacheTest.java:44) - 班级对象:id:1,名称:121
+Hibernate: 
+    select
+        aclazz0_.id as id1_0_0_,
+        aclazz0_.name as name2_0_0_,
+        aclazz0_.createTime as createTi3_0_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=?
+2016-11-09 21:25:18,931 INFO  [main] test.CacheTest (CacheTest.java:51) - 班级对象:id:1,名称:121
+`
+</code></pre><p>我们看到此时会发出两条sql语句，因为session关闭以后，一级缓存就不存在了，所以如果再查询的时候，就会再发sql。要解决这种问题，我们应该怎么做呢？这就要我们来配置hibernate的二级缓存了，也就是sessionFactory级别的缓存。</p>
+<h3 id="二、二级缓存-sessionFactory级别"><a href="#二、二级缓存-sessionFactory级别" class="headerlink" title="二、二级缓存(sessionFactory级别)"></a>二、二级缓存(sessionFactory级别)</h3><p>使用hibernate二级缓存，我们首先需要对其进行配置，配置步骤如下：</p>
+<p>1.hibernate并没有提供相应的二级缓存的组件，所以需要加入额外的二级缓存包，常用的二级缓存包是EHcache。这个我们在下载好的hibernate的lib-&gt;optional-&gt;ehcache下可以找到(我这里使用的版本hibernate5.2版本)，然后将里面的几个jar包导入即可。</p>
+<p>2.在hibernate.cfg.xml配置文件中配置我们二级缓存的一些属性：</p>
+<pre><code>`&lt;!-- 
+    使用ehcache开启二级缓存
+ --&gt;
+ &lt;property name=&quot;hibernate.cache.region.factory_class&quot;&gt;
+    org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+&lt;/property&gt;
+ &lt;!-- 开启二级缓存 --&gt;
+ &lt;property name=&quot;hibernate.cache.use_second_level_cache&quot;&gt;true&lt;/property&gt;`
+</code></pre><p>3.配置hibernate的二级缓存是通过使用 ehcache的缓存包，所以我们需要创建一个 ehcache.xml 的配置文件，来配置我们的缓存信息，将其放到项目根目录下</p>
+<p>修改一下属性：</p>
+<pre><code>`&lt;!--指定二级缓存存放在磁盘上的位置--&gt;
+&lt;diskStore path=&quot;d:/hibernate-cache&quot;/&gt;　`
+</code></pre><p>4.开启我们的二级缓存</p>
+<p>①如果使用xml配置，我们需要在 AClazz.hbm.xml 中加上一下配置：</p>
+<pre><code>`&lt;!-- 声明指定开启二级缓存 --&gt;
+    &lt;cache usage=&quot;read-only&quot;/&gt;`
+</code></pre><p>二级缓存的使用策略一般有这几种：read-only、nonstrict-read-write、read-write、transactional。注意：我们通常使用二级缓存都是将其配置成 read-only ，即我们应当在那些不需要进行修改的实体类上使用二级缓存，否则如果对缓存进行读写的话，性能会变差，这样设置缓存就失去了意义。</p>
+<p>②如果使用annotation配置，我们需要在AClazz这个类上加上这样一个注解：</p>
+<pre><code>`@Entity
+ @Table(name=&quot;a_clazz&quot;)
+ @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)　　//　　表示开启二级缓存，并使用read-only策略`
+</code></pre><p>这样我们的二级缓存配置就算完成了，接下来我们来通过测试用例测试下我们的二级缓存是否起作用</p>
+<p><code>①二级缓存是sessionFactory级别的缓存</code></p>
+<pre><code>`@Test
+public void cache1(){
+    Session session = this.sessionFactory.openSession();
+    /* 查询单条班级记录 */
+    AClazz clazz = session.load(AClazz.class, 1);
+    /* 打印班级信息 */
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    //session关闭
+    session.close();
+    /**
+         * 即使当session关闭以后，因为配置了二级缓存，而二级缓存是sessionFactory级别的，所以会从缓存中取出该数据
+         * 只会发出一条sql语句
+         */
+
+    session = this.sessionFactory.openSession();
+    /* 查询单条班级记录 */
+    clazz = session.load(AClazz.class, 1);
+    /* 打印班级信息 */
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as id1_0_0_,
+        aclazz0_.name as name2_0_0_,
+        aclazz0_.createTime as createTi3_0_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=?
+2016-11-09 21:35:08,132 INFO  [main] test.CacheTest (CacheTest.java:45) - 班级对象:id:1,名称:121
+2016-11-09 21:35:08,138 INFO  [main] test.CacheTest (CacheTest.java:54) - 班级对象:id:1,名称:121
+`
+</code></pre><p>因为二级缓存是sessionFactory级别的缓存，我们看到，在配置了二级缓存以后，当我们session关闭以后，我们再去查询对象的时候，此时hibernate首先会去二级缓存中查询是否有该对象，有就不会再发sql了。</p>
+<p><code>②二级缓存缓存的仅仅是对象，如果查询出来的是对象的一些属性，则不会被加到缓存中去</code></p>
+<pre><code>`@Test
+public void cachehql2_1()
+{
+    Session session = this.sessionFactory.openSession();
+    String hql = &quot;select id,name from AClazz&quot; ;
+    Query query = session.createQuery(hql);
+    List&lt;AClazz&gt; clazzList=query.getResultList();
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();) {
+        Object[] obj =(Object[]) iterator.next();
+        this.logger.info(&quot;数组里面的东西:{}&quot;,Arrays.toString(obj));
+    }
+    session.close();
+
+    /* 第二次查询 */
+    session = this.sessionFactory.openSession();
+    AClazz clazz = session.get(AClazz.class, 1);
+    this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as col_0_0_,
+        aclazz0_.name as col_1_0_ 
+    from
+        a_clazz aclazz0_
+2016-11-09 21:44:48,511 INFO  [main] test.CacheTest (CacheTest.java:106) - 数组里面的东西:[1, 121]
+Hibernate: 
+    select
+        aclazz0_.id as id1_0_0_,
+        aclazz0_.name as name2_0_0_,
+        aclazz0_.createTime as createTi3_0_0_ 
+    from
+        a_clazz aclazz0_ 
+    where
+        aclazz0_.id=?
+2016-11-09 21:44:48,560 INFO  [main] test.CacheTest (CacheTest.java:113) - 班级对象:id:1,名称:121`
+</code></pre><p>注意：二级缓存中缓存的仅仅是对象，而下面这里只保存了姓名和id两个字段，所以 不会被加载到二级缓存里面</p>
+<p>我们看到这个测试用例，如果我们只是取出对象的一些属性的话，则不会将其保存到二级缓存中去，因为<code>二级缓存缓存的仅仅是对象</code>。</p>
+<p><code>③二级缓存会缓存 hql 语句吗？</code></p>
+<pre><code>`@Test
+public void cachehql1()
+{
+    Session session = this.sessionFactory.openSession();
+    String hql = &quot;from AClazz &quot; ;
+    Query query = session.createQuery(hql);
+    List&lt;AClazz&gt; clazzList = query.getResultList() ;
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();)
+    {
+        AClazz clazz = (AClazz) iterator.next();
+        this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    }
+
+    session.close();
+    session = this.sessionFactory.openSession();
+    /* 第二次查询 */
+    query = session.createQuery(hql);
+    clazzList = query.getResultList() ;
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();)
+    {
+        AClazz clazz = (AClazz) iterator.next();
+        this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    }
+
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as id1_0_,
+        aclazz0_.name as name2_0_,
+        aclazz0_.createTime as createTi3_0_ 
+    from
+        a_clazz aclazz0_
+2016-11-09 21:48:07,342 INFO  [main] test.CacheTest (CacheTest.java:77) - 班级对象:id:1,名称:121
+Hibernate: 
+    select
+        aclazz0_.id as id1_0_,
+        aclazz0_.name as name2_0_,
+        aclazz0_.createTime as createTi3_0_ 
+    from
+        a_clazz aclazz0_
+2016-11-09 21:48:07,357 INFO  [main] test.CacheTest (CacheTest.java:87) - 班级对象:id:1,名称:121`
+</code></pre><p>我们看到，当我们如果通过getResultList()去查询两次对象时，二级缓存虽然会缓存查询出来的对象，但是我们看到发出了两条相同的查询语句，<code>这是因为二级缓存不会缓存我们的hql查询语句</code>，要想解决这个问题，我们就要配置我们的查询缓存了。</p>
+<h3 id="三、查询缓存-sessionFactory级别"><a href="#三、查询缓存-sessionFactory级别" class="headerlink" title="三、查询缓存(sessionFactory级别)"></a>三、查询缓存(sessionFactory级别)</h3><p>我们如果要配置查询缓存，只需要在hibernate.cfg.xml中加入一条配置即可：</p>
+<pre><code>`　&lt;!-- 开启查询缓存 --&gt;
+  &lt;property name=&quot;hibernate.cache.use_query_cache&quot;&gt;true&lt;/property&gt;`
+</code></pre><p>然后我们如果在查询hql语句时要使用查询缓存，就需要在查询语句后面设置这样一个方法:</p>
+<pre><code>`String hql = &quot;from AClazz &quot; ;
+ Query query = session.createQuery(hql);
+ query.setCacheable(true);// //开启查询缓存,查询缓存也是sessionFactory级别的缓存`
+</code></pre><p>如果是在annotation中，我们还需要在这个类上加上这样一个注解：@Cacheable</p>
+<p>接下来我们来通过测试用例来看看我们的查询缓存</p>
+<p><code>①查询缓存也是sessionFactory级别的缓存</code></p>
+<pre><code>`@Test
+public void cachehql1()
+{
+    Session session = this.sessionFactory.openSession();
+    String hql = &quot;from AClazz &quot; ;
+    Query query = session.createQuery(hql);
+    query.setCacheable(true);// //开启查询缓存,查询缓存也是sessionFactory级别的缓存
+    List&lt;AClazz&gt; clazzList = query.getResultList() ;
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();)
+    {
+        AClazz clazz = (AClazz) iterator.next();
+        this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    }
+    session.close();
+    session = this.sessionFactory.openSession();
+    /* 第二次查询 */
+    query = session.createQuery(hql);
+    query.setCacheable(true);// //开启查询缓存,查询缓存也是sessionFactory级别的缓存
+    clazzList = query.getResultList() ;
+    for (Iterator iterator = clazzList.iterator(); iterator.hasNext();)
+    {
+        AClazz clazz = (AClazz) iterator.next();
+        this.logger.info(&quot;班级对象:id:{},名称:{}&quot;,clazz.getId() , clazz.getName());
+    }
+
+    session.close();
+}`
+</code></pre><p>控制台输出结果：</p>
+<pre><code>`Hibernate: 
+    select
+        aclazz0_.id as id1_0_,
+        aclazz0_.name as name2_0_,
+        aclazz0_.createTime as createTi3_0_ 
+    from
+        a_clazz aclazz0_
+2016-11-09 21:54:35,956 INFO  [main] test.CacheTest (CacheTest.java:78) - 班级对象:id:1,名称:121
+2016-11-09 21:54:35,963 INFO  [main] test.CacheTest (CacheTest.java:89) - 班级对象:id:1,名称:121
+`
+</code></pre><p>我们看到，此时如果我们发出两条相同的语句，hibernate也只会发出一条sql，因为已经开启了查询缓存了，并且查询缓存也是sessionFactory级别的</p>
+<p>注意：<code>只有当 HQL 查询语句完全相同时，连参数设置都要相同，此时查询缓存才有效</code></p>
+<p><br><br>【总结】</p>
+<p>缓存的作用主要是用来提高hibernate的性能，可以简单的理解成一个map。使用缓存涉及到三个操作：把数据放入缓存、从缓存中取数据、删除缓存中的无效数据。</p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/09/java高级/hibernate缓存/" data-id="civb02ge00015don6mmuncgmg" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSH/">SSH</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/08/设计模式/单例模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">设计模式读书笔记--单例模式</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java高级/hibernate缓存" data-title="深入理解Hibernate缓存机制" data-url="http://yoursite.com/2016/11/09/java高级/hibernate缓存/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">15</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/09/java高级/hibernate缓存/">深入理解Hibernate缓存机制</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/08/设计模式/单例模式/">设计模式读书笔记--单例模式</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/07/java基础/hashmap/">深入剖析HashMap源码</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/Integer方法之惑/">Integer.valueOf(String) 方法之惑</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/06/java基础/final关键字/">浅析Java中的final关键字</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
