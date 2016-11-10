@@ -15,7 +15,7 @@
 <meta property="og:description" content="我们所生活的世界很少有事物是孤立存在的，每个事物必然会存在着与它相关联的事物。在面向对象设计当中，关联关系是非常重要的。关联关系一般可以分为以下两种：
 单向关系：只需单向访问关联端;双向关系：关联的两端都可以互相访问;单向关系可分为：1—N、1—1、N—1、N—N;双向关系可分为：1—1 、1—N、N—N
 下面就上面的每种关联映射分别讲解：">
-<meta property="og:updated_time" content="2016-11-10T02:11:27.237Z">
+<meta property="og:updated_time" content="2016-11-10T07:31:00.018Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hibernate的关联映射之N-1关联映射">
 <meta name="twitter:description" content="我们所生活的世界很少有事物是孤立存在的，每个事物必然会存在着与它相关联的事物。在面向对象设计当中，关联关系是非常重要的。关联关系一般可以分为以下两种：
@@ -381,7 +381,7 @@ public void add2(){
 
         &lt;property name=&quot;name&quot; column=&quot;departmentName&quot; /&gt;  
          &lt;!-- 映射集合属合 --&gt;  
-        &lt;set name=&quot;employees&quot; inverse=&quot;true&quot;&gt;//指定1的一端不控制关联关系  
+        &lt;set name=&quot;employees&quot; inverse=&quot;true&quot; cascade=&quot;all&quot;&gt;//指定1的一端不控制关联关系  
             &lt;!-- 指定关联的外键列 --&gt;  
             &lt;key column=&quot;departmentID&quot; /&gt;  
             &lt;!-- 用以映射到关联类属性 --&gt;  
@@ -398,13 +398,13 @@ public void add2(){
 
         &lt;property name=&quot;name&quot; column=&quot;employeeName&quot; /&gt;  
         &lt;!-- 用于映射N-1关联实体，指定关联实体类为 :Department,指定外键为：departmentID--&gt;  
-        &lt;many-to-one class=&quot;io.github.hibernate.pojo.Department&quot; name=&quot;department&quot; column=&quot;departmentID&quot; /&gt;      
+        &lt;many-to-one class=&quot;io.github.hibernate.pojo.Department&quot; name=&quot;department&quot; column=&quot;departmentID&quot;  cascade=&quot;save-update&quot;/&gt;      
     &lt;/class&gt;
 &lt;/hibernate-mapping&gt;`
 </code></pre><p>下面的程序段用于保存一个Department对象和两个Employee对象</p>
 <p>1.设置inverse=“true”,将关联关系交给多的一端控制;</p>
 <pre><code>`@Test
-public void add4(){
+public void add2(){
     Session session=null;
     Transaction transaction=null;
     try {
@@ -416,16 +416,19 @@ public void add4(){
 
         //建立两个对象  
         Employee employee1 = new Employee();  
-        employee1.setName(&quot;chentmt1&quot;);  
-        employee1.setDepartment(department);      //建立两个对象的关联关系  
-
+        employee1.setName(&quot;zhangsan1&quot;);  
+        employee1.setDepartment(department);
         Employee employee2 = new Employee();  
-        employee2.setName(&quot;chentmt2&quot;);  
-        employee2.setDepartment(department);      //建立两个对象的关联关系  
+        employee2.setName(&quot;zhangsan2&quot;);  
+        employee2.setDepartment(department);
+
+        Set&lt;Employee&gt; emps = new HashSet&lt;Employee&gt;();    
+        emps.add(employee1);
+        emps.add(employee2);
+        //设置Department和Employee之间的关联关系  
+        department.setEmployees(emps);       
 
         session.save(department);          //....1  
-        session.save(employee2);  
-        session.save(employee1);  
 
         transaction.commit();
     } catch (Exception e) {
@@ -460,7 +463,7 @@ public void add4(){
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/09/java高级/关联映射N-1/" data-id="civbq0yvm0018uwn6wbbh42di" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/09/java高级/关联映射N-1/" data-id="civc1ea5v0018qon6u5k8h8l6" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
