@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在spring的世界中， 我们通常会利用bean config file 或者 annotation注解方式来配置bean。
+在第一种利用bean config file(spring xml)方式中， 还包括如下三小类：
+反射模式
+
+工厂方法模式(本文重点)
+
+Factory Bean模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean">
+<meta property="og:url" content="http://yoursite.com/2016/11/12/java高级/创建bean/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="在spring的世界中， 我们通常会利用bean config file 或者 annotation注解方式来配置bean。
+在第一种利用bean config file(spring xml)方式中， 还包括如下三小类：
+反射模式
+
+工厂方法模式(本文重点)
+
+Factory Bean模式">
+<meta property="og:updated_time" content="2016-11-12T12:40:07.890Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean">
+<meta name="twitter:description" content="在spring的世界中， 我们通常会利用bean config file 或者 annotation注解方式来配置bean。
+在第一种利用bean config file(spring xml)方式中， 还包括如下三小类：
+反射模式
+
+工厂方法模式(本文重点)
+
+Factory Bean模式">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java高级/创建bean" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/12/java高级/创建bean/" class="article-date"><time datetime="2016-11-12T12:02:34.144Z" itemprop="datePublished">2016-11-12</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java高级/">java高级</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在spring的世界中， 我们通常会利用bean config file 或者 annotation注解方式来配置bean。</p>
+<p>在第一种利用bean config file(spring xml)方式中， 还包括如下三小类：</p>
+<pre><code>反射模式
+
+工厂方法模式(本文重点)
+
+Factory Bean模式
+</code></pre><a id="more"></a>
+<h3 id="一、反射模式"><a href="#一、反射模式" class="headerlink" title="一、反射模式"></a>一、反射模式</h3><p>其中反射模式最常见， 我们需要在bean 配置中指明我们需要的bean object的全类名。</p>
+<p>例如:</p>
+<pre><code>`&lt;bean id=&quot;car1&quot; class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+      &lt;property name=&quot;id&quot; value=&quot;1&quot;&gt;&lt;/property&gt; 
+      &lt;property name=&quot;name&quot; value=&quot;Honda&quot;&gt;&lt;/property&gt;   
+      &lt;property name=&quot;price&quot; value=&quot;300000&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;`
+</code></pre><p>上面bean 里面的class属性就是全类名， Spring利用Java反射机制创建这个bean。</p>
+<h3 id="二、工厂方法模式"><a href="#二、工厂方法模式" class="headerlink" title="二、工厂方法模式"></a>二、工厂方法模式</h3><p>在工厂方法模式中， Spring不会直接利用反射机制创建bean对象， 而是会利用反射机制先找到Factory类，然后利用Factory再去生成bean对象。</p>
+<p>而Factory Mothod方式也分两种， 分别是静态工厂方法 和 实例工厂方法。</p>
+<h4 id="静态工厂方法方式"><a href="#静态工厂方法方式" class="headerlink" title="静态工厂方法方式"></a>静态工厂方法方式</h4><p>所谓<code>静态工厂方式就是指Factory类不本身不需要实例化， 这个Factory类中提供了1个静态方法来生成bean对象</code>。</p>
+<p>我们一起来看个例子：</p>
+<p>bean类Car</p>
+<p>首先我们定义1个bean类Car</p>
+<pre><code>`package io.github.cc.factoryMethod;
+
+public class Car {
+    private int id;
+    private String name;
+    private int price;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Car [id=&quot; + id + &quot;, name=&quot; + name + &quot;, price=&quot; + price + &quot;]&quot;;
+    }
+
+  public Car(){
+
+  }
+
+    public Car(int id, String name, int price) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+}`
+</code></pre><p>然后我们再定义1个工厂类CarStaticFactory</p>
+<pre><code>`import java.util.HashMap;
+import java.util.Map;
+
+public class CarStaticFactory {
+    private static Map&lt;Integer, Car&gt; map = new HashMap&lt;Integer,Car&gt;();
+
+    static{
+        map.put(1, new Car(1,&quot;Honda&quot;,300000));
+        map.put(2, new Car(2,&quot;Audi&quot;,440000));
+        map.put(3, new Car(3,&quot;BMW&quot;,540000));
+    }
+
+    public static Car getCar(int id){
+        return map.get(id);
+    }
+}`
+</code></pre><p>里面定义了1个静态的bean 容器map. <code>然后提供1个静态方法根据Car 的id 来获取容器里的car对象。</code></p>
+<p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;bmwCar&quot; class=&quot;io.github.cc.factoryMethod.CarStaticFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;3&quot;&gt;&lt;/constructor-arg&gt;           
+&lt;/bean&gt;
+
+&lt;bean id=&quot;audiCar&quot; class=&quot;io.github.cc.factoryMethod.CarStaticFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;2&quot;&gt;&lt;/constructor-arg&gt;           
+&lt;/bean&gt;`
+</code></pre><p>可以见到， 利用静态工厂方法定义的bean item种， class属性不在是bean的全类名， <code>而是静态工厂的全类名， 而且还需要指定工厂里的 getBean 静态方法名字和参数</code>。</p>
+<p>测试代码：</p>
+<pre><code>、public static void h1(){
+      ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+      Car car1 = (Car) ac.getBean(&quot;bmwCar&quot;);
+      System.out.println(car1);
+
+      car1 = (Car) ac.getBean(&quot;audiCar&quot;);
+      System.out.println(car1);
+}、
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=3, name=BMW, price=540000]
+ Car [id=2, name=Audi, price=440000]`
+</code></pre><p>【小结】</p>
+<p>由上面的例子， 静态工厂方法方式是非常适用于作为1个bean容器(集合的), 只不过把bean集合定义在工厂类里面而不是bean config file里面。<br>缺点也比较明显， 把数据写在class里面而不是配置文件中违反了我们程序猿的常识和spring的初衷。当然优点就是令到令人恶心的bean config file更加简洁啦。</p>
+<h4 id="实例工厂方法方式"><a href="#实例工厂方法方式" class="headerlink" title="实例工厂方法方式"></a>实例工厂方法方式</h4><p>所谓实例工厂方式也很容易看懂， 就是里面的getCar 方法不是静态的， 也就是代表要先实例1个工厂对象， 才能依靠这个工厂对象去获得bean 对象。</p>
+<p>CarInstanceFactroy类</p>
+<pre><code>`public class CarInstanceFactory {
+     private Map&lt;Integer, Car&gt; map = new HashMap&lt;Integer,Car&gt;();
+
+     public void setMap(Map&lt;Integer, Car&gt; map) {
+        this.map = map;
+    }
+
+    public CarInstanceFactory(){
+    }
+
+    public Car getCar(int id){
+        return map.get(id);
+    }
+}`
+</code></pre><p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;carFactory&quot; class=&quot;io.github.cc.factoryMethod.CarInstanceFactory&quot;&gt;
+    &lt;property name=&quot;map&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;4&quot;&gt;
+                    &lt;bean class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+                        &lt;property name=&quot;id&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   
+                        &lt;property name=&quot;name&quot; value=&quot;Honda&quot;&gt;&lt;/property&gt; 
+                        &lt;property name=&quot;price&quot; value=&quot;300000&quot;&gt;&lt;/property&gt;   
+                    &lt;/bean&gt;
+            &lt;/entry&gt;    
+
+            &lt;entry key=&quot;6&quot;&gt;
+                    &lt;bean class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+                        &lt;property name=&quot;id&quot; value=&quot;6&quot;&gt;&lt;/property&gt;   
+                        &lt;property name=&quot;name&quot; value=&quot;ford&quot;&gt;&lt;/property&gt;  
+                        &lt;property name=&quot;price&quot; value=&quot;500000&quot;&gt;&lt;/property&gt;   
+                    &lt;/bean&gt;
+            &lt;/entry&gt;
+        &lt;/map&gt;  
+    &lt;/property&gt;
+ &lt;/bean&gt;
+
+&lt;bean id=&quot;car4&quot; factory-bean=&quot;carFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;4&quot;&gt;&lt;/constructor-arg&gt;           
+ &lt;/bean&gt;
+
+ &lt;bean id=&quot;car6&quot; factory-bean=&quot;carFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;6&quot;&gt;&lt;/constructor-arg&gt;           
+ &lt;/bean&gt;`
+</code></pre><p>因为实例工厂本身要实例化， 所以我们可以在xml中 指定它里面容器的data， 解决了上面提到的静态工厂方法的缺点啦.</p>
+<p>测试代码：</p>
+<pre><code>`public static void h2(){
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applivarionContext.xml&quot;);
+    Car car1 = (Car) ac.getBean(&quot;car4&quot;);
+    System.out.println(car1);
+
+    car1 = (Car) ac.getBean(&quot;car6&quot;);
+    System.out.println(car1);
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=4, name=Honda, price=300000]
+ Car [id=6, name=ford, price=500000]`
+</code></pre><p>本人觉得实例工厂方式使用起来更加灵活啦， 不过项目中其实本文一开始提到的第三种方法FactoryBean比起工厂方法方式更加常见。</p>
+<h3 id="三、Factory-Bean模式"><a href="#三、Factory-Bean模式" class="headerlink" title="三、Factory Bean模式"></a>三、Factory Bean模式</h3><p>FactoryBean 用法可以与Factory　Method有点类似，我们同样需要写1个工厂类，只不过spring提供了1个叫做FactoryBean的接口。</p>
+<p>我们的工厂类必须实现这个接口。</p>
+<p>我们首先写1个Car类</p>
+<pre><code>`public class Car {
+    private int id;
+    private String name;
+    private int price;
+
+    @Override
+    public String toString() {
+        return &quot;Car [id=&quot; + id + &quot;, name=&quot; + name + &quot;, price=&quot; + price + &quot;]&quot;;
+    }
+
+    public Car(){
+
+    }
+
+    public Car(int id, String name, int price) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+}`
+</code></pre><p>接下来必须写1个工厂类CarBeanFactory</p>
+<pre><code>`import org.springframework.beans.factory.FactoryBean;
+
+public class CarBeanFactory implements FactoryBean&lt;Car&gt;{
+
+    private int id;
+    private String brand;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    @Override
+    public Car getObject() throws Exception {
+        return new Car(id, brand, 0);
+    }
+
+    @Override
+    public Class&lt;?&gt; getObjectType() {
+        return Car.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+}`
+</code></pre><p>首先上面这个工厂必须实现Spring提供的FactoryBean这个接口。<br>然后重写里面的3个方法</p>
+<p>getObject() -&gt; 这个就是你想利用工厂类生产的bean对象， 通常在里面new 1个 对象就ok </p>
+<p>getObjectType() -&gt; 你必须指明上面bean的对象的class </p>
+<p>isSingleton（） -&gt; 这个方法决定了这个bean是否单例的。</p>
+<p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;car1&quot; class=&quot;io.github.cc.factoryBean.CarBeanFactory&quot;&gt;
+      &lt;property name=&quot;id&quot; value=&quot;1&quot;&gt;&lt;/property&gt;
+      &lt;property name=&quot;brand&quot; value=&quot;Ford&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;`
+</code></pre><p>里面bean的配置写法跟反射机制的十分类似。</p>
+<p>但是一般利用反射机制的bean配置， class= 的值就是bean对象的全类名， 但是利用FactoryBean的方式中， class= 必须是工厂类的全类名。</p>
+<p><code>一但这个工厂类实现了FactoryBean接口， 那么这个bean item 返回的就是它里面的getObject()方法return的对象。</code></p>
+<p>测试代码：</p>
+<pre><code>` public static void f(){
+    ApplicationContext ac= new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+    Car car1 = (Car)ac.getBean(&quot;car1&quot;);
+    System.out.println(car1);
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=1, name=Ford, price=0]`
+</code></pre>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/12/java高级/创建bean/" data-id="civf7fwhx001g8cn6x2oerqsw" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSH/">SSH</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/12/java高级/ioc原理/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">解析Spring IOC原理——工厂模式与反射机制的综合应用</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java高级/创建bean" data-title="Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean" data-url="http://yoursite.com/2016/11/12/java高级/创建bean/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">18</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/12/java高级/创建bean/">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/12/java高级/ioc原理/">解析Spring IOC原理——工厂模式与反射机制的综合应用</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/09/java高级/关联映射N-1/">Hibernate的关联映射之N-1关联映射</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/09/java高级/hibernate缓存/">深入理解Hibernate缓存机制</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/08/设计模式/单例模式/">设计模式读书笔记--单例模式</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
