@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hibernate的关联映射之N-N关联映射 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="N—N关联关系1.双向N-N的关联双向N-N关联两端都需要使用set集合属性，两端都增加对集合属性的访问。双向N-N同样必须使用连接表来建立两个实体之间的关联关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hibernate的关联映射之N-N关联映射">
+<meta property="og:url" content="http://yoursite.com/2016/11/13/java高级/关联映射N-N/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="N—N关联关系1.双向N-N的关联双向N-N关联两端都需要使用set集合属性，两端都增加对集合属性的访问。双向N-N同样必须使用连接表来建立两个实体之间的关联关系。">
+<meta property="og:updated_time" content="2016-11-13T14:54:20.357Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hibernate的关联映射之N-N关联映射">
+<meta name="twitter:description" content="N—N关联关系1.双向N-N的关联双向N-N关联两端都需要使用set集合属性，两端都增加对集合属性的访问。双向N-N同样必须使用连接表来建立两个实体之间的关联关系。">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java高级/关联映射N-N" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      Hibernate的关联映射之N-N关联映射
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/13/java高级/关联映射N-N/" class="article-date"><time datetime="2016-11-13T14:09:22.983Z" itemprop="datePublished">2016-11-13</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java高级/">java高级</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="N—N关联关系"><a href="#N—N关联关系" class="headerlink" title="N—N关联关系"></a>N—N关联关系</h3><h4 id="1-双向N-N的关联"><a href="#1-双向N-N的关联" class="headerlink" title="1.双向N-N的关联"></a>1.双向N-N的关联</h4><p>双向N-N关联两端都需要使用set集合属性，两端都增加对集合属性的访问。双向N-N同样必须使用连接表来建立两个实体之间的关联关系。</p>
+<a id="more"></a>
+<p>以学生、老师为例:下面为两个实体的持久化类：</p>
+<p>Student</p>
+<pre><code>`package io.github.hibernate.pojo;
+
+import java.util.Set;
+
+public class Student {
+      private Integer id;  
+        private String name;  
+        private Set&lt;Teacher&gt; teachers;  
+
+        public Integer getId() {  
+            return id;  
+        }  
+
+        public void setId(Integer id) {  
+            this.id = id;  
+        }  
+
+        public String getName() {  
+            return name;  
+        }  
+
+        public void setName(String name) {  
+            this.name = name;  
+        }  
+
+        public Set&lt;Teacher&gt; getTeachers() {  
+            return teachers;  
+        }  
+
+        public void setTeachers(Set&lt;Teacher&gt; teachers) {  
+            this.teachers = teachers;  
+        }  
+}
+`
+</code></pre><p> Teacher</p>
+<pre><code>`package io.github.hibernate.pojo;
+
+import java.util.Set;
+
+public class Teacher {
+     private Integer id;  
+        private String name;  
+        private Set&lt;Student&gt; students;  
+
+        public Integer getId() {  
+            return id;  
+        }  
+
+        public void setId(Integer id) {  
+            this.id = id;  
+        }  
+
+        public String getName() {  
+            return name;  
+        }  
+
+        public void setName(String name) {  
+            this.name = name;  
+        }  
+
+        public Set&lt;Student&gt; getStudents() {  
+            return students;  
+        }  
+
+        public void setStudents(Set&lt;Student&gt; students) {  
+            this.students = students;  
+        }  
+}
+`
+</code></pre><p>双向N-N关联的映射文件需要使用<set...>元素，用以映射集合属性。<set...>属性还需要增加<key...>子元素来映射外键列，同时还应该增加<code>&lt;many-to-many.../&gt;</code>子元素来映射关联实体类。两个映射文件如下：</key...></set...></set...></p>
+<p>Student.hbm.xml</p>
+<pre><code>`&lt;hibernate-mapping&gt;
+    &lt;class name=&quot;io.github.hibernate.pojo.Student&quot; table=&quot;student&quot;&gt;  
+        &lt;id name=&quot;id&quot; column=&quot;student_id&quot;&gt;  
+            &lt;generator class=&quot;native&quot; /&gt;  
+        &lt;/id&gt;  
+
+        &lt;property name=&quot;name&quot; column=&quot;student_name&quot; /&gt;  
+
+        &lt;!-- 映射N-N关联实体，两边的table应该一样 --&gt;  
+        &lt;set name=&quot;teachers&quot; table=&quot;student_teacher&quot;&gt;  
+            &lt;!-- 映射关联的外键 列--&gt;  
+            &lt;key column=&quot;student_id&quot; /&gt;  
+            &lt;!-- 映射关联类属性 --&gt;  
+            &lt;many-to-many class=&quot;io.github.hibernate.pojo.Teacher&quot; column=&quot;teacher_id&quot; /&gt;  
+        &lt;/set&gt;  
+    &lt;/class&gt;  
+&lt;/hibernate-mapping&gt;`
+</code></pre><p>Teacher.hbm.xml</p>
+<pre><code>`&lt;hibernate-mapping&gt;
+     &lt;class name=&quot;io.github.hibernate.pojo.Teacher&quot; table=&quot;teacher&quot;&gt;  
+        &lt;id name=&quot;id&quot; column=&quot;teacher_id&quot;&gt;  
+            &lt;generator class=&quot;native&quot; /&gt;  
+        &lt;/id&gt;  
+
+        &lt;property name=&quot;name&quot; column=&quot;teacher_name&quot; /&gt;  
+
+        &lt;!-- 映射N-N关联实体，两边的table应该一样 --&gt;  
+        &lt;set name=&quot;students&quot; table=&quot;student_teacher&quot;&gt;  
+            &lt;!-- 映射关联的外键 列--&gt;  
+            &lt;key column=&quot;teacher_id&quot; /&gt;  
+            &lt;!-- 映射关联类属性 --&gt;  
+            &lt;many-to-many class=&quot;io.github.hibernate.pojo.Student&quot; column=&quot;student_id&quot;&gt;&lt;/many-to-many&gt;  
+        &lt;/set&gt;  
+    &lt;/class&gt;  
+&lt;/hibernate-mapping&gt;`
+</code></pre><p>双向N-N关联的双边都需要指定连接表的表名，外键列的列名，所以两个<set...>元素的table属性的值必须指定且一样。<set...>元素的两个子元素:<key..>、<many-to-many...>都必须指定column属性。<key...>和<many-to-many...>分别是指定本持久化类、关联类在连接表中的外键列。因此两边的<key...>和<many-to-many...>的column属性的值应该是交叉相等。</many-to-many...></key...></many-to-many...></key...></many-to-many...></key..></set...></set...></p>
+<p>通过下面的测试类来添加两个Student对象和两个Teacher对象</p>
+<pre><code>`private Logger logger=LogManager.getLogger(HibernateTest.class);
+private SessionFactory sessionFactory;
+
+@Before
+public void init(){
+    StandardServiceRegistry serviceRegistry=new StandardServiceRegistryBuilder().configure().build();
+    sessionFactory=new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+}
+@Test
+public void add(){
+    Session session=null;
+    Transaction transaction=null;
+    try {
+        session = this.sessionFactory.openSession();
+        transaction = session.beginTransaction();
+
+        Teacher teacher1 = new Teacher();  
+        teacher1.setName(&quot;teacher1&quot;);  
+
+        Teacher teacher2 = new Teacher();  
+        teacher2.setName(&quot;teacher2&quot;);  
+
+        Student student1 = new Student();  
+        student1.setName(&quot;student1&quot;);  
+
+        Student student2 = new Student();  
+        student2.setName(&quot;student2&quot;);  
+
+        //建立两者之间的关系  
+        Set&lt;Student&gt; ss = new HashSet&lt;Student&gt;();  
+        ss.add(student1);  
+        ss.add(student2);  
+
+        teacher1.setStudents(ss);  
+        teacher2.setStudents(ss);  
+
+        session.save(teacher1);  
+        session.save(teacher2);  
+        session.save(student1);  
+        session.save(student2);  
+        transaction.commit();
+    } catch (Exception e) {
+        e.printStackTrace();
+        transaction.rollback();
+    }finally {
+        if(session!=null&amp;&amp;session.isOpen()){
+            session.close();
+        }
+    }
+}`
+</code></pre><p> 注意：<code>这里只能由一边建立关联关系，就是说只能由Student对象建立与Teacher对象的关联或者由Teachert对象建立与Student对象的关联。否则将会出现主键重复错误</code></p>
+<h4 id="2-单向N-N的关联"><a href="#2-单向N-N的关联" class="headerlink" title="2.单向N-N的关联"></a>2.单向N-N的关联</h4><p>单向的N-N关联和1-N关联的持久化类完全一样，控制关系的一端需要增加一个set集合属性，被关联的持久化实例以集合的形式存在。</p>
+<p>手动创建一个中间表,本质上其实就是将多对多拆成了两个一对多来实现。</p>
+<p>Student</p>
+<pre><code>`package io.github.hibernate.pojo;
+
+import java.util.Set;
+
+public class Student {
+        private Integer id;  
+        private String name;  
+        private Set&lt;TeaStu&gt; teastuSet;  
+
+        public Integer getId() {  
+            return id;  
+        }  
+
+        public void setId(Integer id) {  
+            this.id = id;  
+        }  
+
+        public String getName() {  
+            return name;  
+        }  
+
+        public void setName(String name) {  
+            this.name = name;  
+        }
+
+        public Set&lt;TeaStu&gt; getTeastuSet() {
+            return teastuSet;
+        }
+
+        public void setTeastuSet(Set&lt;TeaStu&gt; teastuSet) {
+            this.teastuSet = teastuSet;
+        }  
+
+
+}
+`
+</code></pre><p>Teacher</p>
+<pre><code>`package io.github.hibernate.pojo;
+
+import java.util.Set;
+
+public class Teacher {
+         private Integer id;  
+        private String name;  
+        private Set&lt;TeaStu&gt; teastuSet;  
+
+        public Integer getId() {  
+            return id;  
+        }  
+
+        public void setId(Integer id) {  
+            this.id = id;  
+        }  
+
+        public String getName() {  
+            return name;  
+        }  
+
+        public void setName(String name) {  
+            this.name = name;  
+        }
+
+        public Set&lt;TeaStu&gt; getTeastuSet() {
+            return teastuSet;
+        }
+
+        public void setTeastuSet(Set&lt;TeaStu&gt; teastuSet) {
+            this.teastuSet = teastuSet;
+        }    
+}
+`
+</code></pre><p><code>中间连接表TeaStu</code></p>
+<pre><code>`package io.github.hibernate.pojo;
+
+public class TeaStu {
+    private Integer id;  
+    private String name;  
+
+    private Teacher teacher;
+    private Student student;
+
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Teacher getTeacher() {
+        return teacher;
+    }
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+    public Student getStudent() {
+        return student;
+    }
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+
+}
+`
+</code></pre><p> Student.hbm.xml</p>
+<pre><code>`&lt;hibernate-mapping&gt;
+    &lt;class name=&quot;io.github.hibernate.pojo.Student&quot; table=&quot;student&quot;&gt;  
+        &lt;id name=&quot;id&quot; column=&quot;student_id&quot;&gt;  
+            &lt;generator class=&quot;native&quot; /&gt;  
+        &lt;/id&gt;  
+
+        &lt;property name=&quot;name&quot; column=&quot;student_name&quot; /&gt;  
+
+        &lt;set name=&quot;teastuSet&quot;&gt; 
+            &lt;!-- 映射关联的外键 列--&gt;  
+            &lt;key column=&quot;stuid&quot; /&gt;  
+            &lt;!-- 映射关联类属性 --&gt;  
+            &lt;one-to-many class=&quot;io.github.hibernate.pojo.TeaStu&quot; /&gt;  
+        &lt;/set&gt;  
+    &lt;/class&gt;  
+&lt;/hibernate-mapping&gt;`
+</code></pre><p> Teacher.hbm.xml</p>
+<pre><code>`&lt;hibernate-mapping&gt;
+     &lt;class name=&quot;io.github.hibernate.pojo.Teacher&quot; table=&quot;teacher&quot;&gt;  
+        &lt;id name=&quot;id&quot; column=&quot;teacher_id&quot;&gt;  
+            &lt;generator class=&quot;native&quot; /&gt;  
+        &lt;/id&gt;  
+
+        &lt;property name=&quot;name&quot; column=&quot;teacher_name&quot; /&gt;  
+
+        &lt;set name=&quot;teastuSet&quot; &gt;  
+            &lt;!-- 映射关联的外键 列--&gt;  
+            &lt;key column=&quot;teaid&quot; /&gt;  
+            &lt;!-- 映射关联类属性 --&gt;  
+            &lt;one-to-many class=&quot;io.github.hibernate.pojo.TeaStu&quot;/&gt;
+        &lt;/set&gt;  
+    &lt;/class&gt;  
+&lt;/hibernate-mapping&gt;`
+</code></pre><p> <code>TeaStu.hbm.xml</code></p>
+<pre><code>`&lt;hibernate-mapping&gt;
+     &lt;class name=&quot;io.github.hibernate.pojo.TeaStu&quot; table=&quot;teacher_student&quot;&gt;  
+        &lt;id name=&quot;id&quot; column=&quot;teastu_id&quot;&gt;  
+            &lt;generator class=&quot;native&quot; /&gt;  
+        &lt;/id&gt;  
+
+        &lt;property name=&quot;name&quot; column=&quot;teastu_name&quot; /&gt;  
+
+        &lt;!-- 多个中间表对象对应一个老师对象 --&gt;
+        &lt;many-to-one name=&quot;teacher&quot; column=&quot;teacher_id&quot; class=&quot;io.github.hibernate.pojo.Teacher&quot;/&gt;
+        &lt;!-- 多个中间表对象对应一个学生对象  --&gt;
+        &lt;many-to-one name=&quot;student&quot; column=&quot;student_id&quot; class=&quot;io.github.hibernate.pojo.Student&quot;/&gt;
+    &lt;/class&gt;  
+&lt;/hibernate-mapping&gt;`
+</code></pre><p>测试代码：</p>
+<pre><code>`@Test
+public void add(){
+    Session session=null;
+    Transaction transaction=null;
+    try {
+        session = this.sessionFactory.openSession();
+        transaction = session.beginTransaction();
+
+        Teacher teacher1 = new Teacher();  
+        teacher1.setName(&quot;teacher1&quot;);  
+        session.save(teacher1);  
+
+
+        Student student1 = new Student();  
+        student1.setName(&quot;student1&quot;); 
+        session.save(student1);
+
+
+
+        //建立两者之间的关系  
+        TeaStu teastu=new TeaStu();
+        teastu.setName(&quot;tea_stu&quot;);
+        teastu.setStudent(student1);
+        teastu.setTeacher(teacher1);
+
+        session.save(teastu);
+        transaction.commit();
+    } catch (Exception e) {
+        e.printStackTrace();
+        transaction.rollback();
+    }finally {
+        if(session!=null&amp;&amp;session.isOpen()){
+            session.close();
+        }
+    }
+}`
+</code></pre><p><br><br>【总结】</p>
+<p>多对多的关联映射,选择第一种方式多对多还是第二种方式拆成两个一对多。</p>
+<p><code>关键看中间的连接表是否有其他字段，如果有,拆成两个一对多。如果没有,使用第一种多对多。</code></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/13/java高级/关联映射N-N/" data-id="civgrilta001k7sn6mjwu78d6" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSH/">SSH</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/12/java高级/创建bean/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java高级/关联映射N-N" data-title="Hibernate的关联映射之N-N关联映射" data-url="http://yoursite.com/2016/11/13/java高级/关联映射N-N/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">19</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/13/java高级/关联映射N-N/">Hibernate的关联映射之N-N关联映射</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/12/java高级/创建bean/">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/12/java高级/ioc原理/">解析Spring IOC原理——工厂模式与反射机制的综合应用</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/09/java高级/关联映射N-1/">Hibernate的关联映射之N-1关联映射</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/09/java高级/hibernate缓存/">深入理解Hibernate缓存机制</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
