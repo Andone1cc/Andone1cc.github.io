@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式读书笔记--代理模式 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="代理模式定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式读书笔记--代理模式">
+<meta property="og:url" content="http://yoursite.com/2016/11/14/设计模式/代理模式/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="代理模式定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。">
+<meta property="og:image" content="http://i.imgur.com/oh3VMNs.gif">
+<meta property="og:updated_time" content="2016-11-14T14:57:58.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式读书笔记--代理模式">
+<meta name="twitter:description" content="代理模式定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。">
+<meta name="twitter:image" content="http://i.imgur.com/oh3VMNs.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-设计模式/代理模式" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      设计模式读书笔记--代理模式
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/14/设计模式/代理模式/" class="article-date"><time datetime="2016-11-14T13:43:23.351Z" itemprop="datePublished">2016-11-14</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/设计模式/">设计模式</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p>定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。</p>
+<a id="more"></a>
+<p><img src="http://i.imgur.com/oh3VMNs.gif" alt=""></p>
+<pre><code>代理模式UML图
+</code></pre><p>在上图中：</p>
+<p>RealSubject 是原对象（本文把原对象称为”委托对象”），Proxy 是代理对象。’</p>
+<p>Subject 是委托对象和代理对象都共同实现的接口。</p>
+<p><code>Request()</code>是委托对象和代理对象共同拥有的方法。</p>
+<p>要理解代理模式很简单，其实生活当中就存在代理模式：</p>
+<blockquote>
+<p>我们购买火车票可以去火车站买，但是也可以去火车票代售处买，此处的火车票代售处就是火车站购票的代理，即我们在代售点发出买票请求，代售点会把请求发给火车站，火车站把购买成功响应发给代售点，代售点再告诉你。但是代售点只能买票，不能退票，而火车站能买票也能退票，因此代理对象支持的操作可能和委托对象的操作有所不同。</p>
+</blockquote>
+<p>在平时用电脑也会碰到代理模式的应用：</p>
+<p>远程代理：我们在国内因为GFW，所以不能访问 facebook，我们可以用翻墙（设置代理）的方法访问。访问过程是：</p>
+<blockquote>
+<p>(1)用户把HTTP请求发给代理</p>
+<p>(2)代理把HTTP请求发给web服务器</p>
+<p>(3)web服务器把HTTP响应发给代理</p>
+<p>(4)代理把HTTP响应发回给用户</p>
+</blockquote>
+<p>代理的实现分为：</p>
+<p><code>静态代理：代理类是在编译时就实现好的。也就是说 Java 编译完成后代理类是一个实际的 class 文件。</code></p>
+<p><code>动态代理：代理类是在运行时生成的。也就是说 Java 编译完之后并没有实际的 class 文件，而是在运行时动态生成的类字节码，并加载到JVM中。</code></p>
+<h3 id="1-Java-实现静态代理"><a href="#1-Java-实现静态代理" class="headerlink" title="1.Java 实现静态代理"></a>1.Java 实现静态代理</h3><p>实现代码：</p>
+<pre><code>`interface Subject{
+    void request();
+}`
+
+
+`class RealSubject implements Subject{
+    public void request(){
+        System.out.println(&quot;request&quot;);
+    }
+}`
+
+
+`class Proxy implements Subject{
+    private Subject subject;
+    public Proxy(Subject subject){
+        this.subject = subject;
+    }
+    public void request(){
+        System.out.println(&quot;PreProcess&quot;);
+        subject.request();
+        System.out.println(&quot;PostProcess&quot;);
+    }
+}`
+
+`public class ProxyDemo {
+    public static void main(String args[]){
+        RealSubject subject = new RealSubject();
+        Proxy p = new Proxy(subject);
+        p.request();
+    }
+}`
+</code></pre><h3 id="2-Java-实现动态代理"><a href="#2-Java-实现动态代理" class="headerlink" title="2.Java 实现动态代理"></a>2.Java 实现动态代理</h3><p>首先先说明几个词：</p>
+<p>委托类和委托对象：委托类是一个类，委托对象是委托类的实例。</p>
+<p>代理类和代理对象：代理类是一个类，代理对象是代理类的实例。</p>
+<p>Java实现动态代理的大致步骤如下：</p>
+<p>1.定义一个委托类和公共接口。</p>
+<p>2.自己定义一个类（调用处理器类，即实现<code>InvocationHandler 接口</code>），这个类的目的是指定运行时将生成的代理类需要完成的具体任务（包括Preprocess和Postprocess），即代理类调用任何方法都会经过这个调用处理器类（在本文最后一节对此进行解释）。</p>
+<p>3.生成代理对象（当然也会生成代理类），需要为他指定(1)委托对象(2)实现的一系列接口(3)调用处理器类的实例。因此可以看出一个代理对象对应一个委托对象，对应一个调用处理器实例。</p>
+<p>Java 实现动态代理主要涉及以下几个类：</p>
+<p>1.<code>java.lang.reflect.Proxy</code>: 这是生成代理类的主类，通过 Proxy 类生成的代理类都继承了 Proxy 类，即 DynamicProxyClass extends Proxy。</p>
+<p>2.<code>java.lang.reflect.InvocationHandler</code>: 这里称他为”调用处理器”，他是一个接口，我们动态生成的代理类需要完成的具体内容需要自己定义一个类，而这个类必须实现 InvocationHandler 接口。</p>
+<p>Proxy 类主要方法为：</p>
+<pre><code>`//创建代理对象  
+static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)`
+</code></pre><p>这个静态函数的<code>第一个参数是类加载器对象（即哪个类加载器来加载这个代理类到 JVM 的方法区），第二个参数是接口（表明你这个代理类需要实现哪些接口），第三个参数是调用处理器类实例（指定代理类中具体要干什么）。</code>这个函数是 JDK 为了程序员方便创建代理对象而封装的一个函数，因此你调用newProxyInstance()时直接创建了代理对象（略去了创建代理类的代码）。其实他主要完成了以下几个工作：</p>
+<pre><code>`static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler handler)
+{
+    //1. 根据类加载器和接口创建代理类
+    Class clazz = Proxy.getProxyClass(loader, interfaces); 
+    //2. 获得代理类的带参数的构造函数
+    Constructor constructor = clazz.getConstructor(new Class[] { InvocationHandler.class });
+    //3. 创建代理对象，并制定调用处理器实例为参数传入
+    Interface Proxy = (Interface)constructor.newInstance(new Object[] {handler});
+}`
+</code></pre><p>Proxy 类还有一些静态方法，比如：</p>
+<p>1.<code>InvocationHandler getInvocationHandler(Object proxy)</code>: 获得代理对象对应的调用处理器对象。</p>
+<p>2.<code>Class getProxyClass(ClassLoader loader, Class[] interfaces)</code>: 根据类加载器和实现的接口获得代理类。</p>
+<p>Proxy 类中有一个映射表，映射关系为：(<classloader>,(<interfaces>,<proxyclass>) )，可以看出一级key为类加载器，根据这个一级key获得二级映射表，二级key为接口数组，因此可以看出：一个类加载器对象和一个接口数组确定了一个代理类。</proxyclass></interfaces></classloader></p>
+<p>我们写一个简单的例子来阐述 Java 实现动态代理的整个过程：</p>
+<pre><code>`/**
+ * 接口
+ */
+interface Subject{
+    void request();
+}`
+
+`/**
+ * 委托类
+ */
+class RealSubject implements Subject{
+    public void request(){
+        System.out.println(&quot;====RealSubject Request====&quot;);
+    }
+}`
+
+`/**
+ * 代理类的调用处理器
+ */
+class ProxyHandler implements InvocationHandler{
+    private Subject subject;
+    public ProxyHandler(Subject subject){
+        this.subject = subject;
+    }
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        System.out.println(&quot;====before====&quot;);//定义预处理的工作，当然你也可以根据 method 的不同进行不同的预处理工作
+        Object result = method.invoke(subject, args);
+        System.out.println(&quot;====after====&quot;);
+        return result;
+    }
+}`
+
+`public class DynamicProxyDemo01 {
+    public static void main(String[] args) {
+        RealSubject realSubject = new RealSubject();    //1.创建委托对象
+        ProxyHandler handler = new ProxyHandler(realSubject);    //2.创建调用处理器对象
+        Subject proxySubject = (Subject)Proxy.newProxyInstance(RealSubject.class.getClassLoader(),
+                                                 RealSubject.class.getInterfaces(), handler);    //3.动态生成代理对象
+        proxySubject.request();    //4.通过代理对象调用方法
+    }
+}`
+</code></pre><p>InvocationHandler 接口中有方法：</p>
+<pre><code>`invoke(Object proxy, Method method, Object[] args)`
+</code></pre><p><code>这个函数是在代理对象调用任何一个方法时都会调用的，方法不同会导致第二个参数method不同，第一个参数是代理对象（表示哪个代理对象调用了method方法），第二个参数是 Method 对象（表示哪个方法被调用了），第三个参数是指定调用方法的参数。</code></p>
+<p>动态生成的代理类具有几个特点：</p>
+<pre><code>继承 Proxy 类，并实现了在Proxy.newProxyInstance()中提供的接口数组。
+
+public final。
+
+命名方式为 $ProxyN，其中N会慢慢增加，一开始是 $Proxy1，接下来是$Proxy2...
+
+有一个参数为 InvocationHandler 的构造函数。这个从 Proxy.newProxyInstance() 函数内部的clazz.getConstructor(new Class[] { InvocationHandler.class }) 可以看出。
+</code></pre><p>Java 实现动态代理的缺点：<code>因为 Java 的单继承特性（每个代理类都继承了 Proxy 类），只能针对接口创建代理类，不能针对类创建代理类。</code></p>
+<p>不难发现，代理类的实现是有很多共性的（重复代码），动态代理的好处在于避免了这些重复代码，只需要关注操作。</p>
+<h3 id="Java-动态代理的内部实现"><a href="#Java-动态代理的内部实现" class="headerlink" title="Java 动态代理的内部实现"></a>Java 动态代理的内部实现</h3><p>现在我们就会有一个问题： Java 是怎么保证代理对象调用的任何方法都会调用 InvocationHandler 的 invoke() 方法的？</p>
+<p>这就涉及到动态代理的内部实现。假设有一个接口 Subject，且里面有<code>int request(int i) 方法</code>，则生成的代理类大致如下：</p>
+<pre><code>`public final class $Proxy1 extends Proxy implements Subject{
+    private InvocationHandler h;
+    private $Proxy1(){}
+    public $Proxy1(InvocationHandler h){
+        this.h = h;
+    }
+    public int request(int i){
+        Method method = Subject.class.getMethod(&quot;request&quot;, new Class[]{int.class});    //创建method对象
+        return (Integer)h.invoke(this, method, new Object[]{new Integer(i)}); //调用了invoke方法
+    }
+}`
+</code></pre><p>通过上面的方法就成功调用了 invoke() 方法。</p>
+<h3 id="元编程"><a href="#元编程" class="headerlink" title="元编程"></a>元编程</h3><blockquote>
+<p>元编程就是能够操作代码的代码</p>
+</blockquote>
+<p>Java 支持元编程因为反射、动态代理、内省等特性。</p>
+<p>【参考资料】</p>
+<p><a href="http://www.imooc.com/learn/214" target="_blank" rel="external">http://www.imooc.com/learn/214</a></p>
+<p><a href="http://www.cnblogs.com/flyoung2008/archive/2013/08/11/3251148.html" target="_blank" rel="external">http://www.cnblogs.com/flyoung2008/archive/2013/08/11/3251148.html</a></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/14/设计模式/代理模式/" data-id="civi72ya2001qlkn68o5nx3l4" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/13/java高级/关联映射N-N/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">Hibernate的关联映射之N-N关联映射</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-设计模式/代理模式" data-title="设计模式读书笔记--代理模式" data-url="http://yoursite.com/2016/11/14/设计模式/代理模式/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">20</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/14/设计模式/代理模式/">设计模式读书笔记--代理模式</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/13/java高级/关联映射N-N/">Hibernate的关联映射之N-N关联映射</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/12/java高级/创建bean/">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/12/java高级/ioc原理/">解析Spring IOC原理——工厂模式与反射机制的综合应用</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/09/java高级/关联映射N-1/">Hibernate的关联映射之N-1关联映射</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
