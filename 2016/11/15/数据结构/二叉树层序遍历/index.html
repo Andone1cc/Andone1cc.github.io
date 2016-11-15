@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>二叉树的层序遍历与ZigZag遍历 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="【题目】
+给定一棵二叉树的头结点head，分别实现按层打印和ZigZag打印二叉树的函数。
+如图所示：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二叉树的层序遍历与ZigZag遍历">
+<meta property="og:url" content="http://yoursite.com/2016/11/15/数据结构/二叉树层序遍历/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="【题目】
+给定一棵二叉树的头结点head，分别实现按层打印和ZigZag打印二叉树的函数。
+如图所示：">
+<meta property="og:image" content="http://pic002.cnblogs.com/img/miloyip/201005/2010051123352235.png">
+<meta property="og:updated_time" content="2016-11-15T14:10:01.916Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二叉树的层序遍历与ZigZag遍历">
+<meta name="twitter:description" content="【题目】
+给定一棵二叉树的头结点head，分别实现按层打印和ZigZag打印二叉树的函数。
+如图所示：">
+<meta name="twitter:image" content="http://pic002.cnblogs.com/img/miloyip/201005/2010051123352235.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-数据结构/二叉树层序遍历" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      二叉树的层序遍历与ZigZag遍历
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/15/数据结构/二叉树层序遍历/" class="article-date"><time datetime="2016-11-15T13:32:31.390Z" itemprop="datePublished">2016-11-15</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>【题目】</p>
+<p>给定一棵二叉树的头结点head，分别实现按层打印和ZigZag打印二叉树的函数。</p>
+<p>如图所示：</p>
+<a id="more"></a>
+<p><img src="http://pic002.cnblogs.com/img/miloyip/201005/2010051123352235.png" alt=""></p>
+<p>按层打印时,输出格式必须如下：</p>
+<p>Level 1: 1</p>
+<p>Level 2: 2 3</p>
+<p>Level 3: 4 5 6</p>
+<p>Level 4: 7 8</p>
+<p>ZigZag打印时，输出格式必须如下：</p>
+<p>Level 1 from left to right: 1</p>
+<p>Level 2 from right to left： 3 2</p>
+<p>Level 3 from left to right: 4 5 6</p>
+<p>Level 4 from right to left： 8 7</p>
+<h3 id="1-层序遍历"><a href="#1-层序遍历" class="headerlink" title="1.层序遍历"></a>1.层序遍历</h3><p>【分析】</p>
+<p>按层打印原本是十分基础的内容，对二叉树做简单的宽度优先遍历即可，但本题确有额外的要求，那就是同一层的节点必须打印在一行上，并且要求输出行号。所有关键问题是如何知道该换行。只需要用两个node类型的变量last和nlast就可以解决这个问题，<code>last变量表示正在打印的当前行的最右节点，nlast表示下一行的最右节点。</code>假设我们每一层都做从左到右的宽度优先遍历，如果发现遍历到的节点等于last,说明该换行了。换行之后，只要令last=nlast,就可以继续下一行的打印过程，此过程重复，直到所有节点都打印完。<code>那么问题就变成了如何求nlast?只需要让nlast一直跟踪记录宽度优先队列中的最新加入的节点即可。这是因为最新加入的几点一定是目前已经发现的下一行的最右节点。</code>所以在当前行打印完时，nlast一定是下一行所有节点中的最右节点。</p>
+<p>【AC代码】</p>
+<pre><code>`public class TreeNode {
+    public int data;
+    public TreeNode left;
+    public TreeNode right;
+    public TreeNode(int data){
+        this.data=data;
+    }
+}`
+`//层序遍历
+public void printByLevel(TreeNode head){
+    if(head==null){
+        return;
+    }
+    Queue&lt;TreeNode&gt; queue=new LinkedList&lt;TreeNode&gt;();//队列
+    TreeNode last=head;    //表示正在打印的当前行的最右结点
+    TreeNode nLast=null;   //表示下一行的最后结点
+    int level=1;
+    queue.offer(head);
+    System.out.print(&quot;Level&quot;+(level++)+&quot; : &quot;);
+    //nLast一直跟踪记录宽度优先队列中的最新加入的结点即可。
+    while(!queue.isEmpty()){
+        head=queue.poll();
+        System.out.print(head.data+&quot; &quot;);
+        if(head.left!=null){
+            queue.offer(head.left);
+            nLast=head.left;
+        }
+        if(head.right!=null){
+            queue.offer(head.right);
+            nLast=head.right;
+        }
+        if(head==last&amp;&amp;!queue.isEmpty()){//一行打印完
+            System.out.print(&quot;\nLevel&quot;+(level++)+&quot; : &quot;);
+            last=nLast;
+        }
+    }
+    System.out.println();
+}`
+</code></pre><h3 id="2-ZigZag遍历"><a href="#2-ZigZag遍历" class="headerlink" title="2.ZigZag遍历"></a>2.ZigZag遍历</h3><p>【分析】</p>
+<p>使用<code>双端队列</code>。具体为java中的LinkedList结构，这个结构底层实现就是非常纯粹的双端队列结构。</p>
+<p>先举题目的例子来展示大体过程。首先生成双端队列结构dq,将节点1从dq的头部放入dq。</p>
+<p>原则1：如果是从左到右的过程，那么一律从dq的头部弹出节点，如果弹出的节点没有孩子节点，当然不用放入任何节点到dq中；<code>如果弹出的节点有孩子节点，先让左孩子从尾部进入dq,再让右孩子从尾部进入dq.</code></p>
+<p>原则2：如果是从右到左的过程，那么一律从dq的尾部弹出节点，如果弹出的节点没有孩子节点，当然不用放入任何节点到dq中；<code>如果弹出的节点有孩子节点，先让右孩子从头部进入dq,再让左孩子从头部进入dq.</code></p>
+<p>接下来的问题就是如何确定原则1和原则2的时机，其实还是如何确定每一层最后一个节点的问题。</p>
+<p><code>在ZigZag的打印过程中，下一层最后打印的节点是当前层有孩子的节点中最先进入dq的节点。</code></p>
+<p>【AC代码】</p>
+<pre><code>`//ZigZag遍历(之子形)
+public void printByZigZag(TreeNode head){
+    if(head==null){
+        return;
+    }
+    Deque&lt;TreeNode&gt; dq=new LinkedList&lt;TreeNode&gt;();//双端队列
+
+    int level=1;
+    boolean lr=true;//分从左到右打印或从右到左打印。
+    TreeNode last=head;
+    TreeNode nLast=null;
+    dq.offerFirst(head);
+    printLevelAndOrientation(level++,lr);
+    while(!dq.isEmpty()){
+        if(lr){//从左到右的过程,从首部弹出,将左结点和右结点顺序加入队列的尾部
+            head=dq.pollFirst();
+            if(head.left!=null){
+                nLast=nLast==null?head.left:nLast;
+                dq.offerLast(head.left);
+            }
+            if(head.right!=null){
+                nLast=nLast==null?head.right:nLast;
+                dq.offerLast(head.right);
+            }
+        }else{//从右到左的过程,从尾部弹出,将右结点和左结点顺序加入队列的首部
+            head=dq.pollLast();
+            if(head.right!=null){
+                nLast=nLast==null?head.right:nLast;
+                dq.offerFirst(head.right);
+            }
+            if(head.left!=null){
+                nLast=nLast==null?head.left:nLast;
+                dq.offerFirst(head.left);
+            }
+        }
+        System.out.print(head.data+&quot; &quot;);
+        if(head==last&amp;&amp;!dq.isEmpty()){
+            lr=!lr;
+            last=nLast;
+            nLast=null;
+            System.out.println();
+            printLevelAndOrientation(level++, lr);
+        }
+    }
+}
+private void printLevelAndOrientation(int level, boolean lr) {
+    System.out.print(&quot;Level &quot;+level+&quot; from &quot;);
+    System.out.print(lr?&quot;left to right :&quot; :&quot;right to left :&quot;);
+}`
+</code></pre>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/15/数据结构/二叉树层序遍历/" data-id="civjlci61001r4wn62lppmokf" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/14/java高级/aop原理/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">解析Spring Aop原理以及Aop支持的通知类型</span>
+    </a>
+  </li>
+  
+  
+  <li role="presentation">
+    <a href="/2016/11/15/数据结构/平衡二叉树/" id="article-nav-newer" class="article-nav-link-wrap">
+      <span class="article-nav-link-title">判断二叉树是否为平衡二叉树</span>
+      <i class="fa fa-chevron-right pull-right"></i>
+    </a>
+  </li>
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-数据结构/二叉树层序遍历" data-title="二叉树的层序遍历与ZigZag遍历" data-url="http://yoursite.com/2016/11/15/数据结构/二叉树层序遍历/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">25</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/15/数据结构/统计二叉树的节点数/">统计完全二叉树的节点数</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/完全二叉树/">判断二叉树是否为完全二叉树</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/平衡二叉树/">判断二叉树是否为平衡二叉树</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/二叉树层序遍历/">二叉树的层序遍历与ZigZag遍历</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/14/java高级/aop原理/">解析Spring Aop原理以及Aop支持的通知类型</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>

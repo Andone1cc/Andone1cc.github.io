@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: java高级 | Andone1cc</title>
+  <title>判断二叉树是否为完全二叉树 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个有梦想的CS小白">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Andone1cc">
-<meta property="og:url" content="http://yoursite.com/categories/java高级/index.html">
+  <meta name="description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="判断二叉树是否为完全二叉树">
+<meta property="og:url" content="http://yoursite.com/2016/11/15/数据结构/完全二叉树/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="一个有梦想的CS小白">
+<meta property="og:description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
+<meta property="og:updated_time" content="2016-11-15T14:19:06.352Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Andone1cc">
-<meta name="twitter:description" content="一个有梦想的CS小白">
+<meta name="twitter:title" content="判断二叉树是否为完全二叉树">
+<meta name="twitter:description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -78,141 +79,154 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          
-  
-  
+          <article id="post-数据结构/完全二叉树" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
     
+  
+    <h1 class="article-title" itemprop="name">
+      判断二叉树是否为完全二叉树
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/15/数据结构/完全二叉树/" class="article-date"><time datetime="2016-11-15T14:15:32.651Z" itemprop="datePublished">2016-11-15</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="判断二叉树是否为完全二叉树"><a href="#判断二叉树是否为完全二叉树" class="headerlink" title="判断二叉树是否为完全二叉树"></a>判断二叉树是否为完全二叉树</h3><p>若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
+<a id="more"></a>
+<p>【分析】</p>
+<blockquote>
+<p>1.<code>按层遍历</code>二叉树，从每层的左边向右边依次遍历所有的节点。</p>
+<p>2.如果当前节点有右孩子，但没有左孩子，直接返回false</p>
+<p>3.如果当前节点并不是左右孩子都有，那之后的节点必须都为叶节点，否则返回false</p>
+<p>4.遍历过程中如果不返回false,遍历结束后返回true</p>
+</blockquote>
+<p>【AC代码】</p>
+<pre><code>`//判断一棵树是否为完全二叉树
+public class Solution {
+    public boolean isCBT(TreeNode head){
+        if(head==null){
+            return true;
+        }
+        Queue&lt;TreeNode&gt; queue=new LinkedList&lt;TreeNode&gt;();
+        boolean leaf=false;
+        TreeNode l=null;
+        TreeNode r=null;
+        queue.offer(head);
+        while(!queue.isEmpty()){
+            head=queue.poll();
+            l=head.left;
+            r=head.right;
+            if(leaf&amp;&amp;(l!=null||r!=null)||(l==null&amp;&amp;r!=null)){//如果之前某个节点是叶子节点了，之后的节点左右不全为空，则返回false
+                return false;
+            }
+            if(l!=null){
+                queue.offer(l);
+            }
+            if(r!=null){
+                queue.offer(r);
+            }else{
+                leaf=true;
+            }
+        }
+        return true;
+    }
+    public static void main(String[] args) {
+        Solution d=new Solution();
+        TreeNode head1=new TreeNode(1);
+        TreeNode head2=new TreeNode(2);
+        TreeNode head3=new TreeNode(3);
+        TreeNode head4=new TreeNode(4);
+        TreeNode head5=new TreeNode(5);
+        head1.left=head2;
+        head1.right=head3;
+        head2.left=head4;
+        head3.right=head5;
+        System.out.println(d.isCBT(head1)?&quot;该二叉树是完全二叉树&quot;:&quot;该二叉树不是完全二叉树&quot;);
+
+    }
+}`
+</code></pre>
+      
+    </div>
+
     
       
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/15/数据结构/完全二叉树/" data-id="civjlci66001w4wn6qsxxbcht" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li></ul>
+
+
+    </footer>
+  </div>
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/14/java高级/aop原理/">解析Spring Aop原理以及Aop支持的通知类型</a>
-    </h1>
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
   
+  <li role="presentation">
+    <a href="/2016/11/15/数据结构/平衡二叉树/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">判断二叉树是否为平衡二叉树</span>
+    </a>
+  </li>
+  
+  
+  <li role="presentation">
+    <a href="/2016/11/15/数据结构/统计二叉树的节点数/" id="article-nav-newer" class="article-nav-link-wrap">
+      <span class="article-nav-link-title">统计完全二叉树的节点数</span>
+      <i class="fa fa-chevron-right pull-right"></i>
+    </a>
+  </li>
+  
+</ul>
 
 
-    <div class="article-datetime">
-  <a href="/2016/11/14/java高级/aop原理/" class="archive-article-date"><time datetime="2016-11-14T15:00:54.111Z" itemprop="datePublished">十一月 14日</time></a>
-</div>
-
-  </header>
+  
 </article>
 
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/13/java高级/关联映射N-N/">Hibernate的关联映射之N-N关联映射</a>
-    </h1>
-  
 
-
-    <div class="article-datetime">
-  <a href="/2016/11/13/java高级/关联映射N-N/" class="archive-article-date"><time datetime="2016-11-13T14:09:22.983Z" itemprop="datePublished">十一月 13日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/12/java高级/创建bean/">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/12/java高级/创建bean/" class="archive-article-date"><time datetime="2016-11-12T12:02:34.144Z" itemprop="datePublished">十一月 12日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/12/java高级/ioc原理/">解析Spring IOC原理——工厂模式与反射机制的综合应用</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/12/java高级/ioc原理/" class="archive-article-date"><time datetime="2016-11-12T11:24:06.673Z" itemprop="datePublished">十一月 12日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/09/java高级/关联映射N-1/">Hibernate的关联映射之N-1关联映射</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/09/java高级/关联映射N-1/" class="archive-article-date"><time datetime="2016-11-09T14:40:26.851Z" itemprop="datePublished">十一月 9日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/09/java高级/hibernate缓存/">深入理解Hibernate缓存机制</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/09/java高级/hibernate缓存/" class="archive-article-date"><time datetime="2016-11-09T13:05:26.453Z" itemprop="datePublished">十一月 9日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-  
-    </div></section>
-  
-
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-数据结构/完全二叉树" data-title="判断二叉树是否为完全二叉树" data-url="http://yoursite.com/2016/11/15/数据结构/完全二叉树/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
 
 
 

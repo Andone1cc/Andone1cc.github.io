@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: java高级 | Andone1cc</title>
+  <title>统计完全二叉树的节点数 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个有梦想的CS小白">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Andone1cc">
-<meta property="og:url" content="http://yoursite.com/categories/java高级/index.html">
+  <meta name="description" content="遍历整棵树当然可以求出节点数，但这肯定不是最优解法。
+如果完全二叉树的层数为h,时间复杂度为O（h的平方）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="统计完全二叉树的节点数">
+<meta property="og:url" content="http://yoursite.com/2016/11/15/数据结构/统计二叉树的节点数/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="一个有梦想的CS小白">
+<meta property="og:description" content="遍历整棵树当然可以求出节点数，但这肯定不是最优解法。
+如果完全二叉树的层数为h,时间复杂度为O（h的平方）">
+<meta property="og:updated_time" content="2016-11-15T14:24:15.406Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Andone1cc">
-<meta name="twitter:description" content="一个有梦想的CS小白">
+<meta name="twitter:title" content="统计完全二叉树的节点数">
+<meta name="twitter:description" content="遍历整棵树当然可以求出节点数，但这肯定不是最优解法。
+如果完全二叉树的层数为h,时间复杂度为O（h的平方）">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -78,141 +82,152 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          
-  
-  
+          <article id="post-数据结构/统计二叉树的节点数" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
     
+  
+    <h1 class="article-title" itemprop="name">
+      统计完全二叉树的节点数
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/15/数据结构/统计二叉树的节点数/" class="article-date"><time datetime="2016-11-15T14:21:33.644Z" itemprop="datePublished">2016-11-15</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>遍历整棵树当然可以求出节点数，但这肯定不是最优解法。</p>
+<p>如果完全二叉树的层数为h,时间复杂度为O（h的平方）</p>
+<a id="more"></a>
+<p>【分析】</p>
+<blockquote>
+<p>1.如果head==null,说明是空树，直接返回0。</p>
+<p>2.如果不是空树，就求树的高度，求法是找到树的最左节点看能到哪一层，层数记为h</p>
+<p>3.递归过程bs(node,l,h).<code>node表示当前节点，l表示node所在的层数，h表示整棵树的层数始终不变。</code></p>
+</blockquote>
+<p>第一种情况：</p>
+<p>找到node<code>右子树的最左节点</code>，如果能到达最后一层，说明node的整棵左子树是满二叉树。其节点数为2的h次方-1.（算上node节点自己）然后再求右子树的节点数bs(node.right,l+1,h)</p>
+<p>第二种情况：</p>
+<p>找到node<code>右子树的最左节点</code>，没有到达最后一层，说明node的整棵右子树都是满二叉树，其节点数为2的h次方-l-1,然后再求左子树的节点数bs（node.left,l+1,h）</p>
+<p>【AC代码】</p>
+<pre><code>`//统计完全二叉树的节点数
+public class Solution {
+    public int nodeNum(TreeNode head){
+        if(head==null){
+            return 0;
+        }
+        return bs(head,1,mostLeftLevel(head,1));
+    }
+    private int bs(TreeNode head, int l, int h) {
+        if(l==h){
+            return 1;
+        }
+        if(mostLeftLevel(head.right,l+1 )==h){
+            return (1&lt;&lt;(h-l))+bs(head.right,l+1,h);
+        }else{
+            return (1&lt;&lt;(h-l-1))+bs(head.left,l+1,h);
+        }
+    }
+    private int mostLeftLevel(TreeNode node, int level) {
+        while(node!=null){
+            level++;
+            node=node.left;
+        }
+        return level-1;
+    }
+    public static void main(String[] args) {
+        Solution d=new Solution();
+        TreeNode head1=new TreeNode(1);
+        TreeNode head2=new TreeNode(2);
+        TreeNode head3=new TreeNode(3);
+        TreeNode head4=new TreeNode(4);
+        TreeNode head5=new TreeNode(5);
+        TreeNode head6=new TreeNode(6);
+        TreeNode head7=new TreeNode(7);
+        TreeNode head8=new TreeNode(8);
+        head1.left=head2;
+        head1.right=head3;
+        head2.left=head4;
+        head2.right=head5;
+        head3.left=head6;
+        head3.right=head7;
+        head4.left=head8;
+        System.out.println(d.nodeNum(head1));
+    }
+}`
+</code></pre>
+      
+    </div>
+
     
       
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/15/数据结构/统计二叉树的节点数/" data-id="civjlci6a001z4wn6wrh8zr9w" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li></ul>
+
+
+    </footer>
+  </div>
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/14/java高级/aop原理/">解析Spring Aop原理以及Aop支持的通知类型</a>
-    </h1>
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
   
+  <li role="presentation">
+    <a href="/2016/11/15/数据结构/完全二叉树/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">判断二叉树是否为完全二叉树</span>
+    </a>
+  </li>
+  
+  
+</ul>
 
 
-    <div class="article-datetime">
-  <a href="/2016/11/14/java高级/aop原理/" class="archive-article-date"><time datetime="2016-11-14T15:00:54.111Z" itemprop="datePublished">十一月 14日</time></a>
-</div>
-
-  </header>
+  
 </article>
 
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/13/java高级/关联映射N-N/">Hibernate的关联映射之N-N关联映射</a>
-    </h1>
-  
 
-
-    <div class="article-datetime">
-  <a href="/2016/11/13/java高级/关联映射N-N/" class="archive-article-date"><time datetime="2016-11-13T14:09:22.983Z" itemprop="datePublished">十一月 13日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/12/java高级/创建bean/">Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/12/java高级/创建bean/" class="archive-article-date"><time datetime="2016-11-12T12:02:34.144Z" itemprop="datePublished">十一月 12日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/12/java高级/ioc原理/">解析Spring IOC原理——工厂模式与反射机制的综合应用</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/12/java高级/ioc原理/" class="archive-article-date"><time datetime="2016-11-12T11:24:06.673Z" itemprop="datePublished">十一月 12日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/09/java高级/关联映射N-1/">Hibernate的关联映射之N-1关联映射</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/09/java高级/关联映射N-1/" class="archive-article-date"><time datetime="2016-11-09T14:40:26.851Z" itemprop="datePublished">十一月 9日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/09/java高级/hibernate缓存/">深入理解Hibernate缓存机制</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/09/java高级/hibernate缓存/" class="archive-article-date"><time datetime="2016-11-09T13:05:26.453Z" itemprop="datePublished">十一月 9日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-  
-    </div></section>
-  
-
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-数据结构/统计二叉树的节点数" data-title="统计完全二叉树的节点数" data-url="http://yoursite.com/2016/11/15/数据结构/统计二叉树的节点数/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
 
 
 

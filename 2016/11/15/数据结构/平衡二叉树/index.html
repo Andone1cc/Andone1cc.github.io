@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>浅谈Java中的对象和引用 | Andone1cc</title>
+  <title>判断二叉树是否为平衡二叉树 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="浅谈Java中的对象和对象引用在Java中，有一组名词经常一起出现，它们就是“对象和对象引用”，在初学Java的时候经常会混淆这2个概念，觉得它们是一回事，事实上则不然。我们来一起了解一下对象和对象引用之间的区别和联系。">
+  <meta name="description" content="判断二叉树是否为平衡二叉树平衡二叉树的性质为：要么是一棵空树，要么任何一个节点的左右子树高度差的绝对值不超过1,。给定一棵二叉树的头节点head，判断这棵二叉树是否为平衡二叉树。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="浅谈Java中的对象和引用">
-<meta property="og:url" content="http://yoursite.com/2016/11/06/java基础/对象和引用/index.html">
+<meta property="og:title" content="判断二叉树是否为平衡二叉树">
+<meta property="og:url" content="http://yoursite.com/2016/11/15/数据结构/平衡二叉树/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="浅谈Java中的对象和对象引用在Java中，有一组名词经常一起出现，它们就是“对象和对象引用”，在初学Java的时候经常会混淆这2个概念，觉得它们是一回事，事实上则不然。我们来一起了解一下对象和对象引用之间的区别和联系。">
-<meta property="og:updated_time" content="2016-10-30T13:41:15.016Z">
+<meta property="og:description" content="判断二叉树是否为平衡二叉树平衡二叉树的性质为：要么是一棵空树，要么任何一个节点的左右子树高度差的绝对值不超过1,。给定一棵二叉树的头节点head，判断这棵二叉树是否为平衡二叉树。">
+<meta property="og:updated_time" content="2016-11-15T14:15:01.226Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="浅谈Java中的对象和引用">
-<meta name="twitter:description" content="浅谈Java中的对象和对象引用在Java中，有一组名词经常一起出现，它们就是“对象和对象引用”，在初学Java的时候经常会混淆这2个概念，觉得它们是一回事，事实上则不然。我们来一起了解一下对象和对象引用之间的区别和联系。">
+<meta name="twitter:title" content="判断二叉树是否为平衡二叉树">
+<meta name="twitter:description" content="判断二叉树是否为平衡二叉树平衡二叉树的性质为：要么是一棵空树，要么任何一个节点的左右子树高度差的绝对值不超过1,。给定一棵二叉树的头节点head，判断这棵二叉树是否为平衡二叉树。">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -79,13 +79,13 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          <article id="post-java基础/对象和引用" class="article article-type-post" itemscope itemprop="blogPost">
+          <article id="post-数据结构/平衡二叉树" class="article article-type-post" itemscope itemprop="blogPost">
 
   <header class="article-header">
     
   
     <h1 class="article-title" itemprop="name">
-      浅谈Java中的对象和引用
+      判断二叉树是否为平衡二叉树
     </h1>
   
 
@@ -94,13 +94,13 @@
 
   <div class="article-meta">
     <div class="article-datetime">
-  <a href="/2016/11/06/java基础/对象和引用/" class="article-date"><time datetime="2016-11-06T14:17:46.560Z" itemprop="datePublished">2016-11-06</time></a>
+  <a href="/2016/11/15/数据结构/平衡二叉树/" class="article-date"><time datetime="2016-11-15T14:12:30.446Z" itemprop="datePublished">2016-11-15</time></a>
 </div>
 
     
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    <a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
   </div>
 
 
@@ -109,46 +109,59 @@
 
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="浅谈Java中的对象和对象引用"><a href="#浅谈Java中的对象和对象引用" class="headerlink" title="浅谈Java中的对象和对象引用"></a>浅谈Java中的对象和对象引用</h3><p>在Java中，有一组名词经常一起出现，它们就是“对象和对象引用”，在初学Java的时候经常会混淆这2个概念，觉得它们是一回事，事实上则不然。我们来一起了解一下对象和对象引用之间的区别和联系。</p>
+        <h3 id="判断二叉树是否为平衡二叉树"><a href="#判断二叉树是否为平衡二叉树" class="headerlink" title="判断二叉树是否为平衡二叉树"></a>判断二叉树是否为平衡二叉树</h3><p>平衡二叉树的性质为：要么是一棵空树，要么任何一个节点的左右子树高度差的绝对值不超过1,。给定一棵二叉树的头节点head，判断这棵二叉树是否为平衡二叉树。</p>
 <a id="more"></a>
-<h3 id="一、何谓对象？"><a href="#一、何谓对象？" class="headerlink" title="一、何谓对象？"></a>一、何谓对象？</h3><p>在Java中有一句比较流行的话，叫做<code>“万物皆对象”</code>，这是Java语言设计之初的理念之一。要理解什么是对象，需要跟类一起结合起来理解。下面这段话引自《Java编程思想》中的一段原话：</p>
-<blockquote>
-<p>　“按照通俗的说法，每个对象都是某个类（class）的一个实例（instance），这里，‘类’就是‘类型’的同义词。”</p>
-</blockquote>
-<p>从这一句话就可以理解到对象的本质，简而言之，它就是类的实例，比如所有的人统称为“人类”，这里的“人类”就是一个类（物种的一种类型），而具体到每个人，比如张三这个人，它就是对象，就是“人类”的实例。</p>
-<h3 id="二、何谓对象引用？"><a href="#二、何谓对象引用？" class="headerlink" title="二、何谓对象引用？"></a>二、何谓对象引用？</h3><p>我们先看一段话：</p>
-<blockquote>
-<p>“每种编程语言都有自己的数据处理方式。有些时候，程序员必须注意将要处理的数据是什么类型。你是直接操纵元素，还是用某种基于特殊语法的间接表示（例如C/C++里的指针）来操作对象。所有这些在 Java 里都得到了简化，一切都被视为对象。因此，我们可采用一种统一的语法。尽管将一切都“看作”对象，但操纵的标识符实际是指向一个对象的“引用”（reference）。”</p>
-</blockquote>
-<p>这段话来自于《Java编程思想》，很显然，从这段话可以看出对象和对象引用不是一回事，是两个完全不同的概念。举个例子，我们通常会用下面这一行代码来创建一个对象：</p>
-<pre><code>`Person person = new Person(&quot;张三&quot;);`
-</code></pre><p>有人会说，这里的person是一个对象，是Person类的一个实例。</p>
-<p>也有人会说，这里的person并不是真正的对象，而是指向所创建的对象的引用。</p>
-<p>到底哪种说法是对的？我们先不急着纠结哪种说法是对的，再看两行代码：</p>
-<pre><code>`Person person;
- person = new Person(&quot;张三&quot;);`
-</code></pre><p>这两行代码实现的功能和上面的一行代码是完全一样的。大家都知道，在Java中new是用来在堆上创建对象用的，如果person是一个对象的话，那么第二行为何还要通过new来创建对象呢？由此可见，person并不是所创建的对象，是什么？上面的一段话说的很清楚，“操纵的标识符实际是指向一个对象的引用”，也就是说person是一个引用，是指向一个可以指向Person类的对象的引用。真正创建对象的语句是右边的new Person(“张三”);</p>
-<p>　再看一个例子：</p>
-<pre><code>`Person person;
- person = new Person(&quot;张三&quot;);
- person = new Person(&quot;李四&quot;);`
-</code></pre><p>这里让person先指向了“张三”这个对象，然后又指向了“李四”这个对象。也就是说，Person person，这句话只是声明了一个Person类的引用，它可以指向任何Person类的实例。这个道理就和下面这段代码一样：</p>
-<pre><code>`int a;
- a=2;
- a=3;`
-</code></pre><p>这里先声明了一个int类型的变量a，先对a赋值为2，后面又赋值为3.也就是说int类型的变量a，可以让它的值为2，也可以为3，只要是合法的int类型的数值即可。</p>
-<p>也就是说，一个引用可以指向多个对象(不太严谨,最后只会指向最后指向的那个对象)，而一个对象可不可以被多个引用所指呢？答案当然是可以的。</p>
-<p>比如：</p>
-<pre><code>`Person person1 = new Person(&quot;张三&quot;);
- Person person2 = person1;`
-</code></pre><p>person1和person2都指向了“张三”这个对象。</p>
-<p>综上所述:</p>
-<p>可以简单的记为，在初始化时，“=”语句左边的是引用，右边new出来的是对象。 </p>
-<p>在后面的左右都是引用的“=”语句时，左右的引用同时指向了右边引用所指向的对象。 </p>
-<p>再所谓实例，其实就是对象的同义词。</p>
-<p><br><br>【参考资料】</p>
-<p>《Java编程思想》</p>
+<p>时间复杂度：O（N）  节点数为N</p>
+<p>【分析】</p>
+<p>解法的整体过程为<code>二叉树的后序遍历</code>，对任何一个节点Node来说，先遍历node的左子树，遍历过程中收集两个信息，node的左子树是否为平衡二叉树，node的左子树最深到哪一层记为<code>lh</code>,如果发现node的左子树不是平衡二叉树，无须进行任何后续过程，此时返回什么并不重要，因为已经发现整棵树不是平衡二叉树，退出遍历过程。如果node的左子树是平衡二叉树，再遍历node的右子树，遍历过程中再收集两个信息，node的右子树是否为平衡二叉树，node的右子树最深到哪一层记为<code>rh</code>。如果node的右子树也是平衡二叉树，<code>就看lh和rh差的绝对值是否小于1，如果大于1，不是平衡二叉树。</code>返回lh和rh较大的那一个。</p>
+<p>【AC代码】</p>
+<pre><code>`public class Solution {
+    public  boolean isBalance(TreeNode head){
+        //定义全局变量boolean
+        boolean[] res=new boolean[1];
+        res[0]=true;
+        getHeight(head,1,res);
+        return res[0];
 
+    }
+    private int getHeight(TreeNode head, int level, boolean[] res) {
+        if(head==null){
+            return level;
+        }
+        int lh=getHeight(head.left,level+1,res);
+        if(!res[0]){
+            return level;
+        }
+        int rh=getHeight(head.right,level+1,res);
+        if(!res[0]){
+            return level;
+        }
+        if(Math.abs(lh-rh)&gt;1){
+            res[0]=false;
+        }
+        return Math.max(lh, rh);
+    }
+    public static void main(String[] args) {
+        Solution d=new Solution();
+        TreeNode head1=new TreeNode(1);
+        TreeNode head2=new TreeNode(2);
+        TreeNode head3=new TreeNode(3);
+        TreeNode head4=new TreeNode(4);
+        TreeNode head5=new TreeNode(5);
+        TreeNode head6=new TreeNode(6);
+        TreeNode head7=new TreeNode(7);
+        TreeNode head8=new TreeNode(8);
+        head1.left=head2;
+        head1.right=head3;
+        head2.left=head4;
+        head2.right=head7;
+        head3.left=head8;
+        head4.left=head5;
+        head5.left=head6;
+        System.out.println(d.isBalance(head1)==true?&quot;该二叉树是平衡二叉树&quot;:&quot;该二叉树不是平衡二叉树&quot;);
+    }
+}`
+</code></pre>
       
     </div>
 
@@ -158,12 +171,12 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/06/java基础/对象和引用/" data-id="civjlci4v000t4wn6gv9e6z0j" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/15/数据结构/平衡二叉树/" data-id="civjlci6c00224wn63pz0tn6u" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/二叉树/">二叉树</a></li></ul>
 
 
     </footer>
@@ -173,16 +186,16 @@
 <ul id="article-nav" class="nav nav-pills nav-justified">
   
   <li role="presentation">
-    <a href="/2016/11/06/java基础/拆箱和装箱/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/11/15/数据结构/二叉树层序遍历/" id="article-nav-older" class="article-nav-link-wrap">
       <i class="fa fa-chevron-left pull-left"></i>
-      <span class="article-nav-link-title">深入剖析Java中的装箱和拆箱</span>
+      <span class="article-nav-link-title">二叉树的层序遍历与ZigZag遍历</span>
     </a>
   </li>
   
   
   <li role="presentation">
-    <a href="/2016/11/06/java基础/接口和抽象类/" id="article-nav-newer" class="article-nav-link-wrap">
-      <span class="article-nav-link-title">深入理解Java的接口和抽象类</span>
+    <a href="/2016/11/15/数据结构/完全二叉树/" id="article-nav-newer" class="article-nav-link-wrap">
+      <span class="article-nav-link-title">判断二叉树是否为完全二叉树</span>
       <i class="fa fa-chevron-right pull-right"></i>
     </a>
   </li>
@@ -196,7 +209,7 @@
 
 <section id="comments">
 <!-- ��˵���ۿ� start -->
-<div class="ds-thread" data-thread-key="post-java基础/对象和引用" data-title="浅谈Java中的对象和引用" data-url="http://yoursite.com/2016/11/06/java基础/对象和引用/"></div>
+<div class="ds-thread" data-thread-key="post-数据结构/平衡二叉树" data-title="判断二叉树是否为平衡二叉树" data-url="http://yoursite.com/2016/11/15/数据结构/平衡二叉树/"></div>
 <!-- ��˵���ۿ� end -->
 <!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
 <script type="text/javascript">
