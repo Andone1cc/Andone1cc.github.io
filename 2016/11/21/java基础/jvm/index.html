@@ -3,17 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: JAVA | Andone1cc</title>
+  <title>JVM的核心机制 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一个有梦想的CS小白">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Andone1cc">
-<meta property="og:url" content="http://yoursite.com/categories/JAVA/page/3/index.html">
+  <meta name="description" content="一、类加载的全过程为什么要研究类加载全过程？
+
+1.有助于了解JVM运行过程
+2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM的核心机制">
+<meta property="og:url" content="http://yoursite.com/2016/11/21/java基础/jvm/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="一个有梦想的CS小白">
+<meta property="og:description" content="一、类加载的全过程为什么要研究类加载全过程？
+
+1.有助于了解JVM运行过程
+2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。">
+<meta property="og:updated_time" content="2016-11-21T12:49:25.180Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Andone1cc">
-<meta name="twitter:description" content="一个有梦想的CS小白">
+<meta name="twitter:title" content="JVM的核心机制">
+<meta name="twitter:description" content="一、类加载的全过程为什么要研究类加载全过程？
+
+1.有助于了解JVM运行过程
+2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -78,65 +88,116 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
+          <article id="post-java基础/jvm" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
     
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/06/java基础/static关键字/">Java中的static关键字解析</a>
+    <h1 class="article-title" itemprop="name">
+      JVM的核心机制
     </h1>
   
 
 
+  </header>
+
+  <div class="article-meta">
     <div class="article-datetime">
-  <a href="/2016/11/06/java基础/static关键字/" class="archive-article-date"><time datetime="2016-11-06T14:17:46.539Z" itemprop="datePublished">十一月 6日</time></a>
+  <a href="/2016/11/21/java基础/jvm/" class="article-date"><time datetime="2016-11-21T12:18:13.344Z" itemprop="datePublished">2016-11-21</time></a>
 </div>
 
-  </header>
-</article>
-
-  
     
     
-    <article class="archive-article archive-type-post">
-  <header class="archive-article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/11/06/java基础/jvm内存划分/">JVM的内存区域划分</a>
-    </h1>
-  
-
-
-    <div class="article-datetime">
-  <a href="/2016/11/06/java基础/jvm内存划分/" class="archive-article-date"><time datetime="2016-11-06T14:17:46.517Z" itemprop="datePublished">十一月 6日</time></a>
-</div>
-
-  </header>
-</article>
-
-  
-  
-    </div></section>
-  
-
-
-  <div id="page-nav">
-    <nav><ul class="pagination"><li><a class="page-prev" rel="prev" href="/categories/JAVA/page/2/"><i class="fa fa-chevron-left"></i> Prev</a></li><li><a class="page-number" href="/categories/JAVA/">1</a></li><li><a class="page-number" href="/categories/JAVA/page/2/">2</a></li><li class="active"><span class="page-number">3</span></li><li class="disabled"><span class="page-next">Next <i class="fa fa-chevron-right"></i></a></li></ul></nav>
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
   </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一、类加载的全过程"><a href="#一、类加载的全过程" class="headerlink" title="一、类加载的全过程"></a>一、类加载的全过程</h3><p>为什么要研究类加载全过程？</p>
+<blockquote>
+<p>1.有助于了解JVM运行过程</p>
+<p>2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。</p>
+</blockquote>
+<a id="more"></a>
+<p><b>类加载机制</b></p>
+<p>JVM把class文件加载到内存，并对数据进行校验，解析和初始化，最终形成JVM可以直接使用的Java类型的过程。</p>
+<p>1.加载</p>
+<p>将class文件字节码内容加载到内存中,<code>并将这些静态数据转换成方法区中的运行时数据结构，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口</code>。</p>
+<p>2.链接</p>
+<p>将Java类的二进制代码合并到JVM的运行状态之中的过程。</p>
+<pre><code>1）验证：确保加载的类信息符合JVM规范，没有安全方面的问题。
+
+2）准备：正式为类变量(static变量)分配内存并设置类变量初始值的阶段。这些内存都将在方法区中进行分配。
+
+3）解析：虚拟机常量池内的符号引用替换为直接引用的过程。
+</code></pre><p>注意：准备阶段,static int a=3, 默认设置a=0,赋值a=3时是在初始化阶段。</p>
+<p>3.初始化</p>
+<p>初始化阶段是执行类构造器<clinit>()方法的过程，<code>类构造器&lt;clinit&gt;()方法是由编译器自动收集类中的所有类变量的赋值动作和静态语句块（static代码块）中的语句合并产生的。</code></clinit></p>
+<p>当初始化一个类的时候，如果发现其父类还没有进行初始化，则需要先初始化其父类。</p>
+<p>虚拟机会保证一个类的<clinit>()方法在多线程环境中被正确加锁和同步。</clinit></p>
+<p>当访问一个Java类的静态域时，只有真正声明这个域的类才会被初始化。</p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/21/java基础/jvm/" data-id="civs2n2ce000fpon6vdnvrlch" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/15/数据结构/统计二叉树的节点数/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">统计完全二叉树的节点数</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java基础/jvm" data-title="JVM的核心机制" data-url="http://yoursite.com/2016/11/21/java基础/jvm/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
 
 
 
