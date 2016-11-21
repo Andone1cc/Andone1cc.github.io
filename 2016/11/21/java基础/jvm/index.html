@@ -17,13 +17,15 @@
 
 1.有助于了解JVM运行过程
 2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。">
-<meta property="og:updated_time" content="2016-11-21T12:49:25.180Z">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/I0inax.Sk4MCcCo*5Y.0hYYMM*6j*JQFJzKv9w.sFpQ!/m/dPYAAAAAAAAAnull&bo=bgKSAQAAAAADB90!&rf=photolist&t=5">
+<meta property="og:updated_time" content="2016-11-21T13:41:03.494Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM的核心机制">
 <meta name="twitter:description" content="一、类加载的全过程为什么要研究类加载全过程？
 
 1.有助于了解JVM运行过程
 2.更深入了解java动态性（解热部署，动态加载）,提高程序的灵活性。">
+<meta name="twitter:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/I0inax.Sk4MCcCo*5Y.0hYYMM*6j*JQFJzKv9w.sFpQ!/m/dPYAAAAAAAAAnull&bo=bgKSAQAAAAADB90!&rf=photolist&t=5">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -141,7 +143,49 @@
 <p>当初始化一个类的时候，如果发现其父类还没有进行初始化，则需要先初始化其父类。</p>
 <p>虚拟机会保证一个类的<clinit>()方法在多线程环境中被正确加锁和同步。</clinit></p>
 <p>当访问一个Java类的静态域时，只有真正声明这个域的类才会被初始化。</p>
+<p>接下来来看一个示例代码：</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        A a=new A();
+        System.out.println(A.width);
+    }
+}
+class A{
+    public static int width=100;
 
+    static{
+        System.out.println(&quot;静态初始化类A&quot;);
+        width=300;
+    }
+
+    public A(){
+        System.out.println(&quot;创建A的对象&quot;);
+    }
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`静态代码块
+创建A的对象
+300`
+</code></pre><p>分析：在创建一个对象的时候，首先需要加载类的信息,所有先打印初始化类A，然后在执行创建。为什么打印300而不是100，因为类构造器在合并语句的时候，是从上往下执行的。所以100会被覆盖。</p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/I0inax.Sk4MCcCo*5Y.0hYYMM*6j*JQFJzKv9w.sFpQ!/m/dPYAAAAAAAAAnull&amp;bo=bgKSAQAAAAADB90!&amp;rf=photolist&amp;t=5" alt=""></p>
+<p><b>类的主动引用和被动引用</b></p>
+<p>1.类的主动引用（一定会发生类的初始化）</p>
+<pre><code>1）new一个类的对象
+
+2）调用类的静态成员（除了final常量）和静态方法
+
+3）使用java.lang.reflect包的方法对类进行反射调用
+
+4）当虚拟机启动，java.Hello 则一定会初始化Hello类，说白了就是先启动main方法所在的类。
+
+5）当初始化一个类，如果其父类没有被初始化，则先会初始化他的父类。
+</code></pre><p>2.类的被动引用（不会发生类的初始化）</p>
+<pre><code>1)当访问一个静态域时，只有真正声明这个域的类才会被初始化，通过子类调用父类的静态变量，不会导致子类被初始化。
+
+2）通过数组定义引用，不会触发此类的初始化。
+
+3）引用常量不会触发此类的初始化（常量在编译阶段就存入调用类的常量池中）
+</code></pre>
       
     </div>
 
@@ -151,7 +195,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/21/java基础/jvm/" data-id="civs2n2ce000fpon6vdnvrlch" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/21/java基础/jvm/" data-id="civs4fv3d000f44n6g9zfzylp" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
