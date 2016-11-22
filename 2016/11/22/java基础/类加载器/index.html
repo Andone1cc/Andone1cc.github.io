@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入理解类加载器 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="类加载器之前我们提过了类加载的全过程，今天我们就来研究一下类加载器。
+类加载器的作用
+将class文件字节码内容加载到内存中，并将这个静态数据转换成方法区中的运行时数据，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解类加载器">
+<meta property="og:url" content="http://yoursite.com/2016/11/22/java基础/类加载器/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="类加载器之前我们提过了类加载的全过程，今天我们就来研究一下类加载器。
+类加载器的作用
+将class文件字节码内容加载到内存中，并将这个静态数据转换成方法区中的运行时数据，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口。">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/BkWztrTMPlHR9u4sqg8kog5evnRQ5qX5744OC1CW9hU!/b/dCABAAAAAAAA&bo=BwFCAQcBQgEFByQ!&rf=viewer_4">
+<meta property="og:updated_time" content="2016-11-22T12:36:44.772Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解类加载器">
+<meta name="twitter:description" content="类加载器之前我们提过了类加载的全过程，今天我们就来研究一下类加载器。
+类加载器的作用
+将class文件字节码内容加载到内存中，并将这个静态数据转换成方法区中的运行时数据，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口。">
+<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/BkWztrTMPlHR9u4sqg8kog5evnRQ5qX5744OC1CW9hU!/b/dCABAAAAAAAA&bo=BwFCAQcBQgEFByQ!&rf=viewer_4">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java基础/类加载器" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解类加载器
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/22/java基础/类加载器/" class="article-date"><time datetime="2016-11-22T11:41:36.813Z" itemprop="datePublished">2016-11-22</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><p>之前我们提过了类加载的全过程，今天我们就来研究一下类加载器。</p>
+<p><b>类加载器的作用</b></p>
+<p>将class文件字节码内容加载到内存中，并将这个静态数据转换成方法区中的运行时数据，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口。</p>
+<a id="more"></a>
+<p><b>类缓存</b></p>
+<p>标准的Java SE类加载器可以按要求查找类，但一旦某个类被加载到类加载器中，他将维持加载（缓存）一段时间，不过，JVM垃圾收集器可以回收这些Class对象。</p>
+<h3 id="一、类加载器的层次结构（树状结构）"><a href="#一、类加载器的层次结构（树状结构）" class="headerlink" title="一、类加载器的层次结构（树状结构）"></a>一、类加载器的层次结构（树状结构）</h3><p>1、引导(启动)类加载器（bootstrap class loader）</p>
+<pre><code>它用来加载Java的核心库(JAVA_HOME/jre/lib/rt.jar或sun.boot.class.path路径下的内容），是用原生代码来实现的（c++）,并不继承自java.lang.ClassLoader.
+
+加载扩展类和应用程序类加载器，并指定他们的父类加载器。
+</code></pre><p>2、扩展类加载器（extensions class loader）</p>
+<pre><code>用来加载Java的扩展库(JAVA_HOME/jre/ext/*.jar或java.ext.dirs路径下的内容).java虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载Java类。
+
+由sun.misc.Launcher$ExtClassLoader实现
+</code></pre><p>3、应用程序类加载器（application class loader）</p>
+<pre><code>它根据Java应用的类路径（classpath,java.class.path）来加载。
+一般来说，Java应用的类都是由它来完成加载的。
+
+由sun.misc.Launcher$AppClassLoader实现
+</code></pre><p>4、自定义类加载器</p>
+<pre><code>开发人员可以通过继承java.lang.ClassLoader类的方式实现自己的类加载器，以满足一些特殊的要求。
+</code></pre><p>注意：除了启动类加载器是由c++编写外，其他都是java编写，且都继承java.lang.ClassLoader。</p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/BkWztrTMPlHR9u4sqg8kog5evnRQ5qX5744OC1CW9hU!/b/dCABAAAAAAAA&amp;bo=BwFCAQcBQgEFByQ!&amp;rf=viewer_4" alt=""></p>
+<p>下面我们一起来试验一下：</p>
+<pre><code>`public class Test02 {
+    public static void main(String[] args) {
+        System.out.println(ClassLoader.getSystemClassLoader());
+        System.out.println(ClassLoader.getSystemClassLoader().getParent());
+        System.out.println(ClassLoader.getSystemClassLoader().getParent().getParent());
+    }
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`sun.misc.Launcher$AppClassLoader@73d16e93
+sun.misc.Launcher$ExtClassLoader@15db9742
+null`
+</code></pre><p>结果正好验证了上面的树形结构。</p>
+<h3 id="二、类加载器的代理模式"><a href="#二、类加载器的代理模式" class="headerlink" title="二、类加载器的代理模式"></a>二、类加载器的代理模式</h3><p>代理模式：</p>
+<pre><code>交给其他类加载来加载指定的类
+</code></pre><p>类加载器采用了<code>双亲委托机制</code>.就是将某个指定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次追溯，直到最高的爷爷辈的，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
+<p>双亲委托机制是为了保证Java核心库的类型安全。</p>
+<pre><code>这种机制就保证不会出现用户自己能定义java.lang.Object类的情况。
+</code></pre><p>类加载器除了用户加载类，也是安全的最基本的屏障。</p>
+<p>下面我们一起来测试一下：</p>
+<p>1.我们在工作目录下建一个java.lang的包，然后建一个名为String的类。</p>
+<pre><code>`package java.lang;
+
+public class String {
+    public String toString(){
+        return &quot;cc&quot;;
+    }
+}
+`    
+</code></pre><p>2.测试类</p>
+<pre><code>`public class Test03 {
+    public static void main(String[] args) {
+
+    String a=&quot;aa&quot;;
+    System.out.println(a.getClass().getClassLoader());
+    System.out.println(a);
+    }
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>null
+aa
+</code></pre><p>说明我们自己写的String类没有被调用。是启动类加载器来调用核心库的java.lang.String来实现的。</p>
+<p>【注意】</p>
+<p>双亲委托机制是代理模式的一种。 并不是所有的类加载器都采用双亲委托机制。<code>tomcat服务器类加载器</code>也使用代理模式，所不同的是它是首先尝试去加载某个类，如果找不到再代理给父类加载器。这与一般类加载器的顺序是相反的。</p>
+<h3 id="三、java-class-ClassLoader类API详细介绍"><a href="#三、java-class-ClassLoader类API详细介绍" class="headerlink" title="三、java.class.ClassLoader类API详细介绍"></a>三、java.class.ClassLoader类API详细介绍</h3><p><b>相关方法</b></p>
+<blockquote>
+<p>getParent()  </p>
+</blockquote>
+<p>返回类加载器的父类加载器</p>
+<blockquote>
+<p>loadClass(String name) </p>
+</blockquote>
+<p>加载名称为name的类，返回的结果是java.lang.Class类的实例。此方法负责加载指定名字的类，首先会从已加载的类中去寻找，如果没有找到，从parent ClassLoaderExtClassLoader中加载；如果没有加载到，则从bootstrap ClassLoader 中尝试加载，如果还是失败，则自己加载。如果不能加载，则<code>抛出异常ClassNotFoundException</code>。如果要改变类的加载顺序可以覆盖此方法。</p>
+<blockquote>
+<p>findClass(String name)  </p>
+</blockquote>
+<p>查找名为name的类，返回结果为java.lang.Class的实例。</p>
+<blockquote>
+<p>findLoadedClass(String name) </p>
+</blockquote>
+<p>查找名称为name的已经被加载过的类，返回结果为java.lang.Class的实例。</p>
+<blockquote>
+<p>defineClass(String name,byte[] b,int off,int len) </p>
+</blockquote>
+<p>把字节数组b中的内容转换为java类，返回结果是java.lang.Class类的实例。这个方法被声明为final的。</p>
+<blockquote>
+<p>resolveClass(Class&lt;?&gt; c) </p>
+</blockquote>
+<p>链接指定的Java类。</p>
+<p>【注意:】</p>
+<p>表示类名称的name参数的值是类的名称，需要注意的是内部类的表示。如 com.example.Sample$1和com.example.Sample$Inner等表示形式。</p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/22/java基础/类加载器/" data-id="civthowl80019ocn6bd3230kq" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/21/java基础/jvm/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">类加载的全过程</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java基础/类加载器" data-title="深入理解类加载器" data-url="http://yoursite.com/2016/11/22/java基础/类加载器/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">15</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">27</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/22/java基础/类加载器/">深入理解类加载器</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/21/java基础/jvm/">类加载的全过程</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/统计二叉树的节点数/">统计完全二叉树的节点数</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/完全二叉树/">判断二叉树是否为完全二叉树</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/平衡二叉树/">判断二叉树是否为平衡二叉树</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
