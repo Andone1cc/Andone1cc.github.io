@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>原生和jQuery的ajax | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
+Ajax的本质是一个浏览器端的技术。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原生和jQuery的ajax">
+<meta property="og:url" content="http://yoursite.com/2016/11/28/java高级/ajax/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
+Ajax的本质是一个浏览器端的技术。">
+<meta property="og:updated_time" content="2016-11-28T14:38:43.105Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="原生和jQuery的ajax">
+<meta name="twitter:description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
+Ajax的本质是一个浏览器端的技术。">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java高级/ajax" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      原生和jQuery的ajax
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/28/java高级/ajax/" class="article-date"><time datetime="2016-11-28T13:46:33.839Z" itemprop="datePublished">2016-11-28</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java高级/">java高级</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是Ajax"><a href="#什么是Ajax" class="headerlink" title="什么是Ajax?"></a>什么是Ajax?</h3><p>Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。</p>
+<p>Ajax的本质是一个<code>浏览器端</code>的技术。</p>
+<a id="more"></a>
+<h3 id="为什么要学习Ajax"><a href="#为什么要学习Ajax" class="headerlink" title="为什么要学习Ajax?"></a>为什么要学习Ajax?</h3><p>1.通过异步模式，提升了用户体验。</p>
+<p>2.优化了浏览器和服务器之间的传输，减少不必要的数据往返，减少了带宽占用。</p>
+<p><code>ajax局部刷新技术，其实就是使用js实现局部数据的实时变更，解决了不同响应之间的数据共享问题。</code></p>
+<h3 id="创建ajax程序的基本流程"><a href="#创建ajax程序的基本流程" class="headerlink" title="创建ajax程序的基本流程"></a>创建ajax程序的基本流程</h3><blockquote>
+<p>1.创建XMLHttpRequest对象(有浏览器差异问题)</p>
+</blockquote>
+<pre><code>var request;
+if(window.XMLHttpRequest){//Mozilla
+    request=new XMLHttpRequest();
+}else if(window.ActiveXObject){    //IE
+    request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+}
+</code></pre><blockquote>
+<p>2.使用XMLHttpRequest对象创建请求</p>
+</blockquote>
+<pre><code>request.open(&quot;get&quot;,&quot;testAjaxServlet&quot;);
+</code></pre><blockquote>
+<p>3.复写onreadystatechange函数,监视response的状态,处理服务器返回的数据。</p>
+</blockquote>
+<p>接收响应结果：</p>
+<blockquote>
+<blockquote>
+<p>响应数据的类型：</p>
+</blockquote>
+</blockquote>
+<p>1.普通文本：就是字符串</p>
+<p>2.<code>json格式的数据</code>：就是使用了json数据格式拼接的字符串，这样在客户端我们就可以使用eval()方法将响应的字符串数据转换成可执行的js代码。极力推荐使用json数据格式来做响应</p>
+<p>3.XML数据：使用JSP页面来书写XML数据，设置响应头为XML类型的数据。在客户端使用responseXML来接收响应的xml数据（返回document对象）。使用document对象来操作xml数据。<br>doc.getElementsByTagName(“标签名”)[角标].firstChild.data</p>
+<p>按照readyState的值为4来接收，4表示响应数据成功接收</p>
+<p>status：200表示一切OK</p>
+<p>404表示资源未找到</p>
+<p>500表示服务器内部错误</p>
+<pre><code>`request.onreadystatechange=function(){
+    //readyState的值为4表示数据成功接收
+    if(request.readyState==4){
+        if(request.status==200){
+            var result=request.responseText;//接收数据
+            eval(&quot;var arr=&quot;+result);//使用eval强转
+            /*使用js操作文档结构..*/
+        }
+}`
+</code></pre><blockquote>
+<p>4.使用XMLHttpRequest对象创建请求</p>
+</blockquote>
+<pre><code>get：
+    请求数据以问号的形式拼接在url后面，键值对。
+    因为浏览器差异的问题，在send的时候一定是：send(null)
+
+    request.open(&quot;get&quot;,&quot;uri?用户请求数据&quot;);
+    request.send(null);        
+post：
+    post是有请求实体的，用户数据使用send直接发送
+
+    request.open(&quot;post&quot;,&quot;uri&quot;);
+    request.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+    request.send(&quot;用户数据&quot;);    
+</code></pre><h3 id="ajax应用实例"><a href="#ajax应用实例" class="headerlink" title="ajax应用实例"></a>ajax应用实例</h3><p>需求：在一个页面加载完成后，在页面上获取到权限信息，显示到下拉框中。</p>
+<h4 id="1-jQuery的ajax"><a href="#1-jQuery的ajax" class="headerlink" title="1.jQuery的ajax"></a>1.jQuery的ajax</h4><p>JSP:</p>
+<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
+    //页面加载的时候发送请求
+    $(document).ready(function(){
+        getPower();
+    })
+    //获取权限信息
+    function getPower(){
+
+        $.get(&quot;user.action&quot;,{oper:&quot;power&quot;},function(result){
+            //使用eval强转
+            eval(&quot;var power=&quot;+result);
+            //获取权限下拉框对象
+            var sel=$(&quot;#sel&quot;);
+            sel.empty();
+            //遍历
+            for(var i=0;i&lt;power.length;i++){
+                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
+            }
+        });
+    }
+&lt;/script&gt;    
+`
+</code></pre><h4 id="2-原生的ajax"><a href="#2-原生的ajax" class="headerlink" title="2.原生的ajax"></a>2.原生的ajax</h4><p>JSP:</p>
+<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
+//页面加载的时候发送请求
+window.onload(function(){
+    getPower();
+})
+//获取权限信息
+function getPower(){
+    //1创建XMLHttpRequest对象
+    var request;
+    if(window.XMLHttpRequest){
+        request=new XMLHttpRequest();
+    }else if(window.ActiveXObject){
+        request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+    }
+    //2创建请求
+    request.open(&quot;get&quot;,&quot;user.action&quot; + (data==&quot;&quot; ? &quot;&quot; : &quot;?search=&quot;+data));
+    //3复写onreadystatechange
+    request.onreadystatechange=function(){
+    //readyState的值为4表示数据成功接收
+    if(request.readyState==4){
+        if(request.status==200){
+            var result=request.responseText;
+            //使用eval强转
+            eval(&quot;var power=&quot;+result);
+            var sel=document.getElementById(&quot;sel&quot;);
+            sel.innerHTML=&quot;&quot;;
+            for(var i=0;i&lt;power.length;i++){
+                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
+            }
+        }
+    }
+    //4发送请求
+    request.send(null);
+}            
+&lt;/script&gt;`
+</code></pre><p>servlet:</p>
+<pre><code>`
+private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    //查询所有的权限信息
+    ArrayList&lt;Power&gt; list=new UserDao().getPowerInfo();
+    System.out.println(&quot;权限信息为：&quot;+list);
+    resp.getWriter().write(new Gson().toJson(list));
+}`
+</code></pre><p><br></p>
+<p>【其他应用场合】</p>
+<blockquote>
+<p>百度搜索的提示下拉框</p>
+<p>注册验证邮箱是否已经存在</p>
+</blockquote>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/28/java高级/ajax/" data-id="ciw26pfgn001fikn6erfpd0y9" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ajax/">ajax</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/22/java基础/类加载器/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">深入理解类加载器</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java高级/ajax" data-title="原生和jQuery的ajax" data-url="http://yoursite.com/2016/11/28/java高级/ajax/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">15</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">12</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">28</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/28/java高级/ajax/">原生和jQuery的ajax</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/22/java基础/类加载器/">深入理解类加载器</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/21/java基础/jvm/">类加载的全过程</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/统计二叉树的节点数/">统计完全二叉树的节点数</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/完全二叉树/">判断二叉树是否为完全二叉树</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
