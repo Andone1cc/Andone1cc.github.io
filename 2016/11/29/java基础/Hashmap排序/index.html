@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何对HashMap按键值排序 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Java中HashMap是一种用于存储“键”和“值”信息对的数据结构。不同于Array、ArrayList和LinkedLists，它不会维持插入元素的顺序。
+因此，在键或值的基础上排序HashMap是一个很难的问题，如果你不知道如何解决的话。下面让我们看看如何解决这个问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何对HashMap按键值排序">
+<meta property="og:url" content="http://yoursite.com/2016/11/29/java基础/Hashmap排序/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="Java中HashMap是一种用于存储“键”和“值”信息对的数据结构。不同于Array、ArrayList和LinkedLists，它不会维持插入元素的顺序。
+因此，在键或值的基础上排序HashMap是一个很难的问题，如果你不知道如何解决的话。下面让我们看看如何解决这个问题。">
+<meta property="og:image" content="http://s2.51cto.com/wyfs02/M00/72/BF/wKioL1Xs6BGB8yEoAAA_KG1JwzI252.jpg-wh_651x-s_1651521267.jpg">
+<meta property="og:updated_time" content="2016-11-29T14:34:44.818Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何对HashMap按键值排序">
+<meta name="twitter:description" content="Java中HashMap是一种用于存储“键”和“值”信息对的数据结构。不同于Array、ArrayList和LinkedLists，它不会维持插入元素的顺序。
+因此，在键或值的基础上排序HashMap是一个很难的问题，如果你不知道如何解决的话。下面让我们看看如何解决这个问题。">
+<meta name="twitter:image" content="http://s2.51cto.com/wyfs02/M00/72/BF/wKioL1Xs6BGB8yEoAAA_KG1JwzI252.jpg-wh_651x-s_1651521267.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java基础/Hashmap排序" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      如何对HashMap按键值排序
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/11/29/java基础/Hashmap排序/" class="article-date"><time datetime="2016-11-29T14:05:26.543Z" itemprop="datePublished">2016-11-29</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Java中HashMap是一种用于存储“键”和“值”信息对的数据结构。不同于Array、ArrayList和LinkedLists，它不会维持插入元素的顺序。</p>
+<p>因此，在键或值的基础上排序HashMap是一个很难的问题，如果你不知道如何解决的话。下面让我们看看如何解决这个问题。</p>
+<a id="more"></a>
+<p><img src="http://s2.51cto.com/wyfs02/M00/72/BF/wKioL1Xs6BGB8yEoAAA_KG1JwzI252.jpg-wh_651x-s_1651521267.jpg" alt=""></p>
+<h4 id="1-HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，"><a href="#1-HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，" class="headerlink" title="1. HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，"></a>1. HashMap存储每对键和值作为一个Entry<k，v>对象。例如，给出一个HashMap，</k，v></h4><pre><code>`Map&lt;String,Integer&gt; aMap = new HashMap&lt;String,Integer&gt;(); `
+</code></pre><p>键的每次插入，都会有值对应到散列映射上，生成一个Entry <k，v>对象。通过使用这个Entry <k，v>对象，我们可以根据值来排序HashMap。</k，v></k，v></p>
+<h4 id="2-创建一个简单的HashMap，并插入一些键和值。"><a href="#2-创建一个简单的HashMap，并插入一些键和值。" class="headerlink" title="2.创建一个简单的HashMap，并插入一些键和值。"></a>2.创建一个简单的HashMap，并插入一些键和值。</h4><pre><code>`Map&lt;String,Integer&gt; map=new HashMap&lt;String,Integer&gt;();
+    // adding keys and values 
+    map.put(&quot;Five&quot;, 5);
+    map.put(&quot;Six&quot;, 6);
+    map.put(&quot;One&quot;, 1);
+    map.put(&quot;Four&quot;, 4);
+    map.put(&quot;Three&quot;, 3);
+    map.put(&quot;TWO&quot;, 2);`
+</code></pre><h4 id="3-从HashMap恢复entry集合，如下所示。"><a href="#3-从HashMap恢复entry集合，如下所示。" class="headerlink" title="3.从HashMap恢复entry集合，如下所示。"></a>3.从HashMap恢复entry集合，如下所示。</h4><pre><code>`Set&lt;Entry&lt;String,Integer&gt;&gt; mapEntries=map.entrySet();`
+</code></pre><h4 id="4-从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快"><a href="#4-从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快" class="headerlink" title="4.从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快"></a>4.从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快</h4><pre><code>`List&lt;Entry&lt;String,Integer&gt;&gt; list=new LinkedList&lt;Entry&lt;String,Integer&gt;&gt;(mapEntries);`
+</code></pre><h4 id="5-通过传递链表和自定义比较器来使用Collections-sort-方法排序链表。"><a href="#5-通过传递链表和自定义比较器来使用Collections-sort-方法排序链表。" class="headerlink" title="5.通过传递链表和自定义比较器来使用Collections.sort()方法排序链表。"></a>5.通过传递链表和自定义比较器来使用Collections.sort()方法排序链表。</h4><pre><code>`Collections.sort(list,new Comparator&lt;Entry&lt;String,Integer&gt;&gt;() {
+
+        @Override
+        public int compare(Entry&lt;String, Integer&gt; o1, Entry&lt;String, Integer&gt; o2) {
+            return o1.getValue().compareTo(o2.getValue());
+        }
+    });`
+</code></pre><h4 id="6-使用自定义比较器，基于entry的值（Entry-getValue-），来排序链表。"><a href="#6-使用自定义比较器，基于entry的值（Entry-getValue-），来排序链表。" class="headerlink" title="6.使用自定义比较器，基于entry的值（Entry.getValue()），来排序链表。"></a>6.使用自定义比较器，基于entry的值（Entry.getValue()），来排序链表。</h4><h4 id="7-ele1-getValue-compareTo-ele2-getValue-——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。"><a href="#7-ele1-getValue-compareTo-ele2-getValue-——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。" class="headerlink" title="7.ele1.getValue(). compareTo(ele2.getValue())——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。"></a>7.ele1.getValue(). compareTo(ele2.getValue())——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。</h4><h4 id="8-Collections-sort-是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是"><a href="#8-Collections-sort-是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是" class="headerlink" title="8. Collections.sort()是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是"></a>8. Collections.sort()是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是</h4><pre><code>`public static &lt;T extends Comparable&lt;? super T&gt;&gt; void sort(List&lt;T&gt; list) 
+
+public static &lt;T&gt; void sort(List&lt;T&gt; list, Comparator&lt;? super T&gt; c) `
+</code></pre><h4 id="9-现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。"><a href="#9-现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。" class="headerlink" title="9.现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。"></a>9.现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。</h4><pre><code>`Map&lt;String,Integer&gt; map2=new LinkedHashMap&lt;String,Integer&gt;();
+    for(Entry&lt;String, Integer&gt; entry:list){
+        map2.put(entry.getKey(), entry.getValue());
+    }`
+</code></pre><h4 id="10-完整的代码如下。"><a href="#10-完整的代码如下。" class="headerlink" title="10.完整的代码如下。"></a>10.完整的代码如下。</h4><pre><code>`package io.github.hashmap;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public class SortMapByValues {
+    public static void main(String[] args) {
+        Map&lt;String,Integer&gt; map=new HashMap&lt;String,Integer&gt;();
+        // adding keys and values 
+        map.put(&quot;Five&quot;, 5);
+        map.put(&quot;Six&quot;, 6);
+        map.put(&quot;One&quot;, 1);
+        map.put(&quot;Four&quot;, 4);
+        map.put(&quot;Three&quot;, 3);
+        map.put(&quot;TWO&quot;, 2);
+        sortMapByValues(map); 
+    }
+
+    private static void sortMapByValues(Map&lt;String, Integer&gt; map) {
+        Set&lt;Entry&lt;String,Integer&gt;&gt; mapEntries=map.entrySet();
+        System.out.println(&quot;Values and Keys before sorting &quot;); 
+        for(Entry&lt;String,Integer&gt; entry:mapEntries){
+            System.out.println(entry.getValue() + &quot; - &quot;+ entry.getKey()); 
+        }
+        //从mapEntries创建LinkedList
+        List&lt;Entry&lt;String,Integer&gt;&gt; list=new LinkedList&lt;Entry&lt;String,Integer&gt;&gt;(mapEntries);
+        //自定义排序
+        Collections.sort(list,new Comparator&lt;Entry&lt;String,Integer&gt;&gt;() {
+
+            @Override
+            public int compare(Entry&lt;String, Integer&gt; o1, Entry&lt;String, Integer&gt; o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        //将排好序的list放入LinkedHashMap
+        Map&lt;String,Integer&gt; map2=new LinkedHashMap&lt;String,Integer&gt;();
+        for(Entry&lt;String, Integer&gt; entry:list){
+            map2.put(entry.getKey(), entry.getValue());
+        }
+        //打印结果
+        System.out.println(&quot;Values and Keys after sorting&quot;); 
+        for(Entry&lt;String, Integer&gt;entry:map2.entrySet()){
+            System.out.println(entry.getValue()+&quot; - &quot;+entry.getKey());
+        }
+    }
+}
+`
+</code></pre><p>【结果】</p>
+<pre><code>Values and Keys before sorting 
+5 - Five
+6 - Six
+1 - One
+4 - Four
+2 - TWO
+3 - Three
+Values and Keys after sorting
+1 - One
+2 - TWO
+3 - Three
+4 - Four
+5 - Five
+6 - Six
+</code></pre>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/11/29/java基础/Hashmap排序/" data-id="ciw3luv920009s0n661r8ftmq" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/28/java高级/ajax/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">原生和jQuery的ajax</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java基础/Hashmap排序" data-title="如何对HashMap按键值排序" data-url="http://yoursite.com/2016/11/29/java基础/Hashmap排序/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">16</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/11/29/java基础/Hashmap排序/">如何对HashMap按键值排序</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/28/java高级/ajax/">原生和jQuery的ajax</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/22/java基础/类加载器/">深入理解类加载器</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/21/java基础/jvm/">类加载的全过程</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/15/数据结构/统计二叉树的节点数/">统计完全二叉树的节点数</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
