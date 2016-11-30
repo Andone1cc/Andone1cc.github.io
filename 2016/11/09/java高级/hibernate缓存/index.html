@@ -26,8 +26,6 @@ Hibernate是一个持久层框架，经常访问物理数据库，为了降低�
   
   
   
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
@@ -246,14 +244,14 @@ Hibernate:
 <h3 id="二、二级缓存-sessionFactory级别"><a href="#二、二级缓存-sessionFactory级别" class="headerlink" title="二、二级缓存(sessionFactory级别)"></a>二、二级缓存(sessionFactory级别)</h3><p>使用hibernate二级缓存，我们首先需要对其进行配置，配置步骤如下：</p>
 <p>1.hibernate并没有提供相应的二级缓存的组件，所以需要加入额外的二级缓存包，常用的二级缓存包是EHcache。这个我们在下载好的hibernate的lib-&gt;optional-&gt;ehcache下可以找到(我这里使用的版本hibernate5.2版本)，然后将里面的几个jar包导入即可。</p>
 <p>2.在hibernate.cfg.xml配置文件中配置我们二级缓存的一些属性：</p>
-<pre><code>`&lt;!-- 
-    使用ehcache开启二级缓存
- --&gt;
- &lt;property name=&quot;hibernate.cache.region.factory_class&quot;&gt;
-    org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
-&lt;/property&gt;
- &lt;!-- 开启二级缓存 --&gt;
- &lt;property name=&quot;hibernate.cache.use_second_level_cache&quot;&gt;true&lt;/property&gt;`
+<pre><code>    `&lt;!-- 
+        使用ehcache开启二级缓存
+     --&gt;
+     &lt;property name=&quot;hibernate.cache.region.factory_class&quot;&gt;
+        org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+    &lt;/property&gt;
+     &lt;!-- 开启二级缓存 --&gt;
+     &lt;property name=&quot;hibernate.cache.use_second_level_cache&quot;&gt;true&lt;/property&gt;`
 </code></pre><p>3.配置hibernate的二级缓存是通过使用 ehcache的缓存包，所以我们需要创建一个 ehcache.xml 的配置文件，来配置我们的缓存信息，将其放到项目根目录下</p>
 <p>修改一下属性：</p>
 <pre><code>`&lt;!--指定二级缓存存放在磁盘上的位置--&gt;
@@ -451,7 +449,7 @@ public void cachehql1()
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/09/java高级/hibernate缓存/" data-id="ciw4a8jml001q8cn6kh68ixxc" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/09/java高级/hibernate缓存/" data-id="ciw4apsmi001ncon6prub9zn2" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
