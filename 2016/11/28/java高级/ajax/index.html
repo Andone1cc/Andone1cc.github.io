@@ -149,15 +149,15 @@ if(window.XMLHttpRequest){//Mozilla
 <p>status：200表示一切OK</p>
 <p>404表示资源未找到</p>
 <p>500表示服务器内部错误</p>
-<pre><code>    `request.onreadystatechange=function(){
-        //readyState的值为4表示数据成功接收
-        if(request.readyState==4){
-            if(request.status==200){
-                var result=request.responseText;//接收数据
-                eval(&quot;var arr=&quot;+result);//使用eval强转
-                /*使用js操作文档结构..*/
-            }
-    }`
+<pre><code>`request.onreadystatechange=function(){
+    //readyState的值为4表示数据成功接收
+    if(request.readyState==4){
+        if(request.status==200){
+            var result=request.responseText;//接收数据
+            eval(&quot;var arr=&quot;+result);//使用eval强转
+            /*使用js操作文档结构..*/
+        }
+}`
 </code></pre><blockquote>
 <p>4.使用XMLHttpRequest对象创建请求</p>
 </blockquote>
@@ -258,7 +258,7 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/28/java高级/ajax/" data-id="ciw4apsmb001fcon65o3nf0tv" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/11/28/java高级/ajax/" data-id="ciw4av90t001g50n6yxmn1cyq" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
