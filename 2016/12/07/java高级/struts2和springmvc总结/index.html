@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>struts2和springmvc学习总结 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、Struts2简介struts2 是mvc框架,struts1是基于servlet完成的。但是struts2是基于filter完成的。
+小故事:OpenSymphony退出webwork2时,由apache基于webwork2.3推出了struts2.借助struts1的名气,所以才叫struts2。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="struts2和springmvc学习总结">
+<meta property="og:url" content="http://yoursite.com/2016/12/07/java高级/struts2和springmvc总结/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="一、Struts2简介struts2 是mvc框架,struts1是基于servlet完成的。但是struts2是基于filter完成的。
+小故事:OpenSymphony退出webwork2时,由apache基于webwork2.3推出了struts2.借助struts1的名气,所以才叫struts2。">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/eL*ijJOwQutcyrBa9LnCPQE35YBvUpiH7DjWEib9Ajk!/b/dB8BAAAAAAAA&bo=gALuAgAAAAAFB0o!&rf=viewer_4">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JBDiX097mI4dv5aTUxeSsOJKcvTma1Iurwa0xqSLEX8!/b/dB8BAAAAAAAA&bo=mAKFAQAAAAADBzw!&rf=viewer_4">
+<meta property="og:updated_time" content="2016-12-07T12:26:47.623Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="struts2和springmvc学习总结">
+<meta name="twitter:description" content="一、Struts2简介struts2 是mvc框架,struts1是基于servlet完成的。但是struts2是基于filter完成的。
+小故事:OpenSymphony退出webwork2时,由apache基于webwork2.3推出了struts2.借助struts1的名气,所以才叫struts2。">
+<meta name="twitter:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/eL*ijJOwQutcyrBa9LnCPQE35YBvUpiH7DjWEib9Ajk!/b/dB8BAAAAAAAA&bo=gALuAgAAAAAFB0o!&rf=viewer_4">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java高级/struts2和springmvc总结" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      struts2和springmvc学习总结
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2016/12/07/java高级/struts2和springmvc总结/" class="article-date"><time datetime="2016-12-07T11:48:16.929Z" itemprop="datePublished">2016-12-07</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/java高级/">java高级</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="一、Struts2简介"><a href="#一、Struts2简介" class="headerlink" title="一、Struts2简介"></a>一、Struts2简介</h3><p>struts2 是mvc框架,struts1是基于servlet完成的。但是struts2是基于filter完成的。</p>
+<p>小故事:OpenSymphony退出webwork2时,由apache基于webwork2.3推出了struts2.借助struts1的名气,所以才叫struts2。</p>
+<a id="more"></a>
+<h3 id="二、Struts2运行原理"><a href="#二、Struts2运行原理" class="headerlink" title="二、Struts2运行原理"></a>二、Struts2运行原理</h3><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/eL*ijJOwQutcyrBa9LnCPQE35YBvUpiH7DjWEib9Ajk!/b/dB8BAAAAAAAA&amp;bo=gALuAgAAAAAFB0o!&amp;rf=viewer_4" alt=""></p>
+<blockquote>
+<ol>
+<li><p><code>StrutsPrepareAndExecuteFilter</code>:struts2.3+的核心过滤器,也是整个struts2框架的入口</p>
+</li>
+<li><p>ActionProxy:(代理设计模式),当希望访问某个action时,不直接方法,产生一个代理对象</p>
+</li>
+<li><p>ActionMapper:判断请求是否合法的类,如果合法才去执行,否则直接报错.判断格式而不是内容</p>
+</li>
+<li><p>Configuration Manager:管理struts.xml</p>
+</li>
+<li><p><code>ActionInvocation</code>:所有拦截器及action及result调度类,控制调用顺序等事情…..</p>
+</li>
+</ol>
+</blockquote>
+<pre><code>对象.invoke();放行;                也是自定义拦截器方法的参数.
+</code></pre><p>【文字解释】</p>
+<pre><code>`当发送request请求后,由ActionMapper判断请求格式是否合法,如果不合法报错,如果合法进入到核心
+过滤器StrutsPrepareAndExecuteFilter,之后产生ActinProxy的代理对象,代理对象会调用
+Configuration Manager 加载struts.xml,在配置文件查找请求的action对应的类及方法.如果不存
+在报404,如果存在通过 Action Invocation 调度类在执行action之前执行拦截器,默认执行
+defaultStack拦截器栈,struts2大部分默认功能都是通过拦截器实现的.拦截器执行完成后才开始执行
+action,根据返回逻辑视图名调用Result,此时不会立即响应,执行拦截器栈剩余内容,最终才会响应给客户端.`
+</code></pre><h3 id="三、Springmvc简介"><a href="#三、Springmvc简介" class="headerlink" title="三、Springmvc简介"></a>三、Springmvc简介</h3><p>SpringMVC是Spring Framework 的子项目,在实际编程中都是以<code>Spring-webmvc.jar</code>形式存在.<br>SpringMVC是基于<code>front设计模式</code>研发出的,必须要有入口,在SpringMVC的入口是<code>DispatcherServlet</code>.DispatcherServlet也是一个Servlet,在SpringMVC 中ServletAPI被完整的支持.</p>
+<p>由于是一个MVC框架,所以核心是<code>控制器</code>.大部分执行流程都是在控制器前后完成的。</p>
+<h3 id="四、Springmvc运行原理"><a href="#四、Springmvc运行原理" class="headerlink" title="四、Springmvc运行原理"></a>四、Springmvc运行原理</h3><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JBDiX097mI4dv5aTUxeSsOJKcvTma1Iurwa0xqSLEX8!/b/dB8BAAAAAAAA&amp;bo=mAKFAQAAAAADBzw!&amp;rf=viewer_4" alt=""></p>
+<blockquote>
+<ol>
+<li><p>HandlerMapping:判断请求时请求内容格式是否合法,如果合法继续,如果不合法异常</p>
+</li>
+<li><p>HandlerAdapter:实际调用控制器的组件</p>
+</li>
+<li><p>HandlerInterceptor:拦截器,在每个控制器和视图执行前后做一些事情</p>
+</li>
+<li><p>Controller:控制器</p>
+</li>
+</ol>
+<ol>
+<li>ViewResovler:视图解析器</li>
+</ol>
+</blockquote>
+<p>【执行流程】</p>
+<pre><code>`当用户发送请求后被DispatcherSevlet进行分发,然后转交给HandlerMapping进行验证格式是
+否合法,如果不合法报异常,如果合法向下传递交给HandlerAdapter准备调用某个Controller,
+Controller在进入之前一般都需要执行HandlerInterceptor拦截器的preHandle()方法,判断
+是否可以调用Controller.如果可以调用才能进入Controller,当Controller执行完成后再次进
+入拦截的postHandle验证传递内容是否合法,如果合法交给ViewResovler视图解析器调用具体的
+View视图资源.调用成功后再次进入拦截器的afterCompletion做最后验证,如果一切正确,响应给
+客户端.`
+</code></pre><h3 id="五、Struts2和SpringMVC的对比"><a href="#五、Struts2和SpringMVC的对比" class="headerlink" title="五、Struts2和SpringMVC的对比"></a>五、Struts2和SpringMVC的对比</h3><h5 id="1-核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求-（控制器）统一的进行处理-字符编码、文件上传、参数接受、异常处理等等-spring-mvc核心控制器是Servlet，而Struts2是Filter。"><a href="#1-核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求-（控制器）统一的进行处理-字符编码、文件上传、参数接受、异常处理等等-spring-mvc核心控制器是Servlet，而Struts2是Filter。" class="headerlink" title="1.核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求 （控制器）统一的进行处理(字符编码、文件上传、参数接受、异常处理等等),spring mvc核心控制器是Servlet，而Struts2是Filter。"></a>1.核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求 （控制器）统一的进行处理(字符编码、文件上传、参数接受、异常处理等等),<code>spring mvc核心控制器是Servlet，而Struts2是Filter。</code></h5><h5 id="2-控制器实例：Spring-Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可-注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题-。"><a href="#2-控制器实例：Spring-Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可-注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题-。" class="headerlink" title="2.控制器实例：Spring Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可(注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题)。"></a>2.控制器实例：Spring Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可(注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题)。</h5><h5 id="3-属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）-通过（ValueStack）进行传递和赋值-属性的值可以放到request作用域上。"><a href="#3-属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）-通过（ValueStack）进行传递和赋值-属性的值可以放到request作用域上。" class="headerlink" title="3.属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）,通过（ValueStack）进行传递和赋值,属性的值可以放到request作用域上。"></a>3.属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）,通过（ValueStack）进行传递和赋值,属性的值可以放到request作用域上。</h5><h5 id="4-拦截器：springmvc需要实现HandleInterceptor接口-用的是独立的AOP方式。struts需要继承AbstractInterceptor-有自己的interceptor机制。这样导致struts的配置文件量还是比spring-mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring-mvc使用更加简洁，开发效率Spring-MVC确实比struts2高。"><a href="#4-拦截器：springmvc需要实现HandleInterceptor接口-用的是独立的AOP方式。struts需要继承AbstractInterceptor-有自己的interceptor机制。这样导致struts的配置文件量还是比spring-mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring-mvc使用更加简洁，开发效率Spring-MVC确实比struts2高。" class="headerlink" title="4.拦截器：springmvc需要实现HandleInterceptor接口,用的是独立的AOP方式。struts需要继承AbstractInterceptor,有自己的interceptor机制。这样导致struts的配置文件量还是比spring mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring mvc使用更加简洁，开发效率Spring MVC确实比struts2高。"></a>4.拦截器：springmvc需要实现HandleInterceptor接口,用的是独立的AOP方式。struts需要继承AbstractInterceptor,有自己的interceptor机制。这样导致struts的配置文件量还是比spring mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring mvc使用更加简洁，开发效率Spring MVC确实比struts2高。</h5><h5 id="5-转换器：springmvc需要实现Convertor接口-配置信息写到applicationContext——spring-xml配置文件，struts需要继承StrutsTypeConvertor-配置信息写到属性文件，配置较麻烦。"><a href="#5-转换器：springmvc需要实现Convertor接口-配置信息写到applicationContext——spring-xml配置文件，struts需要继承StrutsTypeConvertor-配置信息写到属性文件，配置较麻烦。" class="headerlink" title="5.转换器：springmvc需要实现Convertor接口,配置信息写到applicationContext——spring.xml配置文件，struts需要继承StrutsTypeConvertor.配置信息写到属性文件，配置较麻烦。"></a>5.转换器：springmvc需要实现Convertor接口,配置信息写到applicationContext——spring.xml配置文件，struts需要继承StrutsTypeConvertor.配置信息写到属性文件，配置较麻烦。</h5><h5 id="6-springmvc处理ajax请求-直接通过返回数据，方法中使用注解-ResponseBody，spring-mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。"><a href="#6-springmvc处理ajax请求-直接通过返回数据，方法中使用注解-ResponseBody，spring-mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。" class="headerlink" title="6.springmvc处理ajax请求,直接通过返回数据，方法中使用注解@ResponseBody，spring mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。"></a>6.springmvc处理ajax请求,直接通过返回数据，方法中使用注解<code>@ResponseBody</code>，spring mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。</h5>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/12/07/java高级/struts2和springmvc总结/" data-id="ciwewucix0025ocn63pdqjtu3" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/框架/">框架</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2016/11/29/java基础/Hashmap排序/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">如何对HashMap按键值排序</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java高级/struts2和springmvc总结" data-title="struts2和springmvc学习总结" data-url="http://yoursite.com/2016/12/07/java高级/struts2和springmvc总结/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">16</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">8</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2016/12/07/java高级/struts2和springmvc总结/">struts2和springmvc学习总结</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/29/java基础/Hashmap排序/">如何对HashMap按键值排序</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/28/java高级/ajax/">原生和jQuery的ajax</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/22/java基础/类加载器/">深入理解类加载器</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/21/java基础/jvm/">类加载的全过程</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2016 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
