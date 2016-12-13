@@ -13,14 +13,15 @@ ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言�
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="一、Hibernate简介Hibernate是基于JDBC封装,是一个ORM框架,不依赖于servlet容器的框架。
 ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言里不同类型系统的数据之间的转换。从结果上来说：其实就是创建了一个可在编程语言里使用的“虚拟对象数据库”。">
-<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/G9eYmGS9Qxu9weAj3.nWM5ItNjyBd0wIvANxWabvbTU!/m/dPYAAAAAAAAAnull&bo=KgKSAwAAAAAFB50!&rf=photolist&t=5">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/*H0*AEQBgSDTpQkoCzsIpya.gOCMB0673oJoKhX*ZJs!/b/dKsAAAAAAAAA&bo=jgIXAgAAAAADB7s!&rf=viewer_4">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/3sjAEDKvErx21JT9xS5yvvFXYWtna8Ze5U48w86O*CA!/b/dB8BAAAAAAAA&bo=cgLxAQAAAAADAKU!&rf=viewer_4">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/aB9B68IYwdWCYJI2bA*q.Oe9eG14*sIejzpXYJUO478!/b/dCABAAAAAAAA&bo=tgH3AQAAAAAFAGI!&rf=viewer_4">
-<meta property="og:updated_time" content="2016-12-13T03:00:02.072Z">
+<meta property="og:updated_time" content="2016-12-13T03:07:34.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hibernate和MyBatis学习总结">
 <meta name="twitter:description" content="一、Hibernate简介Hibernate是基于JDBC封装,是一个ORM框架,不依赖于servlet容器的框架。
 ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言里不同类型系统的数据之间的转换。从结果上来说：其实就是创建了一个可在编程语言里使用的“虚拟对象数据库”。">
-<meta name="twitter:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/G9eYmGS9Qxu9weAj3.nWM5ItNjyBd0wIvANxWabvbTU!/m/dPYAAAAAAAAAnull&bo=KgKSAwAAAAAFB50!&rf=photolist&t=5">
+<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/*H0*AEQBgSDTpQkoCzsIpya.gOCMB0673oJoKhX*ZJs!/b/dKsAAAAAAAAA&bo=jgIXAgAAAAADB7s!&rf=viewer_4">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -118,7 +119,8 @@ ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言�
         <h3 id="一、Hibernate简介"><a href="#一、Hibernate简介" class="headerlink" title="一、Hibernate简介"></a>一、Hibernate简介</h3><p>Hibernate是基于JDBC封装,是一个<code>ORM</code>框架,不依赖于servlet容器的框架。</p>
 <p>ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言里不同类型系统的数据之间的转换。从结果上来说：其实就是创建了一个可在编程语言里使用的“虚拟对象数据库”。</p>
 <a id="more"></a>
-<h3 id="二、Hibernate运行原理"><a href="#二、Hibernate运行原理" class="headerlink" title="二、Hibernate运行原理"></a>二、Hibernate运行原理</h3><h4 id="执行流程图："><a href="#执行流程图：" class="headerlink" title="执行流程图："></a>执行流程图：</h4><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/G9eYmGS9Qxu9weAj3.nWM5ItNjyBd0wIvANxWabvbTU!/m/dPYAAAAAAAAAnull&amp;bo=KgKSAwAAAAAFB50!&amp;rf=photolist&amp;t=5" alt=""></p>
+<h3 id="二、Hibernate运行原理"><a href="#二、Hibernate运行原理" class="headerlink" title="二、Hibernate运行原理"></a>二、Hibernate运行原理</h3><h4 id="执行流程图："><a href="#执行流程图：" class="headerlink" title="执行流程图："></a>执行流程图：</h4><p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/*H0*AEQBgSDTpQkoCzsIpya.gOCMB0673oJoKhX*ZJs!/b/dKsAAAAAAAAA&amp;bo=jgIXAgAAAAADB7s!&amp;rf=viewer_4" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/3sjAEDKvErx21JT9xS5yvvFXYWtna8Ze5U48w86O*CA!/b/dB8BAAAAAAAA&amp;bo=cgLxAQAAAAADAKU!&amp;rf=viewer_4" alt=""></p>
 <p>【文字解释】</p>
 <blockquote>
 <p>Hibernate是一个ORM框架，可以帮助我们通过面向对象的思想来操作数据库。直接把对象传给hibernate后，不需要额外的拆箱操作。</p>
@@ -136,11 +138,11 @@ ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言�
 <p>在源码中，可以看出DefaultSqlSessionFactory是SqlSessionFactory的实现类。所以这个时候就产生了SqlSessionFactory接口的实例。</p>
 <p>需要openSession,产生SqlSession示例,根据SqlSession实例执行事务。最后要提交事务和关闭SqlSession。</p>
 </blockquote>
-<h3 id="五、Hibernate和MyBatis的相同点与不同点"><a href="#五、Hibernate和MyBatis的相同点与不同点" class="headerlink" title="五、Hibernate和MyBatis的相同点与不同点"></a>五、Hibernate和MyBatis的相同点与不同点</h3><h4 id="相同点："><a href="#相同点：" class="headerlink" title="相同点："></a>相同点：</h4><p>1、都替换了Dao层。</p>
+<h3 id="五、Hibernate和MyBatis的相同点与不同点"><a href="#五、Hibernate和MyBatis的相同点与不同点" class="headerlink" title="五、Hibernate和MyBatis的相同点与不同点"></a>五、Hibernate和MyBatis的相同点与不同点</h3><h4 id="相同点："><a href="#相同点：" class="headerlink" title="相同点："></a><b>相同点</b>：</h4><p>1、都替换了Dao层。</p>
 <p>2、都是封装了JDBC。</p>
 <p>3、都是占位符赋值做了不同的处理。</p>
 <p>4、数据库只认sql语句，最终都是将sql语句发送到数据库中。</p>
-<h4 id="不同点："><a href="#不同点：" class="headerlink" title="不同点："></a>不同点：</h4><p>1、hibernate的hql语句写的是类名+属性名。mybatis的sql语句写的是表名+列名。</p>
+<h4 id="不同点："><a href="#不同点：" class="headerlink" title="不同点："></a><b>不同点</b>：</h4><p>1、hibernate的hql语句写的是类名+属性名。mybatis的sql语句写的是表名+列名。</p>
 <p>2、mybatis不需要写<code>dao的实现类</code>。</p>
 <p>3、mybatis支持动态的sql语句(有点像JSTL)</p>
 <p>4、hibernate对于<code>数据库分表</code>实现不了，mybatis是手写的sql语句，分表表名可以处理。</p>
@@ -158,7 +160,7 @@ ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言�
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/12/13/java高级/hibernate和mybatis总结/" data-id="ciwmxa0wu001np8n60nbqhsxn" class="article-share-link">
+      <a data-url="http://yoursite.com/2016/12/13/java高级/hibernate和mybatis总结/" data-id="ciwmxhl57001n0wn6j3ug845n" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
