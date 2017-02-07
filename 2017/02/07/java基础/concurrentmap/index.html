@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>java 8中对ConcurrentHashMap的改进 | Andone1cc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="java 8中对ConcurrentHashMap的改进一、简单回顾ConcurrentHashMap在jdk1.7中的设计先简单看下ConcurrentHashMap类在jdk1.7中的设计，其基本结构如图所示：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java 8中对ConcurrentHashMap的改进">
+<meta property="og:url" content="http://yoursite.com/2017/02/07/java基础/concurrentmap/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="java 8中对ConcurrentHashMap的改进一、简单回顾ConcurrentHashMap在jdk1.7中的设计先简单看下ConcurrentHashMap类在jdk1.7中的设计，其基本结构如图所示：">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/764863/201606/764863-20160620202714522-1795796503.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/764863/201606/764863-20160620210413115-733159871.png">
+<meta property="og:updated_time" content="2017-02-07T08:02:37.616Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java 8中对ConcurrentHashMap的改进">
+<meta name="twitter:description" content="java 8中对ConcurrentHashMap的改进一、简单回顾ConcurrentHashMap在jdk1.7中的设计先简单看下ConcurrentHashMap类在jdk1.7中的设计，其基本结构如图所示：">
+<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/764863/201606/764863-20160620202714522-1795796503.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/styles.css">
+  
+
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="main-menu-navbar">
+      <ul class="nav navbar-nav">
+        
+          <li><a class=""
+                 href="/index.html">Home</a></li>
+        
+          <li><a class=""
+                 href="/archives/">Archives</a></li>
+        
+      </ul>
+
+      <!--
+      <ul class="nav navbar-nav navbar-right">
+        
+          <li><a href="/atom.xml" title="RSS Feed"><i class="fa fa-rss"></i></a></li>
+        
+      </ul>
+      -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <div class="container">
+    <div class="blog-header">
+  <h1 class="blog-title">Andone1cc</h1>
+  
+    <p class="lead blog-description">一个有梦想的CS小白</p>
+  
+</div>
+
+    <div class="row">
+        <div class="col-sm-8 blog-main">
+          <article id="post-java基础/concurrentmap" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 class="article-title" itemprop="name">
+      java 8中对ConcurrentHashMap的改进
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2017/02/07/java基础/concurrentmap/" class="article-date"><time datetime="2017-02-07T07:48:07.654Z" itemprop="datePublished">2017-02-07</time></a>
+</div>
+
+    
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="java-8中对ConcurrentHashMap的改进"><a href="#java-8中对ConcurrentHashMap的改进" class="headerlink" title="java 8中对ConcurrentHashMap的改进"></a>java 8中对ConcurrentHashMap的改进</h2><h3 id="一、简单回顾ConcurrentHashMap在jdk1-7中的设计"><a href="#一、简单回顾ConcurrentHashMap在jdk1-7中的设计" class="headerlink" title="一、简单回顾ConcurrentHashMap在jdk1.7中的设计"></a>一、简单回顾ConcurrentHashMap在jdk1.7中的设计</h3><p>先简单看下ConcurrentHashMap类在jdk1.7中的设计，其基本结构如图所示：</p>
+<a id="more"></a>
+<p><img src="http://images2015.cnblogs.com/blog/764863/201606/764863-20160620202714522-1795796503.png" alt=""></p>
+<p>每一个segment都是一个<code>HashEntry&lt;K,V&gt;[] table</code>， table中的每一个元素本质上都是一个HashEntry的单向队列。比如table[3]为首节点，table[3]-&gt;next为节点1，之后为节点2，依次类推。</p>
+<pre><code>`
+public class ConcurrentHashMap&lt;K, V&gt; extends AbstractMap&lt;K, V&gt;  
+    implements ConcurrentMap&lt;K, V&gt;, Serializable {  
+
+// 将整个hashmap分成几个小的map，每个segment都是一个锁；与hashtable相比，
+这么设计的目的是对于put, remove等操作，可以减少并发冲突，对  
+// 不属于同一个片段的节点可以并发操作，大大提高了性能  
+final Segment&lt;K,V&gt;[] segments;  
+
+// 本质上Segment类就是一个小的hashmap，里面table数组存储了各个节点的数据，
+  继承了ReentrantLock, 可以作为互拆锁使用  
+static final class Segment&lt;K,V&gt; extends ReentrantLock implements Serializable
+{  
+    transient volatile HashEntry&lt;K,V&gt;[] table;  
+    transient int count;  
+}  
+
+// 基本节点，存储Key， Value值  
+static final class HashEntry&lt;K,V&gt; {  
+    final int hash;  
+    final K key;  
+    volatile V value;  
+    volatile HashEntry&lt;K,V&gt; next;  
+}  
+}  
+
+`
+</code></pre><h3 id="二、在jdk1-8中主要做了两方面的改进"><a href="#二、在jdk1-8中主要做了两方面的改进" class="headerlink" title="二、在jdk1.8中主要做了两方面的改进"></a>二、在jdk1.8中主要做了两方面的改进</h3><p><code>改进一</code>：取消segments字段，直接采用<code>transient volatile HashEntry&lt;K,V&gt;[] table</code>保存数据，采用table数组元素作为锁，从而<code>实现了对每一行数据进行加锁</code>，进一步减少并发冲突的概率。</p>
+<p><code>改进二</code>：将原先table数组＋单向链表的数据结构，变更为<code>table数组＋单向链表＋红黑树</code>的结构。对于hash表来说，最核心的能力在于将key hash之后能均匀的分布在数组中。如果hash之后散列的很均匀，那么table数组中的每个队列长度主要为0或者1。但实际情况并非总是如此理想，虽然ConcurrentHashMap类默认的加载因子为0.75，但是在数据量过大或者运气不佳的情况下，还是会存在一些队列长度过长的情况，如果还是采用单向列表方式，那么查询某个节点的时间复杂度为O(n)；因此，对于个数超过8(默认值)的列表，<code>jdk1.8中采用了红黑树的结构，那么查询的时间复杂度可以降低到O(logN)，可以改进性能</code>。</p>
+<p>为了说明以上两个改动，看一下put操作是如何实现的。</p>
+<pre><code>`
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+if (key == null || value == null) throw new NullPointerException();
+int hash = spread(key.hashCode());
+int binCount = 0;
+for (Node&lt;K,V&gt;[] tab = table;;) {
+    Node&lt;K,V&gt; f; int n, i, fh;
+    // 如果table为空，初始化；否则，根据hash值计算得到数组索引i，如果tab[i]为空，
+    直接新建节点Node即可。注：tab[i]实质为链表或者红黑树的首节点。
+    if (tab == null || (n = tab.length) == 0)
+        tab = initTable();
+    else if ((f = tabAt(tab, i = (n - 1) &amp; hash)) == null) {
+        if (casTabAt(tab, i, null,
+                     new Node&lt;K,V&gt;(hash, key, value, null)))
+            break;                   // no lock when adding to empty bin
+    }
+    // 如果tab[i]不为空并且hash值为MOVED，说明该链表正在进行transfer操作，
+    返回扩容完成后的table。
+    else if ((fh = f.hash) == MOVED)
+        tab = helpTransfer(tab, f);
+    else {
+        V oldVal = null;
+        // 针对首个节点进行加锁操作，而不是segment，进一步减少线程冲突
+        synchronized (f) {
+            if (tabAt(tab, i) == f) {
+                if (fh &gt;= 0) {
+                    binCount = 1;
+                    for (Node&lt;K,V&gt; e = f;; ++binCount) {
+                        K ek;
+                        // 如果在链表中找到值为key的节点e，直接设置e.val = value即可。
+                        if (e.hash == hash &amp;&amp;
+                            ((ek = e.key) == key ||
+                             (ek != null &amp;&amp; key.equals(ek)))) {
+                            oldVal = e.val;
+                            if (!onlyIfAbsent)
+                                e.val = value;
+                            break;
+                        }
+                        // 如果没有找到值为key的节点，直接新建Node并加入链表即可。
+                        Node&lt;K,V&gt; pred = e;
+                        if ((e = e.next) == null) {
+                            pred.next = new Node&lt;K,V&gt;(hash, key,
+                                                      value, null);
+                            break;
+                        }
+                    }
+                }
+                // 如果首节点为TreeBin类型，说明为红黑树结构，执行putTreeVal操作。
+                else if (f instanceof TreeBin) {
+                    Node&lt;K,V&gt; p;
+                    binCount = 2;
+                    if ((p = ((TreeBin&lt;K,V&gt;)f).putTreeVal(hash, key,
+                                                   value)) != null) {
+                        oldVal = p.val;
+                        if (!onlyIfAbsent)
+                            p.val = value;
+                    }
+                }
+            }
+        }
+        if (binCount != 0) {
+            // 如果节点数&gt;＝8，那么转换链表结构为红黑树结构。
+            if (binCount &gt;= TREEIFY_THRESHOLD)
+                treeifyBin(tab, i);
+            if (oldVal != null)
+                return oldVal;
+            break;
+        }
+    }
+}
+// 计数增加1，有可能触发transfer操作(扩容)。
+addCount(1L, binCount);
+return null;
+}`
+</code></pre><p>另外，在其他方面也有一些小的改进，比如新增字段 <code>transient volatile CounterCell[] counterCells;</code> 可方便的计算hashmap中所有元素的个数，<code>性能大大优于jdk1.7中的size()方法</code>。</p>
+<h3 id="三、ConcurrentHashMap-jdk1-7、jdk1-8性能比较"><a href="#三、ConcurrentHashMap-jdk1-7、jdk1-8性能比较" class="headerlink" title="三、ConcurrentHashMap jdk1.7、jdk1.8性能比较"></a>三、ConcurrentHashMap jdk1.7、jdk1.8性能比较</h3><p>测试程序如下：</p>
+<pre><code>`
+
+public class CompareConcurrentHashMap {
+private static ConcurrentHashMap&lt;String, Integer&gt; map
+ = new ConcurrentHashMap&lt;String, Integer&gt;(40000);
+
+
+public static void putPerformance(int index, int num) {
+    for (int i = index; i &lt; (num + index) ; i++)
+        map.put(String.valueOf(i), i);
+}
+public static void getPerformance2() {
+    long start = System.currentTimeMillis();
+    for (int i = 0; i &lt; 400000; i++)
+        map.get(String.valueOf(i));
+    long end = System.currentTimeMillis();
+    System.out.println(&quot;get: it costs &quot; + (end - start) + &quot; ms&quot;);
+}
+
+public static void main(String[] args) throws InterruptedException {
+    long start = System.currentTimeMillis();
+    final CountDownLatch cdLatch = new CountDownLatch(4);
+    for (int i = 0; i &lt; 4; i++) {
+        final int finalI = i;
+        new Thread(new Runnable() {
+            public void run() {
+                CompareConcurrentHashMap.putPerformance(100000 * finalI, 100000);
+                cdLatch.countDown();
+            }
+        }).start();
+    }
+    cdLatch.await();
+    long end = System.currentTimeMillis();
+    System.out.println(&quot;put: it costs &quot; + (end - start) + &quot; ms&quot;);
+    CompareConcurrentHashMap.getPerformance2();
+}
+}
+`
+</code></pre><p>程序运行多次后取平均值，结果如下：</p>
+<p><img src="http://images2015.cnblogs.com/blog/764863/201606/764863-20160620210413115-733159871.png" alt=""></p>
+<p>【引入扩展】</p>
+<p><code>transient</code> :类型修饰符，只能用来修饰字段。用transient关键字标记的成员变量不参与序列化过程。</p>
+<p><code>volatile</code> :volatile也是变量修饰符，只能用来修饰变量。volatile修饰的成员变量在每次被线程访问时，都强迫从共享内存中重读该成员变量的值。而且，当成员变量发生变化时，强迫线程将变化值回写到共享内存。这样在任何时刻，两个不同的线程总是看到某个成员变量的同一个值。</p>
+<p>【参考资料】</p>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html" target="_blank" rel="external">http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html</a></p>
+<p><a href="http://blog.csdn.net/wangxiaotongfan/article/details/52074160" target="_blank" rel="external">http://blog.csdn.net/wangxiaotongfan/article/details/52074160</a></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/02/07/java基础/concurrentmap/" data-id="ciyv8qxws000v6odo9u8axhk7" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/集合/">集合</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+    
+<ul id="article-nav" class="nav nav-pills nav-justified">
+  
+  <li role="presentation">
+    <a href="/2017/01/09/linux/vmvare网络/" id="article-nav-older" class="article-nav-link-wrap">
+      <i class="fa fa-chevron-left pull-left"></i>
+      <span class="article-nav-link-title">VMware虚拟机提供的桥接、NAT和主机模式的区别</span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+
+  
+</article>
+
+
+<section id="comments">
+<!-- ��˵���ۿ� start -->
+<div class="ds-thread" data-thread-key="post-java基础/concurrentmap" data-title="java 8中对ConcurrentHashMap的改进" data-url="http://yoursite.com/2017/02/07/java基础/concurrentmap/"></div>
+<!-- ��˵���ۿ� end -->
+<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:'andone1cc'};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+<!-- ��˵����JS���� end -->
+</section>
+
+
+
+        </div>
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          
+  <div class="sidebar-module sidebar-module-inset">
+  <h4>About</h4>
+  <p><em>青岛大学   计算机</em><br /> Algorithm JAVA C/C++ Python <br />有些事不是看到希望了才去坚持,而是坚持了才会看到希望..</p>
+
+</div>
+
+
+  
+  <div class="sidebar-module">
+    <h4>Categories</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">17</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/LINUX/">LINUX</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">9</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Tags</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/linux/">linux</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/集合/">集合</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Archives</h4>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">二月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">一月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+  </div>
+
+
+
+  
+  <div class="sidebar-module">
+    <h4>Recents</h4>
+    <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2017/02/07/java基础/concurrentmap/">java 8中对ConcurrentHashMap的改进</a>
+        </li>
+      
+        <li>
+          <a href="/2017/01/09/linux/vmvare网络/">VMware虚拟机提供的桥接、NAT和主机模式的区别</a>
+        </li>
+      
+        <li>
+          <a href="/2016/12/13/java高级/hibernate和mybatis总结/">Hibernate和MyBatis学习总结</a>
+        </li>
+      
+        <li>
+          <a href="/2016/12/07/java高级/struts2和springmvc总结/">struts2和springmvc学习总结</a>
+        </li>
+      
+        <li>
+          <a href="/2016/11/29/java基础/Hashmap排序/">如何对HashMap按键值排序</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+        </div>
+    </div>
+  </div>
+  <footer class="blog-footer">
+  <div class="container">
+    <div id="footer-info" class="inner">
+      &copy; 2017 QDU-scc<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>
