@@ -18,7 +18,7 @@
 <meta property="og:image" content="http://a4.qpic.cn/psb?/V12DoSDy3E1yI8/rYR*2dJm8jWoUQovKz9UetN0yJGOdxTzvDDgEgcT6PE!/m/dB8BAAAAAAAAnull&bo=fgIWAgAAAAADB0o!&rf=photolist&t=5">
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/Q1C1tuBPs67Jh9cf9WvCVuE81v4B9TH5w9YE1zUrIw8!/m/dLIAAAAAAAAAnull&bo=nQLJAQAAAAADB3U!&rf=photolist&t=5">
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/oitk7ixdGv3LsgETO0K9vyaJMa5AoaEI6daqZmxP3cA!/m/dLIAAAAAAAAAnull&bo=6gOAAgAAAAADB0k!&rf=photolist&t=5">
-<meta property="og:updated_time" content="2017-03-02T15:12:46.101Z">
+<meta property="og:updated_time" content="2017-03-02T15:20:59.541Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——spark shuffle过程">
 <meta name="twitter:description" content="MapReduce中的shuffle机制在MapReduce框架中，shuffle是连接Map和Reduce之间的桥梁，Map的输出要用到Reduce中必须经过shuffle这个环节，shuffle的性能高低直接影响了整个程序的性能和吞吐量。">
@@ -134,7 +134,7 @@
 <p>– <code>Shuffle Read</code>：reduce task就会从上一个stage的所有task所在的机器上寻找属于自己的那些分区文件，这样就可以保证每一个key所对应的value都会汇聚到同一个节点上去处理和聚合。</p>
 <h4 id="3-Hash-Based-Shuffle–普通机制-合并机制"><a href="#3-Hash-Based-Shuffle–普通机制-合并机制" class="headerlink" title="3.Hash-Based Shuffle–普通机制||合并机制"></a><font color="orange"><b>3.Hash-Based Shuffle–普通机制||合并机制</b></font></h4><font color="red">HashShuffle普通机制</font>
 
-<p><img src="http://a4.qpic.cn/psb?/V12DoSDy3E1yI8/SwpH6afCodTx5cMxRA4mxAyeHtpiw7Lv.byJG4uCeXQ!/m/dB8BAAAAAAAAnull&amp;bo=GwOaAQAAAAADB6E!&amp;rf=photolist&amp;t=5" alt=""></p>
+<p><img src="http://a4.qpic.cn/psb?/V12DoSDy3E1yI8/SwpH6afCodTx5cMxRA4mxAyeHtpiw7Lv.byJG4uCeXQ!/m/dB8BAAAAAAAAnull&bo=GwOaAQAAAAADB6E!&rf=photolist&t=5" width="600" height="400"></p>
 <p><code>hashshuffle会产生m*r个磁盘小文件  m:maptask的个数  r:reducetask的个数</code></p>
 <p>如果m=1000,r=1000，磁盘小文件数就是100w。</p>
 <p>磁盘小文件过多会有什么问题？</p>
@@ -143,22 +143,23 @@
 <p>jvm中对象过多，对象存储在堆内存中，会引起GC OOM等一系列问题。</p>
 <font color="red">HashShuffle合并机制（针对上述情况的优化）</font>
 
-<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/YVF0VqKD8Pvs*s3jdM.0bz2DXieJkBdBToY6xjJcaBM!/m/dPYAAAAAAAAAnull&amp;bo=EwOMAQAAAAADB78!&amp;rf=photolist&amp;t=5" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/YVF0VqKD8Pvs*s3jdM.0bz2DXieJkBdBToY6xjJcaBM!/m/dPYAAAAAAAAAnull&bo=EwOMAQAAAAADB78!&rf=photolist&t=5" width="600" height="400"></p>
 <p>shuffle file group: task2会复用task1的小文件</p>
 <p>磁盘小文件的数量为：core * reduce的个数</p>
 <h4 id="4-SortShuffle–普通运行机制-bypass运行机制"><a href="#4-SortShuffle–普通运行机制-bypass运行机制" class="headerlink" title="4.SortShuffle–普通运行机制|| bypass运行机制"></a><font color="orange"><b>4.SortShuffle–普通运行机制|| bypass运行机制</b></font></h4><font color="red">SortShuffle–普通机制(排序)</font>
 
-<p><img src="http://a4.qpic.cn/psb?/V12DoSDy3E1yI8/rYR*2dJm8jWoUQovKz9UetN0yJGOdxTzvDDgEgcT6PE!/m/dB8BAAAAAAAAnull&amp;bo=fgIWAgAAAAADB0o!&amp;rf=photolist&amp;t=5" alt=""></p>
+
+<p><img src="http://a4.qpic.cn/psb?/V12DoSDy3E1yI8/rYR*2dJm8jWoUQovKz9UetN0yJGOdxTzvDDgEgcT6PE!/m/dB8BAAAAAAAAnull&bo=fgIWAgAAAAADB0o!&rf=photolist&t=5" width="600" height="400"></p>
 <p>【流程描述】：</p>
 <p>1.map task 计算的结果一条一条的写入内存的数据结构里面去，内存的数据结构初始大小是5M，如果现在内存数据结构的大小超过5M（比如5.01M，它会再次申请5.01*2-5=0.02M的内存，如果现在有空闲的内存就不会溢写，如果没有空闲的空间供它使用，就会发生溢写，在溢写之前会将内存数据结构中的额数据进行排序，排序完成之后分批写入到磁盘，每一批1W条数据，写入磁盘的时候使用了buffer（加速写磁盘的速度)map task 执行完成后，溢写到磁盘上的磁盘小文件会合并为一个大的文件，同时还会创建一个索引（就是这个大文件的一个目录）</p>
 <p>2.reduce task 来数据之前，首先解析这个索引文件,然后拉取大文件中相应的数据</p>
 <font color="red">SortShuffle–bypass机制(不排序)</font>
 
-<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/Q1C1tuBPs67Jh9cf9WvCVuE81v4B9TH5w9YE1zUrIw8!/m/dLIAAAAAAAAAnull&amp;bo=nQLJAQAAAAADB3U!&amp;rf=photolist&amp;t=5" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/Q1C1tuBPs67Jh9cf9WvCVuE81v4B9TH5w9YE1zUrIw8!/m/dLIAAAAAAAAAnull&bo=nQLJAQAAAAADB3U!&rf=photolist&t=5" width="600" height="400"></p>
 <p><code>注意</code>：shuffle reduce task的数量小于spark.shuffle.sort.bypassMergeThreshold参数的值触发</p>
 <h4 id="5-问题：在reduce-task如何去拉取大文件中相应的数据（shuffle-read）"><a href="#5-问题：在reduce-task如何去拉取大文件中相应的数据（shuffle-read）" class="headerlink" title="5.问题：在reduce task如何去拉取大文件中相应的数据（shuffle read）?"></a><font color="orange"><b>5.问题：在reduce task如何去拉取大文件中相应的数据（shuffle read）?</b></font></h4><p><code>MapOutputTracker</code>–追踪磁盘小文件的位置</p>
 <p>shuffle read过程如何去拉取磁盘中小文件借助于MapOutputTracker</p>
-<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/oitk7ixdGv3LsgETO0K9vyaJMa5AoaEI6daqZmxP3cA!/m/dLIAAAAAAAAAnull&amp;bo=6gOAAgAAAAADB0k!&amp;rf=photolist&amp;t=5" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/oitk7ixdGv3LsgETO0K9vyaJMa5AoaEI6daqZmxP3cA!/m/dLIAAAAAAAAAnull&bo=6gOAAgAAAAADB0k!&rf=photolist&t=5" width="600" height="400"></p>
 <p>【流程描述】：</p>
 <p>map task: 所在的Executor中的MapOutPutTrackcerSlaver向Driver中的DAGScheduler对象里面的MapOutPutTrackcerMaster汇报task的执行情况，结果封装到一个map status(磁盘小文件的位置)</p>
 <p>reduce task: 执行之前先向Driver获取磁盘小文件的位置，然后通过ConnectionManager与对应的Executor建立连接，借助BlockTransferService来拉取数据</p>
