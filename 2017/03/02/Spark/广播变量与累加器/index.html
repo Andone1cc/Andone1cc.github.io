@@ -11,7 +11,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/03/02/Spark/广播变量与累加器/index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="一、Spark 广播变量1.引入我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。">
-<meta property="og:updated_time" content="2017-03-02T12:47:36.192Z">
+<meta property="og:updated_time" content="2017-03-02T13:15:13.751Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——广播变量与累加器">
 <meta name="twitter:description" content="一、Spark 广播变量1.引入我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。">
@@ -109,18 +109,18 @@
 
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="一、Spark-广播变量"><a href="#一、Spark-广播变量" class="headerlink" title="一、Spark 广播变量"></a>一、Spark 广播变量</h3><h4 id="1-引入"><a href="#1-引入" class="headerlink" title="1.引入"></a>1.引入</h4><p>我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。所以为了解决变量占用内存的问题，我们直接在executor层面保存一份变量即可。不用给每一个task都保存一份变量，只需要保存executor的个数那么多个。</p>
+        <h3 id="一、Spark-广播变量"><a href="#一、Spark-广播变量" class="headerlink" title="一、Spark 广播变量"></a>一、Spark 广播变量</h3><h4 id="1-引入"><a href="#1-引入" class="headerlink" title="1.引入"></a><b>1.引入</b></h4><p>我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。所以为了解决变量占用内存的问题，我们直接在executor层面保存一份变量即可。不用给每一个task都保存一份变量，只需要保存executor的个数那么多个。</p>
 <a id="more"></a>
-<h4 id="2-广播变量的原理"><a href="#2-广播变量的原理" class="headerlink" title="2.广播变量的原理"></a>2.广播变量的原理</h4><p>task在执行的时候如果使用到了广播变量，它会找本地管理广播变量的组件(<code>BlockManager</code>)去要，如果本地的BlockManager中没有广播变量，BlockManager会去Driver端(有一个BlockManagerMaster组件)去拉取广播变量。</p>
+<h4 id="2-广播变量的原理"><a href="#2-广播变量的原理" class="headerlink" title="2.广播变量的原理"></a><b>2.广播变量的原理</b></h4><p>task在执行的时候如果使用到了广播变量，它会找本地管理广播变量的组件(<code>BlockManager</code>)去要，如果本地的BlockManager中没有广播变量，BlockManager会去Driver端(有一个BlockManagerMaster组件)去拉取广播变量。</p>
 <p>广播变量不是Driver主动发给executor的，而是等到哪个task执行使用到了广播变量，根据需要去取，免得浪费资源。</p>
-<h4 id="3-使用流程"><a href="#3-使用流程" class="headerlink" title="3.使用流程"></a>3.使用流程</h4><p>Driver端：</p>
+<h4 id="3-使用流程"><a href="#3-使用流程" class="headerlink" title="3.使用流程"></a><b>3.使用流程</b></h4><p>Driver端：</p>
 <pre><code>val broadcast=sc.broatcast(变量) 广播的变量可以是基本类型和集合
 </code></pre><p>Executor端：</p>
 <pre><code>broadcast.value
 </code></pre><p>【注意事项】</p>
 <p>1.广播变量只能在Driver端定义，不能在Executor端定义。</p>
 <p>2.广播变量在Executor端不能修改。</p>
-<h4 id="4-广播变量-map实现join算子"><a href="#4-广播变量-map实现join算子" class="headerlink" title="4.广播变量+map实现join算子"></a>4.广播变量+map实现join算子</h4><p>因为join算子会产生shuffle,shuffle过程会有数据的移动,数据的读写I/O,占用过多的资源。所以我们在编写程序时尽量避免使用shuffle类的算子。</p>
+<h4 id="4-广播变量-map实现join算子"><a href="#4-广播变量-map实现join算子" class="headerlink" title="4.广播变量+map实现join算子"></a><b>4.广播变量+map实现join算子</b></h4><p>因为join算子会产生shuffle,shuffle过程会有数据的移动,数据的读写I/O,占用过多的资源。所以我们在编写程序时尽量避免使用shuffle类的算子。</p>
 <p>使用广播变量+map 实现join</p>
 <font color="red">适用场景：</font>
 
@@ -180,10 +180,10 @@ public class TestBroadCast {
 <pre><code>`id:1 name:zhangsan score:90
  id:2 name:lisi score:80
  id:3 name:wangwu score:89`
-</code></pre><h3 id="二、累加器"><a href="#二、累加器" class="headerlink" title="二、累加器"></a>二、累加器</h3><h4 id="1-什么是累加器？"><a href="#1-什么是累加器？" class="headerlink" title="1.什么是累加器？"></a>1.什么是累加器？</h4><p>累加器可以看成是一个集群规模级别的一个大变量。</p>
-<h4 id="2-累加器与广播变量比较"><a href="#2-累加器与广播变量比较" class="headerlink" title="2.累加器与广播变量比较"></a>2.累加器与广播变量比较</h4><p><code>累加器</code>是在Driver端创建，在Driver端读取，在Executor端操作(累加操作)，在Executor端是不能读取的。</p>
+</code></pre><h3 id="二、累加器"><a href="#二、累加器" class="headerlink" title="二、累加器"></a>二、累加器</h3><h4 id="1-什么是累加器？"><a href="#1-什么是累加器？" class="headerlink" title="1.什么是累加器？"></a><b>1.什么是累加器？</b></h4><p>累加器可以看成是一个集群规模级别的一个大变量。</p>
+<h4 id="2-累加器与广播变量比较"><a href="#2-累加器与广播变量比较" class="headerlink" title="2.累加器与广播变量比较"></a><b>2.累加器与广播变量比较</b></h4><p><code>累加器</code>是在Driver端创建，在Driver端读取，在Executor端操作(累加操作)，在Executor端是不能读取的。</p>
 <p><code>广播变量</code>是在Driver端创建，在Executor端读取，在Executor端不能修改。</p>
-<h4 id="3-利用累加器算文件的行数"><a href="#3-利用累加器算文件的行数" class="headerlink" title="3.利用累加器算文件的行数"></a>3.利用累加器算文件的行数</h4><p><b>[代码演示]</b></p>
+<h4 id="3-利用累加器算文件的行数"><a href="#3-利用累加器算文件的行数" class="headerlink" title="3.利用累加器算文件的行数"></a><b>3.利用累加器算文件的行数</b></h4><p><b>[代码演示]</b></p>
 <pre><code>`
 public class TestAccumulator {
     public static void main(String[] args) {
@@ -291,7 +291,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Categories</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">17</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/LINUX/">LINUX</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Spark/">Spark</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">9</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">17</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/LINUX/">LINUX</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Spark/">Spark</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">9</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
   </div>
 
 
@@ -299,7 +299,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Tags</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/Spark学习总结/">Spark学习总结</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/linux/">linux</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/栈和队列/">栈和队列</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/集合/">集合</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/Spark学习总结/">Spark学习总结</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/linux/">linux</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/栈和队列/">栈和队列</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/集合/">集合</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -307,7 +307,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Archives</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">三月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">二月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">一月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">三月 2017</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">二月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">一月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -316,6 +316,10 @@ var duoshuoQuery = {short_name:'andone1cc'};
   <div class="sidebar-module">
     <h4>Recents</h4>
     <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2017/03/02/Spark/spark高可用/">Spark学习笔记——spark配置高可用</a>
+        </li>
       
         <li>
           <a href="/2017/03/02/Spark/blockmanager/">Spark学习笔记——BlockManager组件</a>
@@ -331,10 +335,6 @@ var duoshuoQuery = {short_name:'andone1cc'};
       
         <li>
           <a href="/2017/02/07/java基础/concurrentmap/">java 8中对ConcurrentHashMap的改进</a>
-        </li>
-      
-        <li>
-          <a href="/2017/01/09/linux/vmvare网络/">VMware虚拟机提供的桥接、NAT和主机模式的区别</a>
         </li>
       
     </ul>

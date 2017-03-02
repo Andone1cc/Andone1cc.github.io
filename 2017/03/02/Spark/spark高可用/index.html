@@ -3,33 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>浅谈Java中的equals和== | Andone1cc</title>
+  <title>Spark学习笔记——spark配置高可用 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在初学java的时候,常遇到下面的代码:
-`1 String str1 = new String(&amp;quot;hello&amp;quot;);
- 2 String str2 = new String(&amp;quot;hello&amp;quot;);
- 3         
- 4 System.out.println(str1==str2); 
- 5 System.out.println(str1.equals(s">
+  <meta name="description" content="高可用集群的搭建方式搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="浅谈Java中的equals和==">
-<meta property="og:url" content="http://yoursite.com/2016/11/06/java基础/equals/index.html">
+<meta property="og:title" content="Spark学习笔记——spark配置高可用">
+<meta property="og:url" content="http://yoursite.com/2017/03/02/Spark/spark高可用/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="在初学java的时候,常遇到下面的代码:
-`1 String str1 = new String(&amp;quot;hello&amp;quot;);
- 2 String str2 = new String(&amp;quot;hello&amp;quot;);
- 3         
- 4 System.out.println(str1==str2); 
- 5 System.out.println(str1.equals(s">
-<meta property="og:updated_time" content="2016-10-30T03:33:32.124Z">
+<meta property="og:description" content="高可用集群的搭建方式搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。">
+<meta property="og:updated_time" content="2017-03-02T14:01:55.138Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="浅谈Java中的equals和==">
-<meta name="twitter:description" content="在初学java的时候,常遇到下面的代码:
-`1 String str1 = new String(&amp;quot;hello&amp;quot;);
- 2 String str2 = new String(&amp;quot;hello&amp;quot;);
- 3         
- 4 System.out.println(str1==str2); 
- 5 System.out.println(str1.equals(s">
+<meta name="twitter:title" content="Spark学习笔记——spark配置高可用">
+<meta name="twitter:description" content="高可用集群的搭建方式搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -94,13 +79,13 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          <article id="post-java基础/equals" class="article article-type-post" itemscope itemprop="blogPost">
+          <article id="post-Spark/spark高可用" class="article article-type-post" itemscope itemprop="blogPost">
 
   <header class="article-header">
     
   
     <h1 class="article-title" itemprop="name">
-      浅谈Java中的equals和==
+      Spark学习笔记——spark配置高可用
     </h1>
   
 
@@ -109,13 +94,13 @@
 
   <div class="article-meta">
     <div class="article-datetime">
-  <a href="/2016/11/06/java基础/equals/" class="article-date"><time datetime="2016-11-06T14:17:46.586Z" itemprop="datePublished">2016-11-06</time></a>
+  <a href="/2017/03/02/Spark/spark高可用/" class="article-date"><time datetime="2017-03-02T13:15:20.638Z" itemprop="datePublished">2017-03-02</time></a>
 </div>
 
     
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/JAVA/">JAVA</a>
+    <a class="article-category-link" href="/categories/Spark/">Spark</a>
   </div>
 
 
@@ -124,102 +109,23 @@
 
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在初学java的时候,常遇到下面的代码:</p>
-<pre><code>`1 String str1 = new String(&quot;hello&quot;);
- 2 String str2 = new String(&quot;hello&quot;);
- 3         
- 4 System.out.println(str1==str2); 
- 5 System.out.println(str1.equals(str2));`
-</code></pre><a id="more"></a>
-<p>为什么第四行和第五行的输出结果不一样呢？==和equals方法之间的区别是什么？下面我们就先来了解一下==和equals方法的区别之处。</p>
-<h3 id="一、关系操作符”-”到底比较的是什么？"><a href="#一、关系操作符”-”到底比较的是什么？" class="headerlink" title="一、关系操作符”==”到底比较的是什么？"></a>一、关系操作符”==”到底比较的是什么？</h3><blockquote>
-<p>下面这句话是摘自<code>《Java编程思想》</code>一书中的原话：</p>
-<p>“关系操作符生成的是一个boolean结果，它们计算的是操作数的值之间的关系”。</p>
-</blockquote>
-<p>这句话看似简单，理解起来还是需要细细体会的。说的简单点，==就是用来比较值是否相等。下面先看几个例子：</p>
-<pre><code>`public static void main(String[] args) {
-    // TODO Auto-generated method stub
+        <h3 id="高可用集群的搭建方式"><a href="#高可用集群的搭建方式" class="headerlink" title="高可用集群的搭建方式"></a>高可用集群的搭建方式</h3><p>搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。</p>
+<a id="more"></a>
+<h4 id="zookeeper的作用"><a href="#zookeeper的作用" class="headerlink" title="zookeeper的作用"></a><b>zookeeper的作用</b></h4><p>1、托管主节点的信息，HDFS(namenode),YARN(resourcemanager)。</p>
+<p>2、自动选举leader的功能。</p>
+<p>spark中master存在单点故障，zookeeper里面托管的是master的信息。</p>
+<p>master的信息包含:Worker的信息(HashSet),Driver的信息(ArrayBuffer),Application的信息(ArrayBuffer)。</p>
+<p>如果spark集群中某一台alive状态的master挂掉了，另外一个原先处于standb状态的master会基于zookeeper托管的信息重新恢复，变为alive状态。</p>
+<font color="red"><b>基于文件系统和基于zookeeper搭建spark高可用有什么区别？</b></font>
 
-    int n=3;
-    int m=3;
+<p>基于文件系统，当master挂掉之后，需要手动启动一个master,新的master会基于文件系统上面的信息恢复。</p>
+<p>基于zookeeper,当一个master挂掉了，他会自动选取一个新的master作为alive状态的master,选举出来后，再基于zookeeper保存的信息恢复。</p>
+<font color="red"><b>1.master主备切换时间能提交一个新的application到集群中运行么？</b></font>
 
-    System.out.println(n==m);
+<p>不能，因为在master主备切换的过程，master是无法为当前Application分配资源</p>
+<font color="red"><b>2.主备切换之前已经有application在运行了，主备切换的时候有影响么？</b></font>
 
-    String str = new String(&quot;hello&quot;);
-    String str1 = new String(&quot;hello&quot;);
-    String str2 = new String(&quot;hello&quot;);
-
-    System.out.println(str1==str2);
-
-    str1 = str;
-    str2 = str;
-    System.out.println(str1==str2);
-}`
-</code></pre><p>输出结果为： <code>true  false  true</code></p>
-<p>n==m结果为true,这个容易理解,变量n和变量m存储的值都为3,肯定是相等的。而为什么str1和str2两次比较的结果不同？要理解这个其实只需要理解基本数据类型变量和非基本数据类型变量的区别。</p>
-<p>在java中有8种基本数据类型：</p>
-<p><code>浮点型：float(4 byte), double(8 byte)</code></p>
-<p><code>整型：byte(1 byte), short(2 byte), int(4 byte) , long(8 byte)</code></p>
-<p><code>字符型: char(2 byte)</code></p>
-<p><code>布尔型: boolean(JVM规范没有明确规定其所占的空间大小，仅规定其只能够取字面值&quot;true&quot;和&quot;false&quot;)</code></p>
-<p>对于这8种基本数据类型的变量，变量直接存储的是“值”，因此在用关系操作符==来进行比较时，比较的就是 “值” 本身。要注意浮点型和整型都是有符号类型的，而char是无符号类型的（char类型取值范围为0~2^16-1)。</p>
-<p>也就是说比如：</p>
-<p>　　int n=3;</p>
-<p>　　int m=3;　</p>
-<p>　　变量n和变量m都是直接存储的”3”这个数值，所以用==比较的时候结果是true。</p>
-<p>而对于非基本数据类型的变量，在一些书籍中称作为 引用类型的变量。比如上面的str1就是引用类型的变量，引用类型的变量存储的并不是 “值”本身，而是于其关联的对象在内存中的地址。比如下面这行代码：</p>
-<p>　　String str1;</p>
-<p>　　这句话声明了一个引用类型的变量，此时它并没有和任何对象关联。</p>
-<p>而通过new String(“hello”)来产生一个对象（也称作为类String的一个实例），并将这个对象和str1进行绑定：</p>
-<p>　　str1= new String(“hello”);</p>
-<p>　　那么str1指向了一个对象（很多地方也把str1称作为对象的引用），此时变量str1中存储的是它指向的对象在内存中的存储地址，并不是“值”本身，也就是说并不是直接存储的字符串”hello”。这里面的引用和C/C++中的指针很类似。</p>
-<p>因此在用==对str1和str2进行第一次比较时，得到的结果是false。因此它们分别指向的是不同的对象，也就是说它们实际存储的内存地址不同。</p>
-<p>而在第二次比较时，都让str1和str2指向了str指向的对象，那么得到的结果毫无疑问是true。</p>
-<h3 id="二、equals比较的又是什么？"><a href="#二、equals比较的又是什么？" class="headerlink" title="二、equals比较的又是什么？"></a>二、equals比较的又是什么？</h3><p>equals方法是基类Object中的方法，因此对于所有的继承于Object的类都会有该方法。为了更直观地理解equals方法的作用，直接看<code>Object类中equals方法的实现</code>。</p>
-<pre><code>` public boolean equals(Object obj) {
-   return (this == obj);
- }`
-</code></pre><p>很显然，在Object类中，equals方法是用来比较两个对象的引用是否相等，即是否指向同一个对象。</p>
-<p>为什么下面的代码输出会是true呢？</p>
-<pre><code>` public static void main(String[] args) {
-    // TODO Auto-generated method stub
-
-    String str1 = new String(&quot;hello&quot;);
-    String str2 = new String(&quot;hello&quot;);
-
-    System.out.println(str1.equals(str2));
-}`
-</code></pre><p>要知道究竟，可以看一下<code>String类的equals方法的具体实现</code>.</p>
-<pre><code>` public boolean equals(Object anObject) {
-    if (this == anObject) {
-        return true;
-    }
-    if (anObject instanceof String) {
-        String anotherString = (String) anObject;
-        int n = value.length;
-        if (n == anotherString.value.length) {
-            char v1[] = value;
-            char v2[] = anotherString.value;
-            int i = 0;
-            while (n-- != 0) {
-                if (v1[i] != v2[i])
-                        return false;
-                i++;
-            }
-            return true;
-        }
-    }
-    return false;
-}`
-</code></pre><p>可以看出，<code>String类对equals方法进行了重写，用来比较指向的字符串对象所存储的字符串是否相等。</code></p>
-<p>其他的一些类诸如Double，Date，Integer等，都对equals方法进行了重写用来比较指向的对象所存储的内容是否相等。</p>
-<p><br></p>
-<p>【总结一下】</p>
-<p>1）对于==，如果作用于基本数据类型的变量，则直接比较其存储的 “值”是否相等；</p>
-<p>   如果作用于引用类型的变量，则比较的是所指向的对象的地址。</p>
-<p>2）对于equals方法，注意：equals方法不能作用于基本数据类型的变量。</p>
-<p>   如果没有对equals方法进行重写，则比较的是引用类型的变量所指向的对象的地址；</p>
-<p>   诸如String、Date等类对equals方法进行了重写的话，比较的是所指向的对象的内容。</p>
+<p>没有影响，因为Spark是粗粒度的资源调度，在application运行之前已经分配好资源了。</p>
 
       
     </div>
@@ -230,12 +136,12 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/11/06/java基础/equals/" data-id="cizsdvkf5000f78do9en559iu" class="article-share-link">
+      <a data-url="http://yoursite.com/2017/03/02/Spark/spark高可用/" data-id="cizsgqoki00001gdoxkg5thh5" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java基础/">java基础</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark学习总结/">Spark学习总结</a></li></ul>
 
 
     </footer>
@@ -245,19 +151,12 @@
 <ul id="article-nav" class="nav nav-pills nav-justified">
   
   <li role="presentation">
-    <a href="/2016/11/06/java基础/内部l类/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2017/03/02/Spark/blockmanager/" id="article-nav-older" class="article-nav-link-wrap">
       <i class="fa fa-chevron-left pull-left"></i>
-      <span class="article-nav-link-title">Java内部类详解</span>
+      <span class="article-nav-link-title">Spark学习笔记——BlockManager组件</span>
     </a>
   </li>
   
-  
-  <li role="presentation">
-    <a href="/2016/11/06/java基础/final关键字/" id="article-nav-newer" class="article-nav-link-wrap">
-      <span class="article-nav-link-title">浅析Java中的final关键字</span>
-      <i class="fa fa-chevron-right pull-right"></i>
-    </a>
-  </li>
   
 </ul>
 
@@ -268,7 +167,7 @@
 
 <section id="comments">
 <!-- ��˵���ۿ� start -->
-<div class="ds-thread" data-thread-key="post-java基础/equals" data-title="浅谈Java中的equals和==" data-url="http://yoursite.com/2016/11/06/java基础/equals/"></div>
+<div class="ds-thread" data-thread-key="post-Spark/spark高可用" data-title="Spark学习笔记——spark配置高可用" data-url="http://yoursite.com/2017/03/02/Spark/spark高可用/"></div>
 <!-- ��˵���ۿ� end -->
 <!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
 <script type="text/javascript">

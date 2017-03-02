@@ -14,7 +14,7 @@
 <meta property="og:description" content="BlockManagerBlockManager是一个块管理者。
 每一个Eexcutor中都会有一个BlockManger。">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/m/dCABAAAAAAAAnull&bo=lwTMAQAAAAADB3w!&rf=photolist&t=5">
-<meta property="og:updated_time" content="2017-03-02T13:10:27.187Z">
+<meta property="og:updated_time" content="2017-03-02T13:14:15.788Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——BlockManager组件">
 <meta name="twitter:description" content="BlockManagerBlockManager是一个块管理者。
@@ -119,15 +119,15 @@
 <a id="more"></a>
 <p><b>[如果所示]</b></p>
 <p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/m/dCABAAAAAAAAnull&amp;bo=lwTMAQAAAAADB3w!&amp;rf=photolist&amp;t=5" alt=""></p>
-<h4 id="四大对象"><a href="#四大对象" class="headerlink" title="四大对象"></a>四大对象</h4><p><font color="green">1.ConnectionManager</font>：负责与其他的BlockManger连接。</p>
+<h4 id="四大对象"><a href="#四大对象" class="headerlink" title="四大对象"></a><b>四大对象</b></h4><p><font color="green">1.ConnectionManager</font>：负责与其他的BlockManger连接。</p>
 <p><font color="green">2.BlockTransferService</font>：与其他的BlockManger连接成功后负责进行数据的传输。</p>
 <p><font color="green">3.MemoryStore</font>：负责管理内存中的数据。</p>
 <p><font color="green">4.DiskStore</font>：负责管理磁盘上的数据。</p>
-<h4 id="详述广播变量的使用流程"><a href="#详述广播变量的使用流程" class="headerlink" title="详述广播变量的使用流程"></a>详述广播变量的使用流程</h4><p>1、task如果在执行的时候使用到了广播变量，task会去BlockManager中获取广播变量。</p>
+<h4 id="详述广播变量的使用流程"><a href="#详述广播变量的使用流程" class="headerlink" title="详述广播变量的使用流程"></a><b>详述广播变量的使用流程</b></h4><p>1、task如果在执行的时候使用到了广播变量，task会去BlockManager中获取广播变量。</p>
 <p>2、如果BlockManager中没有广播变量，task所在的Executor中的BlockManager中的ConnectionManager会连接Driver端的BlockManagerMaster中的ConnectionManager。</p>
 <p>3、ConnectionManager连接成功后，由BlockTransferService负责拉取数据。</p>
 <p>4、数据拉取过来后，由Memory Store负责存储到内存中，task就可以使用广播变量了。</p>
-<h4 id="BlockManager的管理范围"><a href="#BlockManager的管理范围" class="headerlink" title="BlockManager的管理范围"></a>BlockManager的管理范围</h4><p>1、RDD的持久化数据</p>
+<h4 id="BlockManager的管理范围"><a href="#BlockManager的管理范围" class="headerlink" title="BlockManager的管理范围"></a><b>BlockManager的管理范围</b></h4><p>1、RDD的持久化数据</p>
 <p>2、广播变量</p>
 <p>3、shuffle file(write过程产生磁盘小文件，由disk store存储，read过程读取小文件)</p>
 
@@ -161,6 +161,13 @@
     </a>
   </li>
   
+  
+  <li role="presentation">
+    <a href="/2017/03/02/Spark/spark高可用/" id="article-nav-newer" class="article-nav-link-wrap">
+      <span class="article-nav-link-title">Spark学习笔记——spark配置高可用</span>
+      <i class="fa fa-chevron-right pull-right"></i>
+    </a>
+  </li>
   
 </ul>
 
@@ -203,7 +210,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Categories</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">17</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/LINUX/">LINUX</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Spark/">Spark</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">9</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Algorithm/">Algorithm</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/JAVA/">JAVA</a><span class="sidebar-module-list-count">17</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/LINUX/">LINUX</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Spark/">Spark</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/java高级/">java高级</a><span class="sidebar-module-list-count">9</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li></ul>
   </div>
 
 
@@ -211,7 +218,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Tags</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/Spark学习总结/">Spark学习总结</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/linux/">linux</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/栈和队列/">栈和队列</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/集合/">集合</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/JVM的核心机制/">JVM的核心机制</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/SSH/">SSH</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/Spark学习总结/">Spark学习总结</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/String/">String</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/ajax/">ajax</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/java基础/">java基础</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/linux/">linux</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/二叉树/">二叉树</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/栈和队列/">栈和队列</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/框架/">框架</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/设计模式/">设计模式</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/tags/集合/">集合</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -219,7 +226,7 @@ var duoshuoQuery = {short_name:'andone1cc'};
   
   <div class="sidebar-module">
     <h4>Archives</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">三月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">二月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">一月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">三月 2017</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">二月 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">一月 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">十二月 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">十一月 2016</a><span class="sidebar-module-list-count">29</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">十月 2016</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -228,6 +235,10 @@ var duoshuoQuery = {short_name:'andone1cc'};
   <div class="sidebar-module">
     <h4>Recents</h4>
     <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2017/03/02/Spark/spark高可用/">Spark学习笔记——spark配置高可用</a>
+        </li>
       
         <li>
           <a href="/2017/03/02/Spark/blockmanager/">Spark学习笔记——BlockManager组件</a>
@@ -243,10 +254,6 @@ var duoshuoQuery = {short_name:'andone1cc'};
       
         <li>
           <a href="/2017/02/07/java基础/concurrentmap/">java 8中对ConcurrentHashMap的改进</a>
-        </li>
-      
-        <li>
-          <a href="/2017/01/09/linux/vmvare网络/">VMware虚拟机提供的桥接、NAT和主机模式的区别</a>
         </li>
       
     </ul>
