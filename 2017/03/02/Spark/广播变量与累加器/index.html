@@ -11,10 +11,13 @@
 <meta property="og:url" content="http://yoursite.com/2017/03/02/Spark/广播变量与累加器/index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="一、Spark 广播变量1.引入我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。">
-<meta property="og:updated_time" content="2017-03-02T13:15:13.751Z">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1832028-c6cec94e61b298fe?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1832028-dc92297e1cbc8533?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-03-02T14:15:13.817Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——广播变量与累加器">
 <meta name="twitter:description" content="一、Spark 广播变量1.引入我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1832028-c6cec94e61b298fe?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -211,7 +214,80 @@ public class TestAccumulator {
     }
 }
 `
-</code></pre>
+</code></pre><h4 id="4-累加器的错误用法"><a href="#4-累加器的错误用法" class="headerlink" title="4.累加器的错误用法"></a><b>4.累加器的错误用法</b></h4><pre><code>`
+val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
+
+val data = sc.parallelize(1 to 10)
+
+//用accumulator统计偶数出现的次数，同时偶数返回0，奇数返回1
+
+val newData = data.map{x =&gt; {
+
+if(x%2 == 0){
+
+accum += 1
+
+0
+
+}else 1
+
+}}
+
+//使用action操作触发执行
+
+newData.count
+
+//此时accum的值为5，是我们要的结果
+
+accum.value
+
+//继续操作，查看刚才变动的数据,foreach也是action操作
+
+newData.foreach(println)
+
+//上个步骤没有进行累计器操作，可是累加器此时的结果已经是10了
+
+//这并不是我们想要的结果
+
+accum.value
+`
+</code></pre><p><b>原因分析</b></p>
+<p>官方对这个问题的解释如下描述:</p>
+<blockquote>
+<p>For accumulator updates performed inside actions only, Spark guarantees that each task’s update to the accumulator will only be applied once, i.e. restarted tasks will not update the value. In transformations, users should be aware of that each task’s update may be applied more than once if tasks or job stages are re-executed.</p>
+</blockquote>
+<p>我们都知道，spark中的一系列transform操作会构成一串长的任务链，此时需要通过一个action操作来触发，accumulator也是一样。因此在一个action操作之前，你调用value方法查看其数值，肯定是没有任何变化的。</p>
+<p>所以在第一次count(action操作)之后，我们发现累加器的数值变成了5，是我们要的答案。</p>
+<p>之后又对新产生的的newData进行了一次foreach(action操作)，其实这个时候又执行了一次map(transform)操作，所以累加器又增加了5。最终获得的结果变成了10。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1832028-c6cec94e61b298fe?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><b>解决办法</b></p>
+<p>看了上面的分析，大家都有这种印象了，那就是使用累加器的过程中只能使用一次action的操作才能保证结果的准确性。</p>
+<p>事实上，还是有解决方案的，只要将任务之间的依赖关系切断就可以了。什么方法有这种功能呢？你们肯定都想到了，cache，persist。调用这个方法的时候会将之前的依赖切除，后续的累加器就不会再被之前的transfrom操作影响到了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1832028-dc92297e1cbc8533?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<pre><code>`
+val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
+
+val data = sc.parallelize(1 to 10)
+
+//代码和上方相同
+
+val newData = data.map{x =&gt; {...}}
+
+//使用cache缓存数据，切断依赖。
+
+newData.cache.count
+
+//此时accum的值为5
+
+accum.value
+
+newData.foreach(println)
+
+//此时的accum依旧是5
+
+accum.value    
+`
+</code></pre><font color="red">使用Accumulator时，为了保证准确性，只使用一次action操作。如果需要使用多次则使用cache或persist操作切断依赖。</font>
       
     </div>
 
