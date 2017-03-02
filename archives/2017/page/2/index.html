@@ -3,23 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Spark学习笔记——BlockManager组件 | Andone1cc</title>
+  <title>Archives: 2017 | Andone1cc</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="BlockManagerBlockManager是一个块管理者。
-每一个Eexcutor中都会有一个BlockManger。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Spark学习笔记——BlockManager组件">
-<meta property="og:url" content="http://yoursite.com/2017/03/02/Spark/blockmanager/index.html">
+  <meta name="description" content="一个有梦想的CS小白">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Andone1cc">
+<meta property="og:url" content="http://yoursite.com/archives/2017/page/2/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="BlockManagerBlockManager是一个块管理者。
-每一个Eexcutor中都会有一个BlockManger。">
-<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/m/dCABAAAAAAAAnull&bo=lwTMAQAAAAADB3w!&rf=photolist&t=5">
-<meta property="og:updated_time" content="2017-03-02T13:14:15.788Z">
+<meta property="og:description" content="一个有梦想的CS小白">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spark学习笔记——BlockManager组件">
-<meta name="twitter:description" content="BlockManagerBlockManager是一个块管理者。
-每一个Eexcutor中都会有一个BlockManger。">
-<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/m/dCABAAAAAAAAnull&bo=lwTMAQAAAAADB3w!&rf=photolist&t=5">
+<meta name="twitter:title" content="Andone1cc">
+<meta name="twitter:description" content="一个有梦想的CS小白">
   
     <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
   
@@ -58,7 +52,7 @@
           <li><a class=""
                  href="/index.html">Home</a></li>
         
-          <li><a class=""
+          <li><a class="active"
                  href="/archives/">Archives</a></li>
         
       </ul>
@@ -84,116 +78,45 @@
 
     <div class="row">
         <div class="col-sm-8 blog-main">
-          <article id="post-Spark/blockmanager" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
+          
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2017" class="archive-year">2017</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <header class="archive-article-header">
     
   
-    <h1 class="article-title" itemprop="name">
-      Spark学习笔记——BlockManager组件
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2017/01/09/linux/vmvare网络/">VMware虚拟机提供的桥接、NAT和主机模式的区别</a>
     </h1>
   
 
 
-  </header>
-
-  <div class="article-meta">
     <div class="article-datetime">
-  <a href="/2017/03/02/Spark/blockmanager/" class="article-date"><time datetime="2017-03-02T12:46:43.154Z" itemprop="datePublished">2017-03-02</time></a>
+  <a href="/2017/01/09/linux/vmvare网络/" class="archive-article-date"><time datetime="2017-01-09T08:32:36.979Z" itemprop="datePublished">一月 9日</time></a>
 </div>
 
-    
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Spark/">Spark</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="BlockManager"><a href="#BlockManager" class="headerlink" title="BlockManager"></a>BlockManager</h3><p>BlockManager是一个块管理者。</p>
-<p>每一个Eexcutor中都会有一个BlockManger。</p>
-<a id="more"></a>
-<p><b>[如果所示]</b></p>
-<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/m/dCABAAAAAAAAnull&amp;bo=lwTMAQAAAAADB3w!&amp;rf=photolist&amp;t=5" alt=""></p>
-<h4 id="四大对象"><a href="#四大对象" class="headerlink" title="四大对象"></a><b>四大对象</b></h4><p><font color="green">1.ConnectionManager</font>：负责与其他的BlockManger连接。</p>
-<p><font color="green">2.BlockTransferService</font>：与其他的BlockManger连接成功后负责进行数据的传输。</p>
-<p><font color="green">3.MemoryStore</font>：负责管理内存中的数据。</p>
-<p><font color="green">4.DiskStore</font>：负责管理磁盘上的数据。</p>
-<h4 id="详述广播变量的使用流程"><a href="#详述广播变量的使用流程" class="headerlink" title="详述广播变量的使用流程"></a><b>详述广播变量的使用流程</b></h4><p>1、task如果在执行的时候使用到了广播变量，task会去BlockManager中获取广播变量。</p>
-<p>2、如果BlockManager中没有广播变量，task所在的Executor中的BlockManager中的ConnectionManager会连接Driver端的BlockManagerMaster中的ConnectionManager。</p>
-<p>3、ConnectionManager连接成功后，由BlockTransferService负责拉取数据。</p>
-<p>4、数据拉取过来后，由Memory Store负责存储到内存中，task就可以使用广播变量了。</p>
-<h4 id="BlockManager的管理范围"><a href="#BlockManager的管理范围" class="headerlink" title="BlockManager的管理范围"></a><b>BlockManager的管理范围</b></h4><p>1、RDD的持久化数据</p>
-<p>2、广播变量</p>
-<p>3、shuffle file(write过程产生磁盘小文件，由disk store存储，read过程读取小文件)</p>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/03/02/Spark/blockmanager/" data-id="cizseu6vi000018doz0xm3a06" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark学习总结/">Spark学习总结</a></li></ul>
-
-
-    </footer>
-  </div>
-  
-    
-<ul id="article-nav" class="nav nav-pills nav-justified">
-  
-  <li role="presentation">
-    <a href="/2017/03/02/Spark/广播变量与累加器/" id="article-nav-older" class="article-nav-link-wrap">
-      <i class="fa fa-chevron-left pull-left"></i>
-      <span class="article-nav-link-title">Spark学习笔记——广播变量与累加器</span>
-    </a>
-  </li>
-  
-  
-  <li role="presentation">
-    <a href="/2017/03/02/Spark/spark高可用/" id="article-nav-newer" class="article-nav-link-wrap">
-      <span class="article-nav-link-title">Spark学习笔记——spark配置高可用</span>
-      <i class="fa fa-chevron-right pull-right"></i>
-    </a>
-  </li>
-  
-</ul>
-
-
-  
+  </header>
 </article>
 
+  
+  
+    </div></section>
+  
 
-<section id="comments">
-<!-- ��˵���ۿ� start -->
-<div class="ds-thread" data-thread-key="post-Spark/blockmanager" data-title="Spark学习笔记——BlockManager组件" data-url="http://yoursite.com/2017/03/02/Spark/blockmanager/"></div>
-<!-- ��˵���ۿ� end -->
-<!-- ��˵����JS���� start (һ����ҳֻ������һ��) -->
-<script type="text/javascript">
-var duoshuoQuery = {short_name:'andone1cc'};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-     || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-  </script>
-<!-- ��˵����JS���� end -->
-</section>
+
+  <div id="page-nav">
+    <nav><ul class="pagination"><li><a class="page-prev" rel="prev" href="/archives/2017/"><i class="fa fa-chevron-left"></i> Prev</a></li><li><a class="page-number" href="/archives/2017/">1</a></li><li class="active"><span class="page-number">2</span></li><li class="disabled"><span class="page-next">Next <i class="fa fa-chevron-right"></i></a></li></ul></nav>
+  </div>
 
 
 
