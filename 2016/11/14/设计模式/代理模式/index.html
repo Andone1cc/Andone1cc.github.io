@@ -86,7 +86,7 @@
         <h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p>定义：给某个对象提供一个代理对象，并由代理对象控制对于原对象的访问，即客户不直接操控原对象，而是通过代理对象间接地操控原对象。</p>
 <a id="more"></a>
 <p><img src="http://i.imgur.com/oh3VMNs.gif" alt=""></p>
-<pre><code>                            代理模式UML图
+<pre><code>代理模式UML图
 </code></pre><p>在上图中：</p>
 <p>RealSubject 是原对象（本文把原对象称为”委托对象”），Proxy 是代理对象。’</p>
 <p>Subject 是委托对象和代理对象都共同实现的接口。</p>
@@ -152,15 +152,15 @@
 <pre><code>`//创建代理对象  
 static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler h)`
 </code></pre><p>这个静态函数的<code>第一个参数是类加载器对象（即哪个类加载器来加载这个代理类到 JVM 的方法区），第二个参数是接口（表明你这个代理类需要实现哪些接口），第三个参数是调用处理器类实例（指定代理类中具体要干什么）。</code>这个函数是 JDK 为了程序员方便创建代理对象而封装的一个函数，因此你调用newProxyInstance()时直接创建了代理对象（略去了创建代理类的代码）。其实他主要完成了以下几个工作：</p>
-<pre><code>    `static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler handler)
-    {
-        //1. 根据类加载器和接口创建代理类
-        Class clazz = Proxy.getProxyClass(loader, interfaces); 
-        //2. 获得代理类的带参数的构造函数
-        Constructor constructor = clazz.getConstructor(new Class[] { InvocationHandler.class });
-        //3. 创建代理对象，并制定调用处理器实例为参数传入
-        Interface Proxy = (Interface)constructor.newInstance(new Object[] {handler});
-    }`
+<pre><code>`static Object newProxyInstance(ClassLoader loader,Class&lt;?&gt;[] interfaces,InvocationHandler handler)
+{
+    //1. 根据类加载器和接口创建代理类
+    Class clazz = Proxy.getProxyClass(loader, interfaces); 
+    //2. 获得代理类的带参数的构造函数
+    Constructor constructor = clazz.getConstructor(new Class[] { InvocationHandler.class });
+    //3. 创建代理对象，并制定调用处理器实例为参数传入
+    Interface Proxy = (Interface)constructor.newInstance(new Object[] {handler});
+}`
 </code></pre><p>Proxy 类还有一些静态方法，比如：</p>
 <p>1.<code>InvocationHandler getInvocationHandler(Object proxy)</code>: 获得代理对象对应的调用处理器对象。</p>
 <p>2.<code>Class getProxyClass(ClassLoader loader, Class[] interfaces)</code>: 根据类加载器和实现的接口获得代理类。</p>

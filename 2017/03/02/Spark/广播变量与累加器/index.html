@@ -101,51 +101,7 @@
 <pre><code>一个RDD的数据量比较大，一个RDD的数据量比较小，适合用这种方式来取代join.
 如果两个RDD的数据量都特别的大，那么会造成executor进程的OOM.
 </code></pre><p><b>[代码演示]</b></p>
-<pre><code>```java
-public class TestBroadCast {
-     public static void main(String[] args) {
-         SparkConf conf = new SparkConf()
-                .setAppName(&quot;BroadCast&quot;)
-                .setMaster(&quot;local&quot;)
-                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        List&lt;Tuple2&lt;String, String&gt;&gt; nameList = Arrays.asList(
-                new Tuple2&lt;String, String&gt;(&quot;1&quot;, &quot;zhangsan&quot;),
-                new Tuple2&lt;String, String&gt;(&quot;2&quot;, &quot;lisi&quot;),
-                new Tuple2&lt;String, String&gt;(&quot;3&quot;, &quot;wangwu&quot;)
-        );
-        List&lt;Tuple2&lt;String, String&gt;&gt; scoreList = Arrays.asList(
-                new Tuple2&lt;String, String&gt;(&quot;1&quot;, &quot;90&quot;),
-                new Tuple2&lt;String, String&gt;(&quot;2&quot;, &quot;80&quot;),
-                new Tuple2&lt;String, String&gt;(&quot;3&quot;, &quot;89&quot;)
-        );
-       JavaPairRDD&lt;String, String&gt; nameRDD = sc.parallelizePairs(nameList);
-       JavaPairRDD&lt;String, String&gt; scoreRDD = sc.parallelizePair(scoreList);
-       List&lt;Tuple2&lt;String, String&gt;&gt; collect = nameRDD.collect();
-        Map&lt;String, String&gt; nameMap = new HashMap&lt;&gt;();
-        for (Tuple2&lt;String, String&gt; tuple2 : collect) {
-            nameMap.put(tuple2._1, tuple2._2);
-        }    
-        final Broadcast&lt;Map&lt;String, String&gt;&gt; nMB =sc.broadcast(nameMap);
-        scoreRDD.map(new Function&lt;Tuple2&lt;String,String&gt;,String&gt;(){
-           private static final long serialVersionUID = 1L;
-           @Override
-           public String call(Tuple2&lt;String, String&gt; tuple) {    
-                Map&lt;String, String&gt; nameMap = nMB.value();
-                String id=tuple._1;
-                String score=tuple._2;
-
-                String name=nameMap.get(id);
-                if(name != null){
-                    System.out.println(id +&quot; name:&quot;+name +&quot; score:&quot;+score);
-                }
-                return null;
-            }
-        }).collect();
-        sc.stop();
-    }
-}
-```
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestBroadCast</span> </span>&#123;</div><div class="line"> 	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">     	SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"BroadCast"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        List&lt;Tuple2&lt;String, String&gt;&gt; nameList = Arrays.asList(</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"1"</span>, <span class="string">"zhangsan"</span>),</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"2"</span>, <span class="string">"lisi"</span>),</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"3"</span>, <span class="string">"wangwu"</span>)</div><div class="line">        );</div><div class="line">        List&lt;Tuple2&lt;String, String&gt;&gt; scoreList = Arrays.asList(</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"1"</span>, <span class="string">"90"</span>),</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"2"</span>, <span class="string">"80"</span>),</div><div class="line">                <span class="keyword">new</span> Tuple2&lt;String, String&gt;(<span class="string">"3"</span>, <span class="string">"89"</span>)</div><div class="line">        );</div><div class="line">       JavaPairRDD&lt;String, String&gt; nameRDD = sc.parallelizePairs(nameList);</div><div class="line">       JavaPairRDD&lt;String, String&gt; scoreRDD = sc.parallelizePair(scoreList);</div><div class="line">       List&lt;Tuple2&lt;String, String&gt;&gt; collect = nameRDD.collect();</div><div class="line">        Map&lt;String, String&gt; nameMap = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (Tuple2&lt;String, String&gt; tuple2 : collect) &#123;</div><div class="line">            nameMap.put(tuple2._1, tuple2._2);</div><div class="line">        &#125;	</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;Map&lt;String, String&gt;&gt; nMB =sc.broadcast(nameMap);</div><div class="line">        scoreRDD.map(<span class="keyword">new</span> Function&lt;Tuple2&lt;String,String&gt;,String&gt;()&#123;</div><div class="line">           <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">           <span class="meta">@Override</span></div><div class="line">           <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">(Tuple2&lt;String, String&gt; tuple)</span> </span>&#123;	</div><div class="line">                Map&lt;String, String&gt; nameMap = nMB.value();</div><div class="line">                String id=tuple._1;</div><div class="line">                String score=tuple._2;</div><div class="line"></div><div class="line">                String name=nameMap.get(id);</div><div class="line">                <span class="keyword">if</span>(name != <span class="keyword">null</span>)&#123;</div><div class="line">                    System.out.println(id +<span class="string">" name:"</span>+name +<span class="string">" score:"</span>+score);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;).collect();</div><div class="line">        sc.stop();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><p><b>[执行结果]</b></p>
 <pre><code>`id:1 name:zhangsan score:90
  id:2 name:lisi score:80
@@ -154,48 +110,8 @@ public class TestBroadCast {
 <h4 id="2-累加器与广播变量比较"><a href="#2-累加器与广播变量比较" class="headerlink" title="2.累加器与广播变量比较"></a><b>2.累加器与广播变量比较</b></h4><p><code>累加器</code>是在Driver端创建，在Driver端读取，在Executor端操作(累加操作)，在Executor端是不能读取的。</p>
 <p><code>广播变量</code>是在Driver端创建，在Executor端读取，在Executor端不能修改。</p>
 <h4 id="3-利用累加器算文件的行数"><a href="#3-利用累加器算文件的行数" class="headerlink" title="3.利用累加器算文件的行数"></a><b>3.利用累加器算文件的行数</b></h4><p><b>[代码演示]</b></p>
-<pre><code>```java
-public class TestAccumulator {
-    public static void main(String[] args) {
-        SparkConf conf = new SparkConf()
-                .setAppName(&quot;BroadCast&quot;)
-                .setMaster(&quot;local&quot;)
-                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);
-       JavaSparkContext sc = new JavaSparkContext(conf);    
-        final Accumulator&lt;Integer&gt; accumulator = sc.accumulator(0);    
-        JavaRDD&lt;String&gt; userLogRDD = sc.textFile(&quot;cs&quot;);    
-        userLogRDD.foreach(new VoidFunction&lt;String&gt;() {    
-            private static final long serialVersionUID = 1L;    
-            @Override
-            public void call(String s) throws Exception {
-                accumulator.add(1);
-            }
-        });
-        System.out.println(&quot;line count:&quot; + accumulator.value());
-        sc.stop();
-    }
-}
-```
-</code></pre><h4 id="4-累加器的错误用法"><a href="#4-累加器的错误用法" class="headerlink" title="4.累加器的错误用法"></a><b>4.累加器的错误用法</b></h4><pre><code>```scala
-val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
-val data = sc.parallelize(1 to 10)    
-//用accumulator统计偶数出现的次数，同时偶数返回0，奇数返回1    
-val newData = data.map{x =&gt; {    
-if(x%2 == 0){    
-accum += 1    
-0    
-}else 1    
-}}    
-//使用action操作触发执行    
-newData.count    
-//此时accum的值为5，是我们要的结果    
-accum.value    
-//继续操作，查看刚才变动的数据,foreach也是action操作    
-newData.foreach(println)    
-//上个步骤没有进行累计器操作，可是累加器此时的结果已经是10了    
-//这并不是我们想要的结果
-accum.value
-```
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAccumulator</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"BroadCast"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">       JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);	</div><div class="line">        <span class="keyword">final</span> Accumulator&lt;Integer&gt; accumulator = sc.accumulator(<span class="number">0</span>);	</div><div class="line">        JavaRDD&lt;String&gt; userLogRDD = sc.textFile(<span class="string">"cs"</span>);	</div><div class="line">        userLogRDD.foreach(<span class="keyword">new</span> VoidFunction&lt;String&gt;() &#123;	</div><div class="line">            <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;	</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                accumulator.add(<span class="number">1</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        System.out.println(<span class="string">"line count:"</span> + accumulator.value());</div><div class="line">        sc.stop();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><h4 id="4-累加器的错误用法"><a href="#4-累加器的错误用法" class="headerlink" title="4.累加器的错误用法"></a><b>4.累加器的错误用法</b></h4><pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> accum= sc.accumulator(<span class="number">0</span>, <span class="string">"Error Accumulator"</span>)</div><div class="line"><span class="keyword">val</span> data = sc.parallelize(<span class="number">1</span> to <span class="number">10</span>)	</div><div class="line"><span class="comment">//用accumulator统计偶数出现的次数，同时偶数返回0，奇数返回1	</span></div><div class="line"><span class="keyword">val</span> newData = data.map&#123;x =&gt; &#123;	</div><div class="line"><span class="keyword">if</span>(x%<span class="number">2</span> == <span class="number">0</span>)&#123;	</div><div class="line">accum += <span class="number">1</span>	</div><div class="line"><span class="number">0</span>	</div><div class="line">&#125;<span class="keyword">else</span> <span class="number">1</span>	</div><div class="line">&#125;&#125;	</div><div class="line"><span class="comment">//使用action操作触发执行	</span></div><div class="line">newData.count	</div><div class="line"><span class="comment">//此时accum的值为5，是我们要的结果	</span></div><div class="line">accum.value	</div><div class="line"><span class="comment">//继续操作，查看刚才变动的数据,foreach也是action操作	</span></div><div class="line">newData.foreach(println)	</div><div class="line"><span class="comment">//上个步骤没有进行累计器操作，可是累加器此时的结果已经是10了	</span></div><div class="line"><span class="comment">//这并不是我们想要的结果</span></div><div class="line">accum.value</div></pre></td></tr></table></figure>
 </code></pre><p><b>原因分析</b></p>
 <p>官方对这个问题的解释如下描述:</p>
 <blockquote>
@@ -209,19 +125,7 @@ accum.value
 <p>看了上面的分析，大家都有这种印象了，那就是使用累加器的过程中只能使用一次action的操作才能保证结果的准确性。</p>
 <p>事实上，还是有解决方案的，只要将任务之间的依赖关系切断就可以了。什么方法有这种功能呢？你们肯定都想到了，cache，persist。调用这个方法的时候会将之前的依赖切除，后续的累加器就不会再被之前的transfrom操作影响到了。</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1832028-dc92297e1cbc8533?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<pre><code>```scala
-val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
-val data = sc.parallelize(1 to 10)
-//代码和上方相同
-val newData = data.map{x =&gt; {...}}
-//使用cache缓存数据，切断依赖。
-newData.cache.count
-//此时accum的值为5
-accum.value
-newData.foreach(println)
-//此时的accum依旧是5
-accum.value    
-```
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> accum= sc.accumulator(<span class="number">0</span>, <span class="string">"Error Accumulator"</span>)</div><div class="line"><span class="keyword">val</span> data = sc.parallelize(<span class="number">1</span> to <span class="number">10</span>)</div><div class="line"><span class="comment">//代码和上方相同</span></div><div class="line"><span class="keyword">val</span> newData = data.map&#123;x =&gt; &#123;...&#125;&#125;</div><div class="line"><span class="comment">//使用cache缓存数据，切断依赖。</span></div><div class="line">newData.cache.count</div><div class="line"><span class="comment">//此时accum的值为5</span></div><div class="line">accum.value</div><div class="line">newData.foreach(println)</div><div class="line"><span class="comment">//此时的accum依旧是5</span></div><div class="line">accum.value</div></pre></td></tr></table></figure>
 </code></pre><font color="red">使用Accumulator时，为了保证准确性，只使用一次action操作。如果需要使用多次则使用cache或persist操作切断依赖。</font>
       
     </div>

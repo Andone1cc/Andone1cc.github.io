@@ -135,9 +135,9 @@
 <p>因此在用==对str1和str2进行第一次比较时，得到的结果是false。因此它们分别指向的是不同的对象，也就是说它们实际存储的内存地址不同。</p>
 <p>而在第二次比较时，都让str1和str2指向了str指向的对象，那么得到的结果毫无疑问是true。</p>
 <h3 id="二、equals比较的又是什么？"><a href="#二、equals比较的又是什么？" class="headerlink" title="二、equals比较的又是什么？"></a>二、equals比较的又是什么？</h3><p>equals方法是基类Object中的方法，因此对于所有的继承于Object的类都会有该方法。为了更直观地理解equals方法的作用，直接看<code>Object类中equals方法的实现</code>。</p>
-<pre><code> ` public boolean equals(Object obj) {
-    return (this == obj);
-  }`
+<pre><code>` public boolean equals(Object obj) {
+   return (this == obj);
+ }`
 </code></pre><p>很显然，在Object类中，equals方法是用来比较两个对象的引用是否相等，即是否指向同一个对象。</p>
 <p>为什么下面的代码输出会是true呢？</p>
 <pre><code>` public static void main(String[] args) {
