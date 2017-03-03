@@ -11,7 +11,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/03/02/Spark/spark高可用/index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="高可用集群的搭建方式搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。">
-<meta property="og:updated_time" content="2017-03-03T01:31:17.458Z">
+<meta property="og:updated_time" content="2017-03-03T01:33:12.057Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——spark配置高可用">
 <meta name="twitter:description" content="高可用集群的搭建方式搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。">
@@ -111,14 +111,7 @@
       
         <h3 id="高可用集群的搭建方式"><a href="#高可用集群的搭建方式" class="headerlink" title="高可用集群的搭建方式"></a>高可用集群的搭建方式</h3><p>搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。</p>
 <a id="more"></a>
-<h4 id="zookeeper的作用"><a href="#zookeeper的作用" class="headerlink" title="zookeeper的作用"></a><b>zookeeper的作用</b></h4><pre><code>
-    public static void main(String[] args){
-        println()    
-    }
-</code></pre>
-
-
-<p>1、托管主节点的信息，HDFS(namenode),YARN(resourcemanager)。</p>
+<h4 id="zookeeper的作用"><a href="#zookeeper的作用" class="headerlink" title="zookeeper的作用"></a><b>zookeeper的作用</b></h4><p>1、托管主节点的信息，HDFS(namenode),YARN(resourcemanager)。</p>
 <p>2、自动选举leader的功能。</p>
 <p>spark中master存在单点故障，zookeeper里面托管的是master的信息。</p>
 <p>master的信息包含:Worker的信息(HashSet),Driver的信息(ArrayBuffer),Application的信息(ArrayBuffer)。</p>
