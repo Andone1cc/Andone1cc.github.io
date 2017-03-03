@@ -18,7 +18,7 @@
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/rYR*2dJm8jWoUQovKz9UetN0yJGOdxTzvDDgEgcT6PE!/b/dB8BAAAAAAAA&bo=fgIWAgAAAAADAE0!&rf=viewer_4">
 <meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/Q1C1tuBPs67Jh9cf9WvCVuE81v4B9TH5w9YE1zUrIw8!/b/dLIAAAAAAAAA&bo=nQLJAQAAAAADAHI!&rf=viewer_4">
 <meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/oitk7ixdGv3LsgETO0K9vyaJMa5AoaEI6daqZmxP3cA!/b/dLIAAAAAAAAA&bo=6gOAAgAAAAADB0k!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-02T15:34:10.093Z">
+<meta property="og:updated_time" content="2017-03-03T01:00:10.398Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——spark shuffle过程">
 <meta name="twitter:description" content="MapReduce中的shuffle机制在MapReduce框架中，shuffle是连接Map和Reduce之间的桥梁，Map的输出要用到Reduce中必须经过shuffle这个环节，shuffle的性能高低直接影响了整个程序的性能和吞吐量。">
@@ -162,6 +162,33 @@
 <p>【流程描述】：</p>
 <p>map task: 所在的Executor中的MapOutPutTrackcerSlaver向Driver中的DAGScheduler对象里面的MapOutPutTrackcerMaster汇报task的执行情况，结果封装到一个map status(磁盘小文件的位置)</p>
 <p>reduce task: 执行之前先向Driver获取磁盘小文件的位置，然后通过ConnectionManager与对应的Executor建立连接，借助BlockTransferService来拉取数据</p>
+<pre><code>
+    public static void main(String[] args){
+        println()    
+    }
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       
     </div>
