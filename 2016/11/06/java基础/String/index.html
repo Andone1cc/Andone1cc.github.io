@@ -1,0 +1,346 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>探秘Java中的String、StringBuilder以及StringBuffer | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="String">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="探秘Java中的String、StringBuilder以及StringBuffer"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>探秘Java中的String、StringBuilder以及StringBuffer</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/String/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.544Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="String、StringBuilder以及StringBuffer"><a href="#String、StringBuilder以及StringBuffer" class="headerlink" title="String、StringBuilder以及StringBuffer"></a>String、StringBuilder以及StringBuffer</h2><h3 id="一-先来了解一下String类"><a href="#一-先来了解一下String类" class="headerlink" title="一.先来了解一下String类"></a>一.先来了解一下String类</h3><p>想要了解一个类,想要了解一个类,最好的办法就是看这个类的实现源代码。</p>
+<a id="more"></a>
+<pre><code>`public final class String
+        implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+
+
+    private int hash; // Default to 0
+
+    /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    private static final long serialVersionUID = -6849794470754667710L;
+    ......
+/**
+}`
+</code></pre><p>由上面可以看出几点:</p>
+<p>1).String类是final类,也即意味着String类不能被继承，并且它的成员方法都默认为final方法。</p>
+<p>2).可以看出String类其实是通过char数组来保存字符串的。</p>
+<p>下面再继续看String类的一些方法实现：</p>
+<pre><code>` public String substring(int beginIndex, int endIndex) {
+    if (beginIndex &lt; 0) {
+        throw new StringIndexOutOfBoundsException(beginIndex);
+    }
+    if (endIndex &gt; value.length) {
+        throw new StringIndexOutOfBoundsException(endIndex);
+    }
+    int subLen = endIndex - beginIndex;
+    if (subLen &lt; 0) {
+        throw new StringIndexOutOfBoundsException(subLen);
+    }
+    return ((beginIndex == 0) &amp;&amp; (endIndex == value.length)) ? this
+            : new String(value, beginIndex, subLen);
+}
+public String replace(char oldChar, char newChar) {
+    if (oldChar != newChar) {
+        int len = value.length;
+        int i = -1;
+        char[] val = value; /* avoid getfield opcode */
+
+        while (++i &lt; len) {
+            if (val[i] == oldChar) {
+                break;
+            }
+        }
+        if (i &lt; len) {
+            char buf[] = new char[len];
+            for (int j = 0; j &lt; i; j++) {
+                buf[j] = val[j];
+            }
+            while (i &lt; len) {
+                char c = val[i];
+                buf[i] = (c == oldChar) ? newChar : c;
+                i++;
+            }
+            return new String(buf, true);
+        }
+    }
+    return this;
+}
+public String concat(String str) {
+    int otherLen = str.length();
+    if (otherLen == 0) {
+        return this;
+    }
+    int len = value.length;
+    char buf[] = Arrays.copyOf(value, len + otherLen);
+    str.getChars(buf, len);
+    return new String(buf, true);
+}
+`
+</code></pre><p>从上面的三个方法可以看出，无论是substring、concat还是replace操作都不是在原有的字符串上进行的，而是重新生成了一个新的字符串对象。也就是说进行这些操作后，最原始的字符串并没有被改变。</p>
+<p>在这里我们只需要记住：</p>
+<blockquote>
+<p>对String对象的任何改变都不影响到原对象，相关的任何change操作都会生成新的对象</p>
+</blockquote>
+<h3 id="二-深入理解String、StringBuffer、StringBuilder"><a href="#二-深入理解String、StringBuffer、StringBuilder" class="headerlink" title="二.深入理解String、StringBuffer、StringBuilder"></a>二.深入理解String、StringBuffer、StringBuilder</h3><p>1.String str=”hello world”和String str=new String(“hello world”)的区别</p>
+<p>想必大家对上面2个语句都不陌生，在平时写代码的过程中也经常遇到，那么它们到底有什么区别和联系呢？下面先看几个例子：</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        String str1 = &quot;hello world&quot;;
+        String str2 = new String(&quot;hello world&quot;);
+        String str3 = &quot;hello world&quot;;
+        String str4 = new String(&quot;hello world&quot;);
+
+        System.out.println(str1==str2);
+        System.out.println(str1==str3);
+        System.out.println(str2==str4);
+  }
+}`
+</code></pre><p>输出结果为 :</p>
+<blockquote>
+<p>false   true   false</p>
+</blockquote>
+<p>在class文件中有一部分 来存储编译期间生成的 字面常量以及符号引用，这部分叫做class文件常量池，在运行期间对应着方法区的运行时常量池。</p>
+<p>因此在上述代码中，String str1 = “hello world”;和String str3 = “hello world”; 都在编译期间生成了 字面常量和符号引用，运行期间字面常量”hello world”被存储在运行时常量池（当然只保存了一份）。通过这种方式来将String对象跟引用绑定的话，JVM执行引擎会先在运行时常量池查找是否存在相同的字面常量，如果存在，则直接将引用指向已经存在的字面常量；否则在运行时常量池开辟一个空间来存储该字面常量，并将引用指向该字面常量。</p>
+<p>总所周知，通过new关键字来生成对象是在堆区进行的，而在堆区进行对象生成的过程是不会去检测该对象是否已经存在的。因此通过new来创建对象，创建出的一定是不同的对象，即使字符串的内容是相同的。</p>
+<p>2.String、StringBuffer以及StringBuilder的区别</p>
+<p>既然在Java中已经存在了String类，那为什么还需要StringBuilder和StringBuffer类呢？</p>
+<p>那么看下面这段代码：</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        String string = &quot;&quot;;
+        for(int i=0;i&lt;10000;i++){
+            string += &quot;hello&quot;;
+        }
+    }
+}`
+</code></pre><p>这句 string += “hello”;的过程相当于将原有的string变量指向的对象内容取出与”hello”作字符串相加操作再存进另一个新的String对象当中，再让string变量指向新生成的对象。可以反编译一下字节码文件便会更清楚了。</p>
+<p> <img src="http://images.cnitblog.com/i/288799/201406/091056535456212.jpg" alt=""></p>
+<p>从这段反编译出的字节码文件可以很清楚地看出：从第8行开始到第35行是整个循环的执行过程，并且每次循环会new出一个StringBuilder对象，然后进行append操作，最后通过toString方法返回String对象。也就是说这个循环执行完毕new出了10000个对象，试想一下，如果这些对象没有被回收，会造成多大的内存资源浪费。从上面还可以看出：string+=”hello”的操作事实上会自动被JVM优化成：</p>
+<p>　　StringBuilder str = new StringBuilder(string);</p>
+<p>　　str.append(“hello”);</p>
+<p>　　str.toString();</p>
+<p>　　再看下面这段代码：</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i=0;i&lt;10000;i++){
+               stringBuilder.append(&quot;hello&quot;);
+        }
+    }
+}`
+</code></pre><p>反编译字节码文件得到：</p>
+<p><img src="http://images.cnitblog.com/i/288799/201406/091109234836868.jpg" alt=""></p>
+<p>从这里可以明显看出，这段代码的for循环式从13行开始到27行结束，并且new操作只进行了一次，也就是说只生成了一个对象，append操作是在原有对象的基础上进行的。因此在循环了10000次之后，这段代码所占的资源要比上面小得多。</p>
+<p>那么有人会问既然有了StringBuilder类，为什么还需要StringBuffer类？查看源代码便一目了然，事实上，StringBuilder和StringBuffer类拥有的成员属性以及成员方法基本相同，区别是StringBuffer类的成员方法前面多了一个关键字：synchronized，不用多说，这个关键字是在多线程访问时起到安全保护作用的,也就是说StringBuffer是线程安全的。</p>
+<p>下面摘了2段代码分别来自StringBuffer和StringBuilder，insert方法的具体实现：</p>
+<p>StringBuilder的insert方法:    </p>
+<pre><code>`public StringBuilder insert(int index, char str[], int offset,int len)
+ {
+    super.insert(index, str, offset, len);
+    return this;
+ }`
+</code></pre><p>StringBuffer的insert方法:</p>
+<pre><code>`public synchronized StringBuffer insert(int index, char str[], int offset,int len)
+{
+    super.insert(index, str, offset, len);
+    return this;
+}`
+</code></pre><blockquote>
+<p>总结：</p>
+</blockquote>
+<p>1）对于直接相加字符串，效率很高，因为在编译器便确定了它的值，也就是说形如”I”+”love”+”java”; 的字符串相加，在编译期间便被优化成了”Ilovejava”。这个可以用javap -c命令反编译生成的class文件进行验证。</p>
+<p>对于间接相加（即包含字符串引用），形如s1+s2+s3; 效率要比直接相加低，因为在编译器不会对引用变量进行优化。</p>
+<p>2）String、StringBuilder、StringBuffer三者的执行效率：</p>
+<p>StringBuilder &gt; StringBuffer &gt; String</p>
+<p>当然这个是相对的，不一定在所有情况下都是这样。</p>
+<p>比如String str = “hello”+ “world”的效率就比 StringBuilder st  = new StringBuilder().append(“hello”).append(“world”)要高。</p>
+<p>因此，这三个类是各有利弊，应当根据不同的情况来进行选择使用：</p>
+<p>当字符串相加操作或者改动较少的情况下，建议使用 String str=”hello”这种形式；</p>
+<p>当字符串相加操作较多的情况下，建议使用StringBuilder，如果采用了多线程，则使用StringBuffer。</p>
+<h3 id="三-常见的关于String、StringBuffer的面试题"><a href="#三-常见的关于String、StringBuffer的面试题" class="headerlink" title="三.常见的关于String、StringBuffer的面试题"></a>三.常见的关于String、StringBuffer的面试题</h3><ol>
+<li>下面这段代码的输出结果是什么？</li>
+</ol>
+<p>　　<code>String a = &quot;hello2&quot;; 　　
+    String b = &quot;hello&quot; + 2; 　　
+    System.out.println((a == b));</code></p>
+<p>　　输出结果为：true。原因很简单，”hello”+2在编译期间就已经被优化成”hello2”，因此在运行期间，变量a和变量b指向的是同一个对象</p>
+<p>2.下面这段代码的输出结果是什么？</p>
+<p>　　<code>String a = &quot;hello2&quot;; 　  String b = &quot;hello&quot;;       String c = b + 2;       System.out.println((a == c));</code></p>
+<p>　　输出结果为:false。由于有符号引用的存在，所以  String c = b + 2;不会在编译期间被优化，不会把b+2当做字面常量来处理的，因此这种方式生成的对象事实上是保存在堆上的。因此a和c指向的并不是同一个对象。</p>
+<p>3.下面这段代码的输出结果是什么？</p>
+<p>　　<code>String a = &quot;hello2&quot;;   　 final String b = &quot;hello&quot;;       String c = b + 2;       System.out.println((a == c));</code></p>
+<p>　　输出结果为：true。对于被final修饰的变量，会在class文件常量池中保存一个副本，也就是说不会通过连接而进行访问，对final变量的访问在编译期间都会直接被替代为真实的值。那么String c = b + 2;在编译期间就会被优化成：String c = “hello” + 2;</p>
+<p>4.下面这段代码输出结果为：</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+         String a = &quot;hello2&quot;;
+        final String b = getHello();
+        String c = b + 2;
+        System.out.println((a == c));
+    }
+
+    public static String getHello() {
+        return &quot;hello&quot;;
+    }
+}`
+</code></pre><p>   输出结果为false。这里面虽然将b用final修饰了，但是由于其赋值是通过方法调用返回的，那么它的值只能在运行期间确定，因此a和c指向的不是同一个对象。</p>
+<p>5.下面这段代码的输出结果是什么？</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        String a = &quot;hello&quot;;
+        String b =  new String(&quot;hello&quot;);
+        String c =  new String(&quot;hello&quot;);
+        String d = b.intern();
+
+        System.out.println(a==b);
+        System.out.println(b==c);
+        System.out.println(b==d);
+        System.out.println(a==d);
+    }
+}`
+</code></pre><p>  输出结果为false false false  true。这里面涉及到的是String.intern方法的使用。在String类中，intern方法是一个本地方法，在JAVA SE6之前，intern方法会在运行时常量池中查找是否存在内容相同的字符串，如果存在则返回指向该字符串的引用，如果不存在，则会将该字符串入池，并返回一个指向该字符串的引用。因此，a和d指向的是同一个对象。</p>
+<p>6.String str = new String(“abc”)创建了多少个对象？</p>
+<p>  这里面要澄清一个概念  该段代码执行过程和类的加载过程是有区别的。在类加载的过程中，确实在运行时常量池中创建了一个”abc”对象，而在代码执行过程中确实只创建了一个String对象。</p>
+<p>  这个问题如果换成 String str = new String(“abc”)涉及到几个String对象？合理的解释是2个。</p>
+<p>7.下面这段代码1）和2）的区别是什么？</p>
+<pre><code>`public class Test {
+    public static void main(String[] args) {
+        String str1 = &quot;I&quot;;
+        //str1 += &quot;love&quot;+&quot;java&quot;;        1)
+        str1 = str1+&quot;love&quot;+&quot;java&quot;;      //2)
+    }
+}`
+</code></pre><p>1）的效率比2）的效率要高，1）中的”love”+”java”在编译期间会被优化成”lovejava”，而2）中的不会被优化。下面是两种方式的字节码：</p>
+<p>　1）的字节码：</p>
+<p><img src="http://images.cnitblog.com/i/288799/201406/092017165925249.jpg" alt=""></p>
+<p>　2）的字节码：</p>
+<p><img src="http://images.cnitblog.com/i/288799/201406/092017552494106.jpg" alt=""></p>
+<p>可以看出，在1）中只进行了一次append操作，而在2）中进行了两次append操作。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/String/">String</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

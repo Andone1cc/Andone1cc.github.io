@@ -1,0 +1,450 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 5 页 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/08/设计模式/单例模式/"><span>设计模式读书笔记--单例模式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/08/设计模式/单例模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-08T15:12:49.243Z">
+          2016-11-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>有时候某些对象我们只需要一个，如：线程池、缓存、对话框等等，对于这类对象我们只能有一个实例，如果我们制造出多个实例，就会导致很多问题产生。</p>
+<p>但是我们怎样才能保证一个类只有一个实例并且能够便于访问？这里我们想到了全局变量，全局变量确实是可以保证该类可以随时访问，但是它很难解决只有一个实例问题。最好的办法就是让该自身来负责保存它的唯一实例。这个类必须要保证没有其他类来创建它。这里我们可以将其构造方法私有化。即</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/设计模式/">设计模式</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/设计模式/">设计模式</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/07/java基础/hashmap/"><span>深入剖析HashMap源码</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/07/java基础/hashmap/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-07T14:54:56.685Z">
+          2016-11-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="HashMap源码分析"><a href="#HashMap源码分析" class="headerlink" title="HashMap源码分析"></a>HashMap源码分析</h3><p>HashMap是我们使用非常多的Collection，它是基于哈希表的 Map 接口的实现，以key-value的形式存在。在HashMap中，key-value总是会当做一个整体来处理，系统会根据hash算法来来计算key-value的存储位置，我们总是可以通过key快速地存、取value。下面就来分析HashMap的存取。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/06/java基础/Integer方法之惑/"><span>Integer.valueOf(String) 方法之惑</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/Integer方法之惑/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.658Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="Integer-valueOf-String-方法之惑"><a href="#Integer-valueOf-String-方法之惑" class="headerlink" title="Integer.valueOf(String) 方法之惑"></a>Integer.valueOf(String) 方法之惑</h3><p>最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？</p>
+<pre><code>`System.out.println(Integer.valueOf(&quot;127&quot;)==Integer.valueOf(&quot;127&quot;));
+ System.out.println(Integer.valueOf(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));
+ System.out.println(Integer.parseInt(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));`
+</code></pre><p>输出结果：<code>true</code> <code>false</code>    <code>true</code></p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/06/java基础/final关键字/"><span>浅析Java中的final关键字</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/final关键字/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.616Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="浅析Java中的final关键字"><a href="#浅析Java中的final关键字" class="headerlink" title="浅析Java中的final关键字"></a>浅析Java中的final关键字</h3><p>谈到final关键字，想必很多人都不陌生，在使用匿名内部类的时候可能会经常用到final关键字。另外，Java中的String类就是一个final类，那么今天我们就来了解final这个关键字的用法。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/06/java基础/equals/"><span>浅谈Java中的equals和==</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/equals/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.586Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>在初学java的时候,常遇到下面的代码:</p>
+<pre><code>`1 String str1 = new String(&quot;hello&quot;);
+ 2 String str2 = new String(&quot;hello&quot;);
+ 3         
+ 4 System.out.println(str1==str2); 
+ 5 System.out.println(str1.equals(str2));`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2016/11/06/java基础/内部l类/"><span>Java内部类详解</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/内部l类/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.568Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="Java内部类详解"><a href="#Java内部类详解" class="headerlink" title="Java内部类详解"></a>Java内部类详解</h3><p>说起内部类这个词，想必很多人都不陌生，但是又会觉得不熟悉。原因是平时编写代码时可能用到的场景不多，用得最多的是在有事件监听的情况下，并且即使用到也很少去总结内部类的用法。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  <a href="/page/4/" class="pagination-prev">上一页</a>
+  
+  
+  <a href="/page/6/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

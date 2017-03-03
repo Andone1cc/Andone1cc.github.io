@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark学习笔记——BlockManager组件 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="Spark学习总结">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spark学习笔记——BlockManager组件"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Spark学习笔记——BlockManager组件</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/blockmanager/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T12:46:43.154Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="BlockManager"><a href="#BlockManager" class="headerlink" title="BlockManager"></a>BlockManager</h3><p>BlockManager是一个块管理者。</p>
+<p>每一个Eexcutor中都会有一个BlockManger。</p>
+<a id="more"></a>
+<p><b>[如果所示]</b></p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/XIxWs3r3ARM5Rb1Nx*jzw5dM6GRyKSZKI21A.yCpcjk!/b/dCABAAAAAAAA&amp;bo=lwTMAQAAAAADAHs!&amp;rf=viewer_4" alt=""></p>
+<h4 id="四大对象"><a href="#四大对象" class="headerlink" title="四大对象"></a><b>四大对象</b></h4><p><font color="green">1.ConnectionManager</font>：负责与其他的BlockManger连接。</p>
+<p><font color="green">2.BlockTransferService</font>：与其他的BlockManger连接成功后负责进行数据的传输。</p>
+<p><font color="green">3.MemoryStore</font>：负责管理内存中的数据。</p>
+<p><font color="green">4.DiskStore</font>：负责管理磁盘上的数据。</p>
+<h4 id="详述广播变量的使用流程"><a href="#详述广播变量的使用流程" class="headerlink" title="详述广播变量的使用流程"></a><b>详述广播变量的使用流程</b></h4><p>1、task如果在执行的时候使用到了广播变量，task会去BlockManager中获取广播变量。</p>
+<p>2、如果BlockManager中没有广播变量，task所在的Executor中的BlockManager中的ConnectionManager会连接Driver端的BlockManagerMaster中的ConnectionManager。</p>
+<p>3、ConnectionManager连接成功后，由BlockTransferService负责拉取数据。</p>
+<p>4、数据拉取过来后，由Memory Store负责存储到内存中，task就可以使用广播变量了。</p>
+<h4 id="BlockManager的管理范围"><a href="#BlockManager的管理范围" class="headerlink" title="BlockManager的管理范围"></a><b>BlockManager的管理范围</b></h4><p>1、RDD的持久化数据</p>
+<p>2、广播变量</p>
+<p>3、shuffle file(write过程产生磁盘小文件，由disk store存储，read过程读取小文件)</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

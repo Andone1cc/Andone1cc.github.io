@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>VMware虚拟机提供的桥接、NAT和主机模式的区别 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="linux">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="VMware虚拟机提供的桥接、NAT和主机模式的区别"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>VMware虚拟机提供的桥接、NAT和主机模式的区别</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/01/09/linux/vmvare网络/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-01-09T08:32:36.979Z">
+          2017-01-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="VMWare提供三种工作模式桥接（bridge）、NAT（网络地址转换）和host-only（主机模式）。"><a href="#VMWare提供三种工作模式桥接（bridge）、NAT（网络地址转换）和host-only（主机模式）。" class="headerlink" title="VMWare提供三种工作模式桥接（bridge）、NAT（网络地址转换）和host-only（主机模式）。"></a>VMWare提供三种工作模式桥接（bridge）、NAT（网络地址转换）和host-only（主机模式）。</h3><a id="more"></a>
+<h3 id="1-桥接模式"><a href="#1-桥接模式" class="headerlink" title="1. 桥接模式"></a>1. 桥接模式</h3><p>在桥接模式下，VMware虚拟出来的操作系统就像是局域网中的一天<code>独立的主机</code>（主机和虚拟机处于对等地位），它可以访问网内任何一天机器。在桥接模式下，我们往往需要为虚拟主机配置IP地址、子网掩码等（注意虚拟主机的ip地址和主机ip地址在同一网段）。</p>
+<p>使用桥接模式的虚拟系统和主机的关系，<code>就如同连接在一个集线器上的两台电脑</code>;要让他们通讯就需要为虚拟系统配置ip地址和子网掩码。<code>如果我们需要在局域网内建立一个虚拟服务器，并为局域网用户提供服务，那就要用桥接模式</code>。</p>
+<p>但对于想进行种种网络实验的朋友这种模式是不太适合的，因为你无法对虚拟机的网络进行控制，它直接出去了。 </p>
+<h3 id="2-NAT模式-Network-Address-Translation"><a href="#2-NAT模式-Network-Address-Translation" class="headerlink" title="2. NAT模式(Network Address Translation)"></a>2. NAT模式(Network Address Translation)</h3><p>在NAT模式下，虚拟系统需要借助<code>NAT(网络地址转换)</code>功能，通过宿主机器所在的网络来访问公网。也就是说，<code>使用NAT模式虚拟系统可把物理主机作为路由器访问互联网</code>。NAT模式下的虚拟系统的TCP/IP配置信息是由<code>VMnet8(NAT)</code>虚拟网络的DHCP服务器提供的，无法进行手工修改，因此<code>虚拟系统也就无法和本局域网中的其他真实主机进行通讯</code>。采用NAT模式最大的优势是虚拟系统接入互联网非常简单，你不需要进行任何其他的配置，只需要宿主机器能访问互联网即可。</p>
+<p>这种方式也可以实现Host OS与Guest OS的<code>双向访问</code>。但网络内其他机器不能访问Guest OS，Guest OS可通过Host OS用NAT协议访问网络内其他机器。NAT方式的IP地址配置方法是由VMware的虚拟DHCP服务器中分配一个IP ，在这个IP地址中已经设置好路由，就是指向192.168.138.1的。如果你想利用VMWare安装一个新的虚拟系统，在虚拟系统中不用进行任何手工配置就能直接访问互联网，建议你采用NAT模式。</p>
+<p>这种方式下host内部出现了一个虚拟的网卡vmnet8（默认情况下），如果你有过做nat服务器的经验，这里的<code>vmnet8就相当于连接到内网的网卡</code>，而<code>虚拟机本身则相当于运行在内网上的机器</code>，<code>虚拟机内的网卡（eth0）则独立于vmnet8</code>。</p>
+<p>vmware自带了nat服务，提供了从vmnet8到外网的地址转 换，所以这种情况是一个实实在在的nat服务器在运行，只不过是供虚拟机用的。很显然，如果你只有一个外网地址，此种方式很合适。 </p>
+<h3 id="3-主机模式"><a href="#3-主机模式" class="headerlink" title="3. 主机模式"></a>3. 主机模式</h3><p>主机模式下，<code>真实环境和虚拟环境是隔离开的</code>；在这种模式下，<code>所有的虚拟系统是可以相互通信的，但虚拟系统和真实的网络是被隔离开</code>。（虚拟系统和宿主机器系统是可以相互通信的，相当于这两台机器通过双绞线互连。）</p>
+<p>这应该是最为灵活的方式，有兴趣的话可以进行各种网络实验。和nat唯一的不同的是，此种方式下，<code>没有地址转换服务，因此，默认情况下，虚拟机只能到主机访问,虚拟机跟互联网仍无法通信</code>。</p>
+<p>【图示】<br><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/t.VsQTshsfCN1adkePpop4Mu5qny4eg5fhyRRW5uM2Y!/b/dKsAAAAAAAAA&amp;bo=jAOrAQAAAAADBwc!&amp;rf=viewer_4" alt=""><br><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/n4sFz5IMVkbCsj4WC5T3yE.t.dKPYcOqi*FdfXDieOU!/b/dB8BAAAAAAAA&amp;bo=qAO2AAAAAAADBz8!&amp;rf=viewer_4" alt=""></p>
+<p>【总结】</p>
+<p><b>桥接既能使虚拟机与外网通讯，又能与局域网主机通讯；而NAT和主机模式都能与自己的真实机通讯，但是不能和局域网的主机通讯，区别在于NAT能利用真实机的网卡上公网。</b></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/LINUX/">LINUX</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

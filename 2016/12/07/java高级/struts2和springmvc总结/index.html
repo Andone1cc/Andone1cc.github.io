@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>struts2和springmvc学习总结 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="框架">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="struts2和springmvc学习总结"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>struts2和springmvc学习总结</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/12/07/java高级/struts2和springmvc总结/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-12-07T11:48:16.929Z">
+          2016-12-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、Struts2简介"><a href="#一、Struts2简介" class="headerlink" title="一、Struts2简介"></a>一、Struts2简介</h3><p>struts2 是mvc框架,struts1是基于servlet完成的。但是struts2是基于filter完成的。</p>
+<p>小故事:OpenSymphony退出webwork2时,由apache基于webwork2.3推出了struts2.借助struts1的名气,所以才叫struts2。</p>
+<a id="more"></a>
+<h3 id="二、Struts2运行原理"><a href="#二、Struts2运行原理" class="headerlink" title="二、Struts2运行原理"></a>二、Struts2运行原理</h3><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/eL*ijJOwQutcyrBa9LnCPQE35YBvUpiH7DjWEib9Ajk!/b/dB8BAAAAAAAA&amp;bo=gALuAgAAAAAFB0o!&amp;rf=viewer_4" alt=""></p>
+<blockquote>
+<ol>
+<li><p><code>StrutsPrepareAndExecuteFilter</code>:struts2.3+的核心过滤器,也是整个struts2框架的入口</p>
+</li>
+<li><p>ActionProxy:(代理设计模式),当希望访问某个action时,不直接方法,产生一个代理对象</p>
+</li>
+<li><p>ActionMapper:判断请求是否合法的类,如果合法才去执行,否则直接报错.判断格式而不是内容</p>
+</li>
+<li><p>Configuration Manager:管理struts.xml</p>
+</li>
+<li><p><code>ActionInvocation</code>:所有拦截器及action及result调度类,控制调用顺序等事情…..</p>
+</li>
+</ol>
+</blockquote>
+<pre><code>对象.invoke();放行;                也是自定义拦截器方法的参数.
+</code></pre><p>【文字解释】</p>
+<pre><code>`当发送request请求后,由ActionMapper判断请求格式是否合法,如果不合法报错,如果合法进入到核心
+过滤器StrutsPrepareAndExecuteFilter,之后产生ActinProxy的代理对象,代理对象会调用
+Configuration Manager 加载struts.xml,在配置文件查找请求的action对应的类及方法.如果不存
+在报404,如果存在通过 Action Invocation 调度类在执行action之前执行拦截器,默认执行
+defaultStack拦截器栈,struts2大部分默认功能都是通过拦截器实现的.拦截器执行完成后才开始执行
+action,根据返回逻辑视图名调用Result,此时不会立即响应,执行拦截器栈剩余内容,最终才会响应给客户端.`
+</code></pre><h3 id="三、Springmvc简介"><a href="#三、Springmvc简介" class="headerlink" title="三、Springmvc简介"></a>三、Springmvc简介</h3><p>SpringMVC是Spring Framework 的子项目,在实际编程中都是以<code>Spring-webmvc.jar</code>形式存在.<br>SpringMVC是基于<code>front设计模式</code>研发出的,必须要有入口,在SpringMVC的入口是<code>DispatcherServlet</code>.DispatcherServlet也是一个Servlet,在SpringMVC 中ServletAPI被完整的支持.</p>
+<p>由于是一个MVC框架,所以核心是<code>控制器</code>.大部分执行流程都是在控制器前后完成的。</p>
+<h3 id="四、Springmvc运行原理"><a href="#四、Springmvc运行原理" class="headerlink" title="四、Springmvc运行原理"></a>四、Springmvc运行原理</h3><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JBDiX097mI4dv5aTUxeSsOJKcvTma1Iurwa0xqSLEX8!/b/dB8BAAAAAAAA&amp;bo=mAKFAQAAAAADBzw!&amp;rf=viewer_4" alt=""></p>
+<blockquote>
+<ol>
+<li><p>HandlerMapping:判断请求时请求内容格式是否合法,如果合法继续,如果不合法异常</p>
+</li>
+<li><p>HandlerAdapter:实际调用控制器的组件</p>
+</li>
+<li><p>HandlerInterceptor:拦截器,在每个控制器和视图执行前后做一些事情</p>
+</li>
+<li><p>Controller:控制器</p>
+</li>
+</ol>
+<ol>
+<li>ViewResovler:视图解析器</li>
+</ol>
+</blockquote>
+<p>【执行流程】</p>
+<pre><code>`当用户发送请求后被DispatcherSevlet进行分发,然后转交给HandlerMapping进行验证格式是
+否合法,如果不合法报异常,如果合法向下传递交给HandlerAdapter准备调用某个Controller,
+Controller在进入之前一般都需要执行HandlerInterceptor拦截器的preHandle()方法,判断
+是否可以调用Controller.如果可以调用才能进入Controller,当Controller执行完成后再次进
+入拦截的postHandle验证传递内容是否合法,如果合法交给ViewResovler视图解析器调用具体的
+View视图资源.调用成功后再次进入拦截器的afterCompletion做最后验证,如果一切正确,响应给
+客户端.`
+</code></pre><h3 id="五、Struts2和SpringMVC的对比"><a href="#五、Struts2和SpringMVC的对比" class="headerlink" title="五、Struts2和SpringMVC的对比"></a>五、Struts2和SpringMVC的对比</h3><h5 id="1-核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求-（控制器）统一的进行处理-字符编码、文件上传、参数接受、异常处理等等-spring-mvc核心控制器是Servlet，而Struts2是Filter。"><a href="#1-核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求-（控制器）统一的进行处理-字符编码、文件上传、参数接受、异常处理等等-spring-mvc核心控制器是Servlet，而Struts2是Filter。" class="headerlink" title="1.核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求 （控制器）统一的进行处理(字符编码、文件上传、参数接受、异常处理等等),spring mvc核心控制器是Servlet，而Struts2是Filter。"></a>1.核心控制器：核心控制器的主要用途是处理所有的请求，然后对那些特殊的请求 （控制器）统一的进行处理(字符编码、文件上传、参数接受、异常处理等等),<code>spring mvc核心控制器是Servlet，而Struts2是Filter。</code></h5><h5 id="2-控制器实例：Spring-Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可-注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题-。"><a href="#2-控制器实例：Spring-Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可-注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题-。" class="headerlink" title="2.控制器实例：Spring Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可(注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题)。"></a>2.控制器实例：Spring Mvc是基于方法设计，而Sturts是基于对象，每次发一次请求都会实例一个action，每个action都会被注入属性，而Spring更像Servlet一样，只有一个实例，每次请求执行对应的方法即可(注意：由于是单例实例，所以应当避免全局变量的修改，这样会产生线程安全问题)。</h5><h5 id="3-属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）-通过（ValueStack）进行传递和赋值-属性的值可以放到request作用域上。"><a href="#3-属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）-通过（ValueStack）进行传递和赋值-属性的值可以放到request作用域上。" class="headerlink" title="3.属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）,通过（ValueStack）进行传递和赋值,属性的值可以放到request作用域上。"></a>3.属性驱动（参数传递）：springmvc直接放到方法的参数列表中，属性的值不能放到request作用域上。struts的属性写在类中（全局变量）,通过（ValueStack）进行传递和赋值,属性的值可以放到request作用域上。</h5><h5 id="4-拦截器：springmvc需要实现HandleInterceptor接口-用的是独立的AOP方式。struts需要继承AbstractInterceptor-有自己的interceptor机制。这样导致struts的配置文件量还是比spring-mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring-mvc使用更加简洁，开发效率Spring-MVC确实比struts2高。"><a href="#4-拦截器：springmvc需要实现HandleInterceptor接口-用的是独立的AOP方式。struts需要继承AbstractInterceptor-有自己的interceptor机制。这样导致struts的配置文件量还是比spring-mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring-mvc使用更加简洁，开发效率Spring-MVC确实比struts2高。" class="headerlink" title="4.拦截器：springmvc需要实现HandleInterceptor接口,用的是独立的AOP方式。struts需要继承AbstractInterceptor,有自己的interceptor机制。这样导致struts的配置文件量还是比spring mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring mvc使用更加简洁，开发效率Spring MVC确实比struts2高。"></a>4.拦截器：springmvc需要实现HandleInterceptor接口,用的是独立的AOP方式。struts需要继承AbstractInterceptor,有自己的interceptor机制。这样导致struts的配置文件量还是比spring mvc大，虽然struts的配置能继承，所以我觉得论使用上来讲，spring mvc使用更加简洁，开发效率Spring MVC确实比struts2高。</h5><h5 id="5-转换器：springmvc需要实现Convertor接口-配置信息写到applicationContext——spring-xml配置文件，struts需要继承StrutsTypeConvertor-配置信息写到属性文件，配置较麻烦。"><a href="#5-转换器：springmvc需要实现Convertor接口-配置信息写到applicationContext——spring-xml配置文件，struts需要继承StrutsTypeConvertor-配置信息写到属性文件，配置较麻烦。" class="headerlink" title="5.转换器：springmvc需要实现Convertor接口,配置信息写到applicationContext——spring.xml配置文件，struts需要继承StrutsTypeConvertor.配置信息写到属性文件，配置较麻烦。"></a>5.转换器：springmvc需要实现Convertor接口,配置信息写到applicationContext——spring.xml配置文件，struts需要继承StrutsTypeConvertor.配置信息写到属性文件，配置较麻烦。</h5><h5 id="6-springmvc处理ajax请求-直接通过返回数据，方法中使用注解-ResponseBody，spring-mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。"><a href="#6-springmvc处理ajax请求-直接通过返回数据，方法中使用注解-ResponseBody，spring-mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。" class="headerlink" title="6.springmvc处理ajax请求,直接通过返回数据，方法中使用注解@ResponseBody，spring mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。"></a>6.springmvc处理ajax请求,直接通过返回数据，方法中使用注解<code>@ResponseBody</code>，spring mvc自动帮我们对象转换为JSON数据。struts2需要借助于插件。</h5>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/框架/">框架</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

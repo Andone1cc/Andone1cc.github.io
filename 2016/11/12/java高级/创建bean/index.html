@@ -1,0 +1,382 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="SSH">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Spring 通过多种模式(反射,工厂方法，Factory Bean)来配置bean</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/12/java高级/创建bean/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-12T12:02:34.144Z">
+          2016-11-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>在spring的世界中， 我们通常会利用bean config file 或者 annotation注解方式来配置bean。</p>
+<p>在第一种利用bean config file(spring xml)方式中， 还包括如下三小类：</p>
+<pre><code>反射模式
+
+工厂方法模式(本文重点)
+
+Factory Bean模式
+</code></pre><a id="more"></a>
+<h3 id="一、反射模式"><a href="#一、反射模式" class="headerlink" title="一、反射模式"></a>一、反射模式</h3><p>其中反射模式最常见， 我们需要在bean 配置中指明我们需要的bean object的全类名。</p>
+<p>例如:</p>
+<pre><code>`&lt;bean id=&quot;car1&quot; class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+      &lt;property name=&quot;id&quot; value=&quot;1&quot;&gt;&lt;/property&gt; 
+      &lt;property name=&quot;name&quot; value=&quot;Honda&quot;&gt;&lt;/property&gt;   
+      &lt;property name=&quot;price&quot; value=&quot;300000&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;`
+</code></pre><p>上面bean 里面的class属性就是全类名， Spring利用Java反射机制创建这个bean。</p>
+<h3 id="二、工厂方法模式"><a href="#二、工厂方法模式" class="headerlink" title="二、工厂方法模式"></a>二、工厂方法模式</h3><p>在工厂方法模式中， Spring不会直接利用反射机制创建bean对象， 而是会利用反射机制先找到Factory类，然后利用Factory再去生成bean对象。</p>
+<p>而Factory Mothod方式也分两种， 分别是静态工厂方法 和 实例工厂方法。</p>
+<h4 id="静态工厂方法方式"><a href="#静态工厂方法方式" class="headerlink" title="静态工厂方法方式"></a>静态工厂方法方式</h4><p>所谓<code>静态工厂方式就是指Factory类不本身不需要实例化， 这个Factory类中提供了1个静态方法来生成bean对象</code>。</p>
+<p>我们一起来看个例子：</p>
+<p>bean类Car</p>
+<p>首先我们定义1个bean类Car</p>
+<pre><code>`package io.github.cc.factoryMethod;
+
+public class Car {
+    private int id;
+    private String name;
+    private int price;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Car [id=&quot; + id + &quot;, name=&quot; + name + &quot;, price=&quot; + price + &quot;]&quot;;
+    }
+
+  public Car(){
+
+  }
+
+    public Car(int id, String name, int price) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+}`
+</code></pre><p>然后我们再定义1个工厂类CarStaticFactory</p>
+<pre><code>`import java.util.HashMap;
+import java.util.Map;
+
+public class CarStaticFactory {
+    private static Map&lt;Integer, Car&gt; map = new HashMap&lt;Integer,Car&gt;();
+
+    static{
+        map.put(1, new Car(1,&quot;Honda&quot;,300000));
+        map.put(2, new Car(2,&quot;Audi&quot;,440000));
+        map.put(3, new Car(3,&quot;BMW&quot;,540000));
+    }
+
+    public static Car getCar(int id){
+        return map.get(id);
+    }
+}`
+</code></pre><p>里面定义了1个静态的bean 容器map. <code>然后提供1个静态方法根据Car 的id 来获取容器里的car对象。</code></p>
+<p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;bmwCar&quot; class=&quot;io.github.cc.factoryMethod.CarStaticFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;3&quot;&gt;&lt;/constructor-arg&gt;           
+&lt;/bean&gt;
+
+&lt;bean id=&quot;audiCar&quot; class=&quot;io.github.cc.factoryMethod.CarStaticFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;2&quot;&gt;&lt;/constructor-arg&gt;           
+&lt;/bean&gt;`
+</code></pre><p>可以见到， 利用静态工厂方法定义的bean item种， class属性不在是bean的全类名， <code>而是静态工厂的全类名， 而且还需要指定工厂里的 getBean 静态方法名字和参数</code>。</p>
+<p>测试代码：</p>
+<pre><code>、public static void h1(){
+      ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+      Car car1 = (Car) ac.getBean(&quot;bmwCar&quot;);
+      System.out.println(car1);
+
+      car1 = (Car) ac.getBean(&quot;audiCar&quot;);
+      System.out.println(car1);
+}、
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=3, name=BMW, price=540000]
+ Car [id=2, name=Audi, price=440000]`
+</code></pre><p>【小结】</p>
+<p>由上面的例子， 静态工厂方法方式是非常适用于作为1个bean容器(集合的), 只不过把bean集合定义在工厂类里面而不是bean config file里面。<br>缺点也比较明显， 把数据写在class里面而不是配置文件中违反了我们程序猿的常识和spring的初衷。当然优点就是令到令人恶心的bean config file更加简洁啦。</p>
+<h4 id="实例工厂方法方式"><a href="#实例工厂方法方式" class="headerlink" title="实例工厂方法方式"></a>实例工厂方法方式</h4><p>所谓实例工厂方式也很容易看懂， 就是里面的getCar 方法不是静态的， 也就是代表要先实例1个工厂对象， 才能依靠这个工厂对象去获得bean 对象。</p>
+<p>CarInstanceFactroy类</p>
+<pre><code>`public class CarInstanceFactory {
+     private Map&lt;Integer, Car&gt; map = new HashMap&lt;Integer,Car&gt;();
+
+     public void setMap(Map&lt;Integer, Car&gt; map) {
+        this.map = map;
+    }
+
+    public CarInstanceFactory(){
+    }
+
+    public Car getCar(int id){
+        return map.get(id);
+    }
+}`
+</code></pre><p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;carFactory&quot; class=&quot;io.github.cc.factoryMethod.CarInstanceFactory&quot;&gt;
+    &lt;property name=&quot;map&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;4&quot;&gt;
+                    &lt;bean class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+                        &lt;property name=&quot;id&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   
+                        &lt;property name=&quot;name&quot; value=&quot;Honda&quot;&gt;&lt;/property&gt; 
+                        &lt;property name=&quot;price&quot; value=&quot;300000&quot;&gt;&lt;/property&gt;   
+                    &lt;/bean&gt;
+            &lt;/entry&gt;    
+
+            &lt;entry key=&quot;6&quot;&gt;
+                    &lt;bean class=&quot;io.github.cc.factoryMethod.Car&quot;&gt;
+                        &lt;property name=&quot;id&quot; value=&quot;6&quot;&gt;&lt;/property&gt;   
+                        &lt;property name=&quot;name&quot; value=&quot;ford&quot;&gt;&lt;/property&gt;  
+                        &lt;property name=&quot;price&quot; value=&quot;500000&quot;&gt;&lt;/property&gt;   
+                    &lt;/bean&gt;
+            &lt;/entry&gt;
+        &lt;/map&gt;  
+    &lt;/property&gt;
+ &lt;/bean&gt;
+
+&lt;bean id=&quot;car4&quot; factory-bean=&quot;carFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;4&quot;&gt;&lt;/constructor-arg&gt;           
+ &lt;/bean&gt;
+
+ &lt;bean id=&quot;car6&quot; factory-bean=&quot;carFactory&quot; factory-method=&quot;getCar&quot;&gt;
+    &lt;constructor-arg value=&quot;6&quot;&gt;&lt;/constructor-arg&gt;           
+ &lt;/bean&gt;`
+</code></pre><p>因为实例工厂本身要实例化， 所以我们可以在xml中 指定它里面容器的data， 解决了上面提到的静态工厂方法的缺点啦.</p>
+<p>测试代码：</p>
+<pre><code>`public static void h2(){
+    ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applivarionContext.xml&quot;);
+    Car car1 = (Car) ac.getBean(&quot;car4&quot;);
+    System.out.println(car1);
+
+    car1 = (Car) ac.getBean(&quot;car6&quot;);
+    System.out.println(car1);
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=4, name=Honda, price=300000]
+ Car [id=6, name=ford, price=500000]`
+</code></pre><p>本人觉得实例工厂方式使用起来更加灵活啦， 不过项目中其实本文一开始提到的第三种方法FactoryBean比起工厂方法方式更加常见。</p>
+<h3 id="三、Factory-Bean模式"><a href="#三、Factory-Bean模式" class="headerlink" title="三、Factory Bean模式"></a>三、Factory Bean模式</h3><p>FactoryBean 用法可以与Factory　Method有点类似，我们同样需要写1个工厂类，只不过spring提供了1个叫做FactoryBean的接口。</p>
+<p>我们的工厂类必须实现这个接口。</p>
+<p>我们首先写1个Car类</p>
+<pre><code>`public class Car {
+    private int id;
+    private String name;
+    private int price;
+
+    @Override
+    public String toString() {
+        return &quot;Car [id=&quot; + id + &quot;, name=&quot; + name + &quot;, price=&quot; + price + &quot;]&quot;;
+    }
+
+    public Car(){
+
+    }
+
+    public Car(int id, String name, int price) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+}`
+</code></pre><p>接下来必须写1个工厂类CarBeanFactory</p>
+<pre><code>`import org.springframework.beans.factory.FactoryBean;
+
+public class CarBeanFactory implements FactoryBean&lt;Car&gt;{
+
+    private int id;
+    private String brand;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    @Override
+    public Car getObject() throws Exception {
+        return new Car(id, brand, 0);
+    }
+
+    @Override
+    public Class&lt;?&gt; getObjectType() {
+        return Car.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+}`
+</code></pre><p>首先上面这个工厂必须实现Spring提供的FactoryBean这个接口。<br>然后重写里面的3个方法</p>
+<p>getObject() -&gt; 这个就是你想利用工厂类生产的bean对象， 通常在里面new 1个 对象就ok </p>
+<p>getObjectType() -&gt; 你必须指明上面bean的对象的class </p>
+<p>isSingleton（） -&gt; 这个方法决定了这个bean是否单例的。</p>
+<p>xml配置applicationContext.xml</p>
+<pre><code>`&lt;bean id=&quot;car1&quot; class=&quot;io.github.cc.factoryBean.CarBeanFactory&quot;&gt;
+      &lt;property name=&quot;id&quot; value=&quot;1&quot;&gt;&lt;/property&gt;
+      &lt;property name=&quot;brand&quot; value=&quot;Ford&quot;&gt;&lt;/property&gt;
+&lt;/bean&gt;`
+</code></pre><p>里面bean的配置写法跟反射机制的十分类似。</p>
+<p>但是一般利用反射机制的bean配置， class= 的值就是bean对象的全类名， 但是利用FactoryBean的方式中， class= 必须是工厂类的全类名。</p>
+<p><code>一但这个工厂类实现了FactoryBean接口， 那么这个bean item 返回的就是它里面的getObject()方法return的对象。</code></p>
+<p>测试代码：</p>
+<pre><code>` public static void f(){
+    ApplicationContext ac= new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+    Car car1 = (Car)ac.getBean(&quot;car1&quot;);
+    System.out.println(car1);
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`Car [id=1, name=Ford, price=0]`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/SSH/">SSH</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hibernate和MyBatis学习总结 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="框架">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Hibernate和MyBatis学习总结"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Hibernate和MyBatis学习总结</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/12/13/java高级/hibernate和mybatis总结/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-12-13T02:23:30.195Z">
+          2016-12-13
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、Hibernate简介"><a href="#一、Hibernate简介" class="headerlink" title="一、Hibernate简介"></a>一、Hibernate简介</h3><p>Hibernate是基于JDBC封装,是一个<code>ORM</code>框架,不依赖于servlet容器的框架。</p>
+<p>ORM:对象关系映射(Object Relation Mapping),用于实现面向对象语言里不同类型系统的数据之间的转换。从结果上来说：其实就是创建了一个可在编程语言里使用的“虚拟对象数据库”。</p>
+<a id="more"></a>
+<h3 id="二、Hibernate运行原理"><a href="#二、Hibernate运行原理" class="headerlink" title="二、Hibernate运行原理"></a>二、Hibernate运行原理</h3><h4 id="执行流程图："><a href="#执行流程图：" class="headerlink" title="执行流程图："></a>执行流程图：</h4><p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/*H0*AEQBgSDTpQkoCzsIpya.gOCMB0673oJoKhX*ZJs!/b/dKsAAAAAAAAA&amp;bo=jgIXAgAAAAADB7s!&amp;rf=viewer_4" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/3sjAEDKvErx21JT9xS5yvvFXYWtna8Ze5U48w86O*CA!/b/dB8BAAAAAAAA&amp;bo=cgLxAQAAAAADAKU!&amp;rf=viewer_4" alt=""></p>
+<p>【文字解释】</p>
+<blockquote>
+<p>Hibernate是一个ORM框架，可以帮助我们通过面向对象的思想来操作数据库。直接把对象传给hibernate后，不需要额外的拆箱操作。</p>
+<p>当程序运行后，需要通过StandardServiceRegistry注册服务组件，把所有准备工作做完，这个时候已经把配置文件加载。之后通过Metadata真正解析configure和mapping文件。如果配置文件有错误，会报异常。如果配置文件正确，会产生唯一的SessionFactory。如果只用hibernate框架，多用ThreadLocal结合保证唯一。</p>
+<p>在web中项目通常都是一个Session一次请求,当用户多次请求后由SessionFactory频繁产生Session,请求时打开Session并保证每个业务逻辑对应一个Transaction,如果不结合Spring框架,都需要进行编程事务,多通过OpenSessionInView实现。</p>
+<p>当事务处理结束后,需要关闭Session,释放Session缓存中所有内容,节约服务器内存资源。</p>
+<p>在web项目中通常都是不关闭SessionFactory和不销毁StandardServiceRegistry.因为如果销毁每次访问时在重新实例化会特别影响效率,hibernate本身运行效率就不是特别高。</p>
+</blockquote>
+<h3 id="三、MyBatis简介"><a href="#三、MyBatis简介" class="headerlink" title="三、MyBatis简介"></a>三、MyBatis简介</h3><p>MyBatis是支持普通SQL和存储过程和高级映射的<code>持久层</code>框架。</p>
+<p>原名叫做ibatis,项目被迁移到apache中更名为mybatis。</p>
+<h3 id="四、MyBatis运行原理"><a href="#四、MyBatis运行原理" class="headerlink" title="四、MyBatis运行原理"></a>四、MyBatis运行原理</h3><h4 id="执行流程图：-1"><a href="#执行流程图：-1" class="headerlink" title="执行流程图："></a>执行流程图：</h4><p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/aB9B68IYwdWCYJI2bA*q.Oe9eG14*sIejzpXYJUO478!/b/dCABAAAAAAAA&amp;bo=tgH3AQAAAAAFAGI!&amp;rf=viewer_4" alt=""></p>
+<p>【运行原理】</p>
+<blockquote>
+<p>程序执行过程，平时编写代码时只需要把配置文件转换为流交给SqlSessionFactoryBuilder就会产生SqlSessionFactory。根据打断点进源码观察到实际上把配置文件流有XMLConfigBuilder进行解析，解析后把所有配置信息封装到了Configuration中，在把Configuration传递给DefaultSqlSessionFactory，并实例化这个类。</p>
+<p>在源码中，可以看出DefaultSqlSessionFactory是SqlSessionFactory的实现类。所以这个时候就产生了SqlSessionFactory接口的实例。</p>
+<p>需要openSession,产生SqlSession示例,根据SqlSession实例执行事务。最后要提交事务和关闭SqlSession。</p>
+</blockquote>
+<h3 id="五、Hibernate和MyBatis的相同点与不同点"><a href="#五、Hibernate和MyBatis的相同点与不同点" class="headerlink" title="五、Hibernate和MyBatis的相同点与不同点"></a>五、Hibernate和MyBatis的相同点与不同点</h3><h4 id="相同点："><a href="#相同点：" class="headerlink" title="相同点："></a><b>相同点</b>：</h4><p>1、都替换了Dao层。</p>
+<p>2、都是封装了JDBC。</p>
+<p>3、都是占位符赋值做了不同的处理。</p>
+<p>4、数据库只认sql语句，最终都是将sql语句发送到数据库中。</p>
+<h4 id="不同点："><a href="#不同点：" class="headerlink" title="不同点："></a><b>不同点</b>：</h4><p>1、hibernate的hql语句写的是类名+属性名。mybatis的sql语句写的是表名+列名。</p>
+<p>2、mybatis不需要写<code>dao的实现类</code>。</p>
+<p>3、mybatis支持动态的sql语句(有点像JSTL)</p>
+<p>4、hibernate对于<code>数据库分表</code>实现不了，mybatis是手写的sql语句，分表表名可以处理。</p>
+<p>5、hibernate支持<code>hbm2ddl</code>（自动更新表结构）。</p>
+<p>6、<code>保存记录</code>时，hibernate返回的是主键。mybatis返回的是影响条数，对象的id</p>
+<p>7、Hibernate数据库<code>移植性</code>很好，MyBatis的数据库移植性不好，不同的数据库需要写不同SQL。</p>
+<p>8、Hibernate有更好的二级<code>缓存机制</code>，可以使用第三方缓存。MyBatis本身提供的缓存机制不佳。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/框架/">框架</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

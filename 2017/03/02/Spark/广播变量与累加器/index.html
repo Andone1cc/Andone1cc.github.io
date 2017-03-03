@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark学习笔记——广播变量与累加器 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="Spark学习总结">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spark学习笔记——广播变量与累加器"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Spark学习笔记——广播变量与累加器</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/广播变量与累加器/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T11:33:18.050Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、Spark-广播变量"><a href="#一、Spark-广播变量" class="headerlink" title="一、Spark 广播变量"></a>一、Spark 广播变量</h3><h4 id="1-引入"><a href="#1-引入" class="headerlink" title="1.引入"></a><b>1.引入</b></h4><p>我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。所以为了解决变量占用内存的问题，我们直接在executor层面保存一份变量即可。不用给每一个task都保存一份变量，只需要保存executor的个数那么多个。</p>
+<a id="more"></a>
+<h4 id="2-广播变量的原理"><a href="#2-广播变量的原理" class="headerlink" title="2.广播变量的原理"></a><b>2.广播变量的原理</b></h4><p>task在执行的时候如果使用到了广播变量，它会找本地管理广播变量的组件(<code>BlockManager</code>)去要，如果本地的BlockManager中没有广播变量，BlockManager会去Driver端(有一个BlockManagerMaster组件)去拉取广播变量。</p>
+<p>广播变量不是Driver主动发给executor的，而是等到哪个task执行使用到了广播变量，根据需要去取，免得浪费资源。</p>
+<h4 id="3-使用流程"><a href="#3-使用流程" class="headerlink" title="3.使用流程"></a><b>3.使用流程</b></h4><p>Driver端：</p>
+<pre><code>val broadcast=sc.broatcast(变量) 广播的变量可以是基本类型和集合
+</code></pre><p>Executor端：</p>
+<pre><code>broadcast.value
+</code></pre><p>【注意事项】</p>
+<p>1.广播变量只能在Driver端定义，不能在Executor端定义。</p>
+<p>2.广播变量在Executor端不能修改。</p>
+<h4 id="4-广播变量-map实现join算子"><a href="#4-广播变量-map实现join算子" class="headerlink" title="4.广播变量+map实现join算子"></a><b>4.广播变量+map实现join算子</b></h4><p>因为join算子会产生shuffle,shuffle过程会有数据的移动,数据的读写I/O,占用过多的资源。所以我们在编写程序时尽量避免使用shuffle类的算子。</p>
+<p>使用广播变量+map 实现join</p>
+<font color="red">适用场景：</font>
+
+<pre><code>一个RDD的数据量比较大，一个RDD的数据量比较小，适合用这种方式来取代join.
+如果两个RDD的数据量都特别的大，那么会造成executor进程的OOM.
+</code></pre><p><b>[代码演示]</b></p>
+<pre><code>```java
+public class TestBroadCast {
+     public static void main(String[] args) {
+         SparkConf conf = new SparkConf()
+                .setAppName(&quot;BroadCast&quot;)
+                .setMaster(&quot;local&quot;)
+                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        List&lt;Tuple2&lt;String, String&gt;&gt; nameList = Arrays.asList(
+                new Tuple2&lt;String, String&gt;(&quot;1&quot;, &quot;zhangsan&quot;),
+                new Tuple2&lt;String, String&gt;(&quot;2&quot;, &quot;lisi&quot;),
+                new Tuple2&lt;String, String&gt;(&quot;3&quot;, &quot;wangwu&quot;)
+        );
+        List&lt;Tuple2&lt;String, String&gt;&gt; scoreList = Arrays.asList(
+                new Tuple2&lt;String, String&gt;(&quot;1&quot;, &quot;90&quot;),
+                new Tuple2&lt;String, String&gt;(&quot;2&quot;, &quot;80&quot;),
+                new Tuple2&lt;String, String&gt;(&quot;3&quot;, &quot;89&quot;)
+        );
+       JavaPairRDD&lt;String, String&gt; nameRDD = sc.parallelizePairs(nameList);
+       JavaPairRDD&lt;String, String&gt; scoreRDD = sc.parallelizePair(scoreList);
+       List&lt;Tuple2&lt;String, String&gt;&gt; collect = nameRDD.collect();
+        Map&lt;String, String&gt; nameMap = new HashMap&lt;&gt;();
+        for (Tuple2&lt;String, String&gt; tuple2 : collect) {
+            nameMap.put(tuple2._1, tuple2._2);
+        }    
+        final Broadcast&lt;Map&lt;String, String&gt;&gt; nMB =sc.broadcast(nameMap);
+        scoreRDD.map(new Function&lt;Tuple2&lt;String,String&gt;,String&gt;(){
+           private static final long serialVersionUID = 1L;
+           @Override
+           public String call(Tuple2&lt;String, String&gt; tuple) {    
+                Map&lt;String, String&gt; nameMap = nMB.value();
+                String id=tuple._1;
+                String score=tuple._2;
+
+                String name=nameMap.get(id);
+                if(name != null){
+                    System.out.println(id +&quot; name:&quot;+name +&quot; score:&quot;+score);
+                }
+                return null;
+            }
+        }).collect();
+        sc.stop();
+    }
+}
+```
+</code></pre><p><b>[执行结果]</b></p>
+<pre><code>`id:1 name:zhangsan score:90
+ id:2 name:lisi score:80
+ id:3 name:wangwu score:89`
+</code></pre><h3 id="二、累加器"><a href="#二、累加器" class="headerlink" title="二、累加器"></a>二、累加器</h3><h4 id="1-什么是累加器？"><a href="#1-什么是累加器？" class="headerlink" title="1.什么是累加器？"></a><b>1.什么是累加器？</b></h4><p>累加器可以看成是一个集群规模级别的一个大变量。</p>
+<h4 id="2-累加器与广播变量比较"><a href="#2-累加器与广播变量比较" class="headerlink" title="2.累加器与广播变量比较"></a><b>2.累加器与广播变量比较</b></h4><p><code>累加器</code>是在Driver端创建，在Driver端读取，在Executor端操作(累加操作)，在Executor端是不能读取的。</p>
+<p><code>广播变量</code>是在Driver端创建，在Executor端读取，在Executor端不能修改。</p>
+<h4 id="3-利用累加器算文件的行数"><a href="#3-利用累加器算文件的行数" class="headerlink" title="3.利用累加器算文件的行数"></a><b>3.利用累加器算文件的行数</b></h4><p><b>[代码演示]</b></p>
+<pre><code>```java
+public class TestAccumulator {
+    public static void main(String[] args) {
+        SparkConf conf = new SparkConf()
+                .setAppName(&quot;BroadCast&quot;)
+                .setMaster(&quot;local&quot;)
+                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);
+       JavaSparkContext sc = new JavaSparkContext(conf);    
+        final Accumulator&lt;Integer&gt; accumulator = sc.accumulator(0);    
+        JavaRDD&lt;String&gt; userLogRDD = sc.textFile(&quot;cs&quot;);    
+        userLogRDD.foreach(new VoidFunction&lt;String&gt;() {    
+            private static final long serialVersionUID = 1L;    
+            @Override
+            public void call(String s) throws Exception {
+                accumulator.add(1);
+            }
+        });
+        System.out.println(&quot;line count:&quot; + accumulator.value());
+        sc.stop();
+    }
+}
+```
+</code></pre><h4 id="4-累加器的错误用法"><a href="#4-累加器的错误用法" class="headerlink" title="4.累加器的错误用法"></a><b>4.累加器的错误用法</b></h4><pre><code>```scala
+val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
+val data = sc.parallelize(1 to 10)    
+//用accumulator统计偶数出现的次数，同时偶数返回0，奇数返回1    
+val newData = data.map{x =&gt; {    
+if(x%2 == 0){    
+accum += 1    
+0    
+}else 1    
+}}    
+//使用action操作触发执行    
+newData.count    
+//此时accum的值为5，是我们要的结果    
+accum.value    
+//继续操作，查看刚才变动的数据,foreach也是action操作    
+newData.foreach(println)    
+//上个步骤没有进行累计器操作，可是累加器此时的结果已经是10了    
+//这并不是我们想要的结果
+accum.value
+```
+</code></pre><p><b>原因分析</b></p>
+<p>官方对这个问题的解释如下描述:</p>
+<blockquote>
+<p>For accumulator updates performed inside actions only, Spark guarantees that each task’s update to the accumulator will only be applied once, i.e. restarted tasks will not update the value. In transformations, users should be aware of that each task’s update may be applied more than once if tasks or job stages are re-executed.</p>
+</blockquote>
+<p>我们都知道，spark中的一系列transform操作会构成一串长的任务链，此时需要通过一个action操作来触发，accumulator也是一样。因此在一个action操作之前，你调用value方法查看其数值，肯定是没有任何变化的。</p>
+<p>所以在第一次count(action操作)之后，我们发现累加器的数值变成了5，是我们要的答案。</p>
+<p>之后又对新产生的的newData进行了一次foreach(action操作)，其实这个时候又执行了一次map(transform)操作，所以累加器又增加了5。最终获得的结果变成了10。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1832028-c6cec94e61b298fe?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><b>解决办法</b></p>
+<p>看了上面的分析，大家都有这种印象了，那就是使用累加器的过程中只能使用一次action的操作才能保证结果的准确性。</p>
+<p>事实上，还是有解决方案的，只要将任务之间的依赖关系切断就可以了。什么方法有这种功能呢？你们肯定都想到了，cache，persist。调用这个方法的时候会将之前的依赖切除，后续的累加器就不会再被之前的transfrom操作影响到了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1832028-dc92297e1cbc8533?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<pre><code>```scala
+val accum= sc.accumulator(0, &quot;Error Accumulator&quot;)
+val data = sc.parallelize(1 to 10)
+//代码和上方相同
+val newData = data.map{x =&gt; {...}}
+//使用cache缓存数据，切断依赖。
+newData.cache.count
+//此时accum的值为5
+accum.value
+newData.foreach(println)
+//此时的accum依旧是5
+accum.value    
+```
+</code></pre><font color="red">使用Accumulator时，为了保证准确性，只使用一次action操作。如果需要使用多次则使用cache或persist操作切断依赖。</font>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

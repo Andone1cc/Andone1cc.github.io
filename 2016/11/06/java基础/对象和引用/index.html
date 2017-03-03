@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浅谈Java中的对象和引用 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="java基础">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="浅谈Java中的对象和引用"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>浅谈Java中的对象和引用</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/对象和引用/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.560Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="浅谈Java中的对象和对象引用"><a href="#浅谈Java中的对象和对象引用" class="headerlink" title="浅谈Java中的对象和对象引用"></a>浅谈Java中的对象和对象引用</h3><p>在Java中，有一组名词经常一起出现，它们就是“对象和对象引用”，在初学Java的时候经常会混淆这2个概念，觉得它们是一回事，事实上则不然。我们来一起了解一下对象和对象引用之间的区别和联系。</p>
+<a id="more"></a>
+<h3 id="一、何谓对象？"><a href="#一、何谓对象？" class="headerlink" title="一、何谓对象？"></a>一、何谓对象？</h3><p>在Java中有一句比较流行的话，叫做<code>“万物皆对象”</code>，这是Java语言设计之初的理念之一。要理解什么是对象，需要跟类一起结合起来理解。下面这段话引自《Java编程思想》中的一段原话：</p>
+<blockquote>
+<p>　“按照通俗的说法，每个对象都是某个类（class）的一个实例（instance），这里，‘类’就是‘类型’的同义词。”</p>
+</blockquote>
+<p>从这一句话就可以理解到对象的本质，简而言之，它就是类的实例，比如所有的人统称为“人类”，这里的“人类”就是一个类（物种的一种类型），而具体到每个人，比如张三这个人，它就是对象，就是“人类”的实例。</p>
+<h3 id="二、何谓对象引用？"><a href="#二、何谓对象引用？" class="headerlink" title="二、何谓对象引用？"></a>二、何谓对象引用？</h3><p>我们先看一段话：</p>
+<blockquote>
+<p>“每种编程语言都有自己的数据处理方式。有些时候，程序员必须注意将要处理的数据是什么类型。你是直接操纵元素，还是用某种基于特殊语法的间接表示（例如C/C++里的指针）来操作对象。所有这些在 Java 里都得到了简化，一切都被视为对象。因此，我们可采用一种统一的语法。尽管将一切都“看作”对象，但操纵的标识符实际是指向一个对象的“引用”（reference）。”</p>
+</blockquote>
+<p>这段话来自于《Java编程思想》，很显然，从这段话可以看出对象和对象引用不是一回事，是两个完全不同的概念。举个例子，我们通常会用下面这一行代码来创建一个对象：</p>
+<pre><code>`Person person = new Person(&quot;张三&quot;);`
+</code></pre><p>有人会说，这里的person是一个对象，是Person类的一个实例。</p>
+<p>也有人会说，这里的person并不是真正的对象，而是指向所创建的对象的引用。</p>
+<p>到底哪种说法是对的？我们先不急着纠结哪种说法是对的，再看两行代码：</p>
+<pre><code>`Person person;
+ person = new Person(&quot;张三&quot;);`
+</code></pre><p>这两行代码实现的功能和上面的一行代码是完全一样的。大家都知道，在Java中new是用来在堆上创建对象用的，如果person是一个对象的话，那么第二行为何还要通过new来创建对象呢？由此可见，person并不是所创建的对象，是什么？上面的一段话说的很清楚，“操纵的标识符实际是指向一个对象的引用”，也就是说person是一个引用，是指向一个可以指向Person类的对象的引用。真正创建对象的语句是右边的new Person(“张三”);</p>
+<p>　再看一个例子：</p>
+<pre><code>`Person person;
+ person = new Person(&quot;张三&quot;);
+ person = new Person(&quot;李四&quot;);`
+</code></pre><p>这里让person先指向了“张三”这个对象，然后又指向了“李四”这个对象。也就是说，Person person，这句话只是声明了一个Person类的引用，它可以指向任何Person类的实例。这个道理就和下面这段代码一样：</p>
+<pre><code>`int a;
+ a=2;
+ a=3;`
+</code></pre><p>这里先声明了一个int类型的变量a，先对a赋值为2，后面又赋值为3.也就是说int类型的变量a，可以让它的值为2，也可以为3，只要是合法的int类型的数值即可。</p>
+<p>也就是说，一个引用可以指向多个对象(不太严谨,最后只会指向最后指向的那个对象)，而一个对象可不可以被多个引用所指呢？答案当然是可以的。</p>
+<p>比如：</p>
+<pre><code>`Person person1 = new Person(&quot;张三&quot;);
+ Person person2 = person1;`
+</code></pre><p>person1和person2都指向了“张三”这个对象。</p>
+<p>综上所述:</p>
+<p>可以简单的记为，在初始化时，“=”语句左边的是引用，右边new出来的是对象。 </p>
+<p>在后面的左右都是引用的“=”语句时，左右的引用同时指向了右边引用所指向的对象。 </p>
+<p>再所谓实例，其实就是对象的同义词。</p>
+<p><br><br>【参考资料】</p>
+<p>《Java编程思想》</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

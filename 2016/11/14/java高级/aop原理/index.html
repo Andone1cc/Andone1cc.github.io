@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>解析Spring Aop原理以及Aop支持的通知类型 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="SSH">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="解析Spring Aop原理以及Aop支持的通知类型"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>解析Spring Aop原理以及Aop支持的通知类型</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/14/java高级/aop原理/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-14T15:00:54.111Z">
+          2016-11-14
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、Spring-容器AOP的实现原理——动态代理"><a href="#一、Spring-容器AOP的实现原理——动态代理" class="headerlink" title="一、Spring 容器AOP的实现原理——动态代理"></a>一、Spring 容器AOP的实现原理——动态代理</h3><p><code>IOC负责将对象动态的注入到容器，从而达到一种需要谁就注入谁，什么时候需要就什么时候注入的效果，可谓是招之则来，挥之则去。</code>而AOP呢，它实现的就是容器的另一大好处了，就是<code>可以让容器中的对象都享有容器中的公共服务</code>。那么容器是怎么做到的呢？它怎么就能让在它里面的对象自动拥有它提供的公共性服务呢？答案就是——动态代理。</p>
+<a id="more"></a>
+<p>动态代理其实并不是什么新鲜的东西，学过设计模式的人都应该知道代理模式，<code>代理模式是一种静态代理，而动态代理就是利用反射和动态编译将代理模式变成动态的。</code>原理跟动态注入一样，代理模式在编译的时候就已经确定代理类将要代理谁，而动态代理在运行的时候才知道自己要代理谁。</p>
+<p>Spring的动态代理有两种：<code>一是JDK的动态代理；另一个是cglib动态代理（通过修改字节码来实现代理）。</code>今天咱们主要讨论JDK动态代理的方式。JDK的代理方式主要就是通过反射跟动态编译来实现的，下面咱们就通过代码来看看它具体是怎么实现的。</p>
+<pre><code>`/**
+ * 接口
+ */
+interface Subject{
+    void request();
+}`
+
+`/**
+ * 委托类
+ */
+class RealSubject implements Subject{
+    public void request(){
+        System.out.println(&quot;====RealSubject Request====&quot;);
+    }
+}`
+
+`/**
+ * 代理类的调用处理器
+ */
+class ProxyHandler implements InvocationHandler{
+    private Subject subject;
+    public ProxyHandler(Subject subject){
+        this.subject = subject;
+    }
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        System.out.println(&quot;====before====&quot;);//定义预处理的工作，当然你也可以根据 method 的不同进行不同的预处理工作
+        Object result = method.invoke(subject, args);
+        System.out.println(&quot;====after====&quot;);
+        return result;
+    }
+}`
+
+`public class DynamicProxyDemo01 {
+    public static void main(String[] args) {
+        RealSubject realSubject = new RealSubject();    //1.创建委托对象
+        ProxyHandler handler = new ProxyHandler(realSubject);    //2.创建调用处理器对象
+        Subject proxySubject = (Subject)Proxy.newProxyInstance(RealSubject.class.getClassLoader(),
+                                                 RealSubject.class.getInterfaces(), handler);    //3.动态生成代理对象
+        proxySubject.request();    //4.通过代理对象调用方法
+    }
+}`
+</code></pre><p>事务处理：</p>
+<pre><code>`public class TransactionHandler implements InvocationHandler {  
+
+    private Object target;  
+
+    public TransactionHandler(Object target) {  
+        super();  
+        this.target = target;  
+    }  
+
+    @Override  
+    public void invoke(Object o, Method m) {  
+        System.out.println(&quot;开启事务.....&quot;);  
+        try {  
+            m.invoke(target);  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+        System.out.println(&quot;提交事务.....&quot;);  
+    }  
+
+} `
+</code></pre><p><code>从代码中不难看出，我们代理的功能里没有涉及到任何被代理对象的具体信息</code>，这样有什么好处呢？这样的好处就是将代理要做的事情跟被代理的对象完全分开，这样一来我们就可以在代理和被代理之间随意的进行组合了。也就是说同一个功能我们只需要一个。同样的功能只有一个，那么这个功能不就是公共的功能吗？<code>不管容器中有多少给对象，都可以享受容器提供的服务了。这就是容器的好处。</code></p>
+<h3 id="二、Aop支持的通知类型"><a href="#二、Aop支持的通知类型" class="headerlink" title="二、Aop支持的通知类型"></a>二、Aop支持的通知类型</h3><p>spring aop通知(advice)分成五类： </p>
+<p><code>前置通知[Before advice]</code>：在连接点前面执行，前置通知不会影响连接点的执行，除非此处抛出异常。 </p>
+<p><code>正常返回通知[After returning advice]</code>：在连接点正常执行完成后执行，如果连接点抛出异常，则不会执行。 </p>
+<p><code>异常返回通知[After throwing advice]</code>：在连接点抛出异常后执行。 </p>
+<p><code>返回通知[After (finally) advice]</code>：在连接点执行完成后执行，不管是正常执行完成，还是抛出异常，都会执行返回通知中的内容。 </p>
+<p><code>环绕通知[Around advice]</code>：环绕通知围绕在连接点前后，比如一个方法调用的前后。这是最强大的通知类型，能在方法调用前后自定义一些操作。环绕通知还需要负责决定是继续处理join point(调用ProceedingJoinPoint的proceed方法)还是中断执行。</p>
+<p>下面是实现代码:</p>
+<pre><code>`package io.github.cc.aop;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+/**
+ * 注解,把当前类放到spring容器中
+ * @author Andone
+ *
+ */
+@Component(&quot;myAdviceAnno&quot;)
+@Aspect
+public class MyAdviceAnno {
+    /**
+     * 方法之前执行
+     */
+    @Before(value=&quot;execution(* io.github.cc.service.impl.*.*(..))&quot;)
+    public void before(){
+        System.out.println(&quot;====before=====&quot;);
+    }
+    @After(value=&quot;execution(* io.github.cc.service.impl.*.*(..))&quot;)
+    public void after()
+    {
+        System.out.println(&quot;======after=============&quot;);
+    }
+    @AfterReturning(value=&quot;execution(* io.github.cc.service.impl.*.*(..))&quot;)
+    public void afterReturn()
+    {
+        System.out.println(&quot;===========afterReturn==========&quot;);
+    }
+    @Around(value=&quot;execution(* io.github.cc.service.impl.*.*(..))&quot;)
+    public Object around(ProceedingJoinPoint pjp) throws Throwable
+    {
+        System.out.println(&quot;======around==before===========&quot;);
+        Object obj = null ;
+        /* 执行目标方法 */
+        obj = pjp.proceed();
+        System.out.println(&quot;======around==after===========&quot;);
+        return obj ;
+    }
+    @AfterThrowing(value=&quot;execution(* io.github.cc.service.impl.*.*(..))&quot;)
+    public void afterThrowing()
+    {
+        System.out.println(&quot;-----exception-------&quot;);
+    }
+}`
+</code></pre><p>service的实现类</p>
+<pre><code>`package io.github.cc.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import io.github.cc.service.IUsersService;
+
+@Service(&quot;usersService&quot;)
+public class UsersServiceImpl implements IUsersService{
+
+    @Override
+    public int save(int res) {
+        System.out.println(&quot;---save---&quot;+res);
+        return 110;
+    }
+
+    @Override
+    public void update() {
+        System.out.println(&quot;---update---&quot;);
+    }
+
+    @Override
+    public void delete() {
+        System.out.println(&quot;---delete---&quot;);
+        if(1 == 1 )
+        {
+            throw new NullPointerException(&quot;===aa===&quot;);
+        }
+        //throw new IndexOutOfBoundsException();
+    }
+
+}`    
+</code></pre><p>测试代码：</p>
+<pre><code>`public class AopTest extends SpringTest{
+    @Test
+    public void aopTest(){
+        IUsersService usersService=(IUsersService) this.ac.getBean(&quot;usersService&quot;);
+        this.logger.info(&quot;--aopTest==={}&quot;,usersService);
+        usersService.save(10);
+        //usersService.delete();
+    }
+}`
+
+`package io.github.cc.test;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Before;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+ * 初始化Spring的类
+ * @author wangshSxt
+ *
+ */
+public class SpringTest
+{
+    protected Logger logger = LogManager.getLogger(SpringTest.class);
+
+    protected ApplicationContext ac ; 
+
+    /**
+     * 初始化Spring
+     */
+    @Before
+    public void init()
+    {
+        ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+        this.logger.info(&quot;---spring 初始化成功---init----&quot;);
+    }
+}
+`
+</code></pre><p>注意：使用Aop注解，需要在xml文件中配置</p>
+<pre><code>`&lt;!-- 开启Aop的注解 --&gt;
+&lt;aop:aspectj-autoproxy /&gt;`
+</code></pre><p>输出结果：</p>
+<p>1.有异常出现时：</p>
+<pre><code>`2016-11-14 20:04:02,870 INFO  [main] test.SpringTest (SpringTest.java:27) - 
+
+---spring 初始化成功---
+
+init----2016-11-14 20:04:02,875 INFO  [main] test.AopTest (AopTest.java:11) - --
+
+aopTest===io.github.cc.service.impl.UsersServiceImpl@748741cb======around==be
+fore
+===============before=====
+
+---delete---
+
+======after=============
+
+-----exception-------  `
+</code></pre><p>2.没有异常：</p>
+<pre><code>`2016-11-14 20:06:13,480 INFO  [main] test.SpringTest (SpringTest.java:27) - ---spring 初始化成功---
+
+init----2016-11-14 20:06:13,485 INFO  [main] test.AopTest (AopTest.java:11) -
+
+aopTest===io.github.cc.service.impl.UsersServiceImpl@748741cb======around==before=========
+
+======before=====
+
+---save---10
+
+======around==after======//有输出
+
+===========after===============
+
+=========afterReturn==========//有输出  `
+</code></pre><p>【总结】</p>
+<blockquote>
+<p>Aop切面编程的理解</p>
+</blockquote>
+<p><code>Aop切面编程就是在常规的执行java类中方法前或执行后加入自定义的方法。</code>比如你本来每天都去打酱油，去，打酱油，回。现在我每天在你打酱油路上等着，你去打酱油的时候我打你一顿，回来的时候给你点糖果吃。你根本不知道为什么我会在路上拦住打你。<code>所以在切面中插入你自定义的方法，这个方法的执行和本身要执行的类方法无关系，也就是不是这个类的方法来调用你写的方法的，你写的方法什么时候执行都是要通过在配置指定。</code>我打完你，你该打酱油还是去打酱油，当然我如果是拦住你让你酱油打少点，你打酱油的时候还是会打那么多，但是在你打完酱油回来的时候我可以把你的酱油倒些出去，<code>所以嵌入的自定义方法对要调用的类方法本身没有影响，但是可以操纵这个方法的返结果或者处理结果。</code></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/SSH/">SSH</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

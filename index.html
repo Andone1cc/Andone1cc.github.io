@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/03/02/Spark/spark shuffle/"><span>Spark学习笔记——spark shuffle过程</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/spark shuffle/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T14:21:10.786Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="MapReduce中的shuffle机制"><a href="#MapReduce中的shuffle机制" class="headerlink" title="MapReduce中的shuffle机制"></a>MapReduce中的shuffle机制</h3><p>在MapReduce框架中，shuffle是连接Map和Reduce之间的桥梁，Map的输出要用到Reduce中必须经过shuffle这个环节，shuffle的性能高低直接影响了整个程序的性能和吞吐量。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/03/02/Spark/spark高可用/"><span>Spark学习笔记——spark配置高可用</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/spark高可用/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T13:15:20.638Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="高可用集群的搭建方式"><a href="#高可用集群的搭建方式" class="headerlink" title="高可用集群的搭建方式"></a>高可用集群的搭建方式</h3><p>搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/03/02/Spark/blockmanager/"><span>Spark学习笔记——BlockManager组件</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/blockmanager/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T12:46:43.154Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="BlockManager"><a href="#BlockManager" class="headerlink" title="BlockManager"></a>BlockManager</h3><p>BlockManager是一个块管理者。</p>
+<p>每一个Eexcutor中都会有一个BlockManger。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/03/02/Spark/广播变量与累加器/"><span>Spark学习笔记——广播变量与累加器</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/广播变量与累加器/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T11:33:18.050Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、Spark-广播变量"><a href="#一、Spark-广播变量" class="headerlink" title="一、Spark 广播变量"></a>一、Spark 广播变量</h3><h4 id="1-引入"><a href="#1-引入" class="headerlink" title="1.引入"></a><b>1.引入</b></h4><p>我们声明定义的变量是在Driver中产生,算子中的匿名函数是在Executor中执行的。也就是如果在Driver中定义的变量最终是要发送到task中去,task需要引用executor中线程池执行,而Executor是一个jvm进程，变量副本过多会占用jvm过多的堆内存，会引起频繁的GC、OOM。如果不使用广播变量，那么有多少个task就会在集群中有多少个变量副本。所以为了解决变量占用内存的问题，我们直接在executor层面保存一份变量即可。不用给每一个task都保存一份变量，只需要保存executor的个数那么多个。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/02/09/数据结构/窗口最大值数组/"><span>双端队列--生成窗口最大值数组</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/02/09/数据结构/窗口最大值数组/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-02-09T15:47:46.959Z">
+          2017-02-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="生成窗口最大值数组"><a href="#生成窗口最大值数组" class="headerlink" title="生成窗口最大值数组"></a>生成窗口最大值数组</h3><p>【题目】</p>
+<p>有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Algorithm/">Algorithm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/栈和队列/">栈和队列</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+  <article>
+
+  
+    
+    <h3 class="article-title"><a href="/2017/02/07/java基础/concurrentmap/"><span>java 8中对ConcurrentHashMap的改进</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/02/07/java基础/concurrentmap/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-02-07T07:48:07.654Z">
+          2017-02-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="java-8中对ConcurrentHashMap的改进"><a href="#java-8中对ConcurrentHashMap的改进" class="headerlink" title="java 8中对ConcurrentHashMap的改进"></a>java 8中对ConcurrentHashMap的改进</h2><h3 id="一、简单回顾ConcurrentHashMap在jdk1-7中的设计"><a href="#一、简单回顾ConcurrentHashMap在jdk1-7中的设计" class="headerlink" title="一、简单回顾ConcurrentHashMap在jdk1.7中的设计"></a>一、简单回顾ConcurrentHashMap在jdk1.7中的设计</h3><p>先简单看下ConcurrentHashMap类在jdk1.7中的设计，其基本结构如图所示：</p>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/集合/">集合</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+
+
+<nav class="pagination">
+  
+  
+  <a href="/page/2/" class="pagination-next">下一页</a>
+  
+</nav>
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

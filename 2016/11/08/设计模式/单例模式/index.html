@@ -1,0 +1,279 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式读书笔记--单例模式 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="设计模式">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="设计模式读书笔记--单例模式"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>设计模式读书笔记--单例模式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/08/设计模式/单例模式/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-08T15:12:49.243Z">
+          2016-11-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>有时候某些对象我们只需要一个，如：线程池、缓存、对话框等等，对于这类对象我们只能有一个实例，如果我们制造出多个实例，就会导致很多问题产生。</p>
+<p>但是我们怎样才能保证一个类只有一个实例并且能够便于访问？这里我们想到了全局变量，全局变量确实是可以保证该类可以随时访问，但是它很难解决只有一个实例问题。最好的办法就是让该自身来负责保存它的唯一实例。这个类必须要保证没有其他类来创建它。这里我们可以将其构造方法私有化。即</p>
+<a id="more"></a>
+<pre><code>`Public MyClass{  
+     PrivateMyClass(){}  
+}  `
+</code></pre><p>含有私有化构造器的类就能保证它不能被其他类实例化了。但是我们如何来获取这个实例化类呢？提供一个方法用于返回该类的实例对象即可实现。</p>
+<pre><code>`public class MyClass {  
+    private MyClass(){  
+
+    }  
+
+    public static MyClass getInstance(){  
+    return new MyClass();  
+    }  
+}  `
+</code></pre><h3 id="一、基本定义"><a href="#一、基本定义" class="headerlink" title="一、基本定义"></a>一、基本定义</h3><p>通过上面简单介绍，我们可以对单例模式有一个简单的认识。所谓单例模式就是确保某一个类只有一个实例，并且提供一个全局访问点。</p>
+<p>从上面可以看出单例模式有如下几个特点：</p>
+<p>一、它只有一个实例。</p>
+<p>二、它必须要自行实例化。</p>
+<p>三、它必须自行向整个系统提供访问点。</p>
+<h3 id="二、模式结构"><a href="#二、模式结构" class="headerlink" title="二、模式结构"></a>二、模式结构</h3><p><img src="http://img.blog.csdn.net/20130703214047953?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY2hlbnNzeQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<p>单例模式可以说是最简单的设计模式了，它仅有一个角色Singleton。</p>
+<p><code>Singleton：单例。</code></p>
+<h3 id="三、模式实现"><a href="#三、模式实现" class="headerlink" title="三、模式实现"></a>三、模式实现</h3><pre><code>`public class Singleton {  
+    //利用静态变量来记录Singleton的唯一实例  
+    private static Singleton uniqueInstance;  
+
+    /* 
+     * 构造器私有化，只有Singleton类内才可以调用构造器 
+     */  
+    private Singleton(){  
+
+    }  
+
+    public static Singleton getInstance(){  
+        if(uniqueInstance == null){  
+            uniqueInstance = new Singleton();  
+        }  
+
+        return uniqueInstance;  
+    }  
+
+}  `
+</code></pre><p>在《Head  First》有这样一个场景，就是说有两个线程都要执行这段代码，很有可能会产生两个实例对象。如下图：</p>
+<p><img src="http://img.blog.csdn.net/20130703214240843?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY2hlbnNzeQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p>
+<p>这里有三种解决方案。</p>
+<p>第一、 <code>使用synchronized来处理</code>。也就是说将getInstance()方法变成同步方法即可。</p>
+<pre><code>`public class Singleton {  
+    //利用静态变量来记录Singleton的唯一实例  
+    private static Singleton uniqueInstance;  
+
+    /* 
+     * 构造器私有化，只有Singleton类内才可以调用构造器 
+     */  
+    private Singleton(){  
+
+    }  
+
+    public static synchronized Singleton getInstance(){  
+        if(uniqueInstance == null){  
+            uniqueInstance = new Singleton();  
+        }  
+
+        return uniqueInstance;  
+    }  
+
+}  `
+</code></pre><p>第二、  <code>直接初始化静态变量。</code>这样就保证了线程安全。</p>
+<pre><code>`public class Singleton {  
+    /* 
+     * 利用静态变量来记录Singleton的唯一实例 
+     * 直接初始化静态变量，这样就可以确保线程安全了 
+     */  
+    private static Singleton uniqueInstance = new Singleton();  
+
+    /* 
+     * 构造器私有化，只有Singleton类内才可以调用构造器 
+     */  
+    private Singleton(){  
+
+    }  
+
+    public static Singleton getInstance(){  
+        return uniqueInstance;  
+    }  
+
+}  `
+</code></pre><p>第三、  <code>用“双重检查加锁”</code>，在getInstance()中减少使用同步。</p>
+<pre><code>    `public class Singleton {  
+    /* 
+     * 利用静态变量来记录Singleton的唯一实例 
+     * volatile 关键字确保：当uniqueInstance变量被初始化成Singleton实例时， 
+     * 多个线程正确地处理uniqueInstance变量 
+     *  
+     */  
+    private volatile static Singleton uniqueInstance;  
+
+    /* 
+     * 构造器私有化，只有Singleton类内才可以调用构造器 
+     */  
+    private Singleton(){  
+
+    }  
+
+    /* 
+     *  
+     * 检查实例，如果不存在，就进入同步区域 
+     */  
+    public static Singleton getInstance(){  
+        if(uniqueInstance == null){  
+            synchronized(Singleton.class){    //进入同步区域  
+                if(uniqueInstance == null){     //在检查一次，如果为null，则创建  
+                    uniqueInstance  = new Singleton();  
+                }  
+            }  
+        }  
+
+        return uniqueInstance;  
+    }  
+
+}  `
+</code></pre><p><code>在这里是首先检查是否实例已经创建了，如果尚未创建，才会进行同步。这样一来。只有第一次会同步。</code></p>
+<h3 id="四、模式优缺点"><a href="#四、模式优缺点" class="headerlink" title="四、模式优缺点"></a>四、模式优缺点</h3><p>【优点】</p>
+<p>一、节约了系统资源。由于系统中只存在一个实例对象，对与一些需要频繁创建和销毁对象的系统而言，单<br>例模式无疑节约了系统资源和提高了系统的性能。</p>
+<p>二、因为单例类封装了它的唯一实例，所以它可以严格控制客户怎样以及何时访问它。</p>
+<p>【缺点】</p>
+<p>一、由于单例模式中没有抽象层，因此单例类的扩展有很大的困难。</p>
+<p>二、单例类的职责过重，在一定程度上违背了“单一职责原则”。</p>
+<h3 id="五、模式使用场景"><a href="#五、模式使用场景" class="headerlink" title="五、模式使用场景"></a>五、模式使用场景</h3><p>下列几种情况可以使用单例模式。</p>
+<p>一、系统只需要一个实例对象，如系统要求提供一个唯一的序列号生成器，或者需要考虑资源消耗太大而只允许创建一个对象。   </p>
+<p>二、客户调用类的单个实例只允许使用一个公共访问点，除了该公共访问点，不能通过其他途径访问该实例。</p>
+<h3 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h3><ol>
+<li><p>单例模式中确保程序中一个类最多只有一个实例。</p>
+</li>
+<li><p>单例模式的构造器是私有了，而且它必须要提供实例的全局访问点。</p>
+</li>
+<li><p>单例模式可能会因为多线程的问题而带来安全隐患。</p>
+</li>
+</ol>
+<p><br><br>【参考资料】</p>
+<p>《大话设计模式》</p>
+<p>《Head First》</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/设计模式/">设计模式</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/设计模式/">设计模式</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

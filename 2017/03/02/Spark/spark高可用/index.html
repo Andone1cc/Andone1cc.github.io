@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark学习笔记——spark配置高可用 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="Spark学习总结">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spark学习笔记——spark配置高可用"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Spark学习笔记——spark配置高可用</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/spark高可用/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T13:15:20.638Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="高可用集群的搭建方式"><a href="#高可用集群的搭建方式" class="headerlink" title="高可用集群的搭建方式"></a>高可用集群的搭建方式</h3><p>搭高可用的集群有两种方式，一种是基于文件系统，一种是基于zookeeper。但是zookeeper有选举的功能，也就是当一台master挂掉之后，备用的master能够被zookeeper启动起来，并基于zookeeper恢复数据。</p>
+<a id="more"></a>
+<h4 id="zookeeper的作用"><a href="#zookeeper的作用" class="headerlink" title="zookeeper的作用"></a><b>zookeeper的作用</b></h4><p>1、托管主节点的信息，HDFS(namenode),YARN(resourcemanager)。</p>
+<p>2、自动选举leader的功能。</p>
+<p>spark中master存在单点故障，zookeeper里面托管的是master的信息。</p>
+<p>master的信息包含:Worker的信息(HashSet),Driver的信息(ArrayBuffer),Application的信息(ArrayBuffer)。</p>
+<p>如果spark集群中某一台alive状态的master挂掉了，另外一个原先处于standb状态的master会基于zookeeper托管的信息重新恢复，变为alive状态。</p>
+<font color="red"><b>基于文件系统和基于zookeeper搭建spark高可用有什么区别？</b></font>
+
+<p>基于文件系统，当master挂掉之后，需要手动启动一个master,新的master会基于文件系统上面的信息恢复。</p>
+<p>基于zookeeper,当一个master挂掉了，他会自动选取一个新的master作为alive状态的master,选举出来后，再基于zookeeper保存的信息恢复。</p>
+<font color="red"><b>1.master主备切换时间能提交一个新的application到集群中运行么？</b></font>
+
+<p>不能，因为在master主备切换的过程，master是无法为当前Application分配资源</p>
+<font color="red"><b>2.主备切换之前已经有application在运行了，主备切换的时候有影响么？</b></font>
+
+<p>没有影响，因为Spark是粗粒度的资源调度，在application运行之前已经分配好资源了。</p>
+<font color="red"><b>3.心跳机制</b></font>
+
+<p>Worker仅仅向Master汇报的信息只有WorkerID， 也就是告诉 Master 我还活着，至于 Worker 内部的资源信息，因为 Spark 是粗粒度的资源调度，在Worker启动时就已经向Master汇报了资源情况，所以 Master内部有它的资源信息。 </p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何对HashMap按键值排序 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="java基础">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="如何对HashMap按键值排序"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>如何对HashMap按键值排序</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/29/java基础/Hashmap排序/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-29T14:05:26.543Z">
+          2016-11-29
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Java中HashMap是一种用于存储“键”和“值”信息对的数据结构。不同于Array、ArrayList和LinkedList，它不会维持插入元素的顺序。</p>
+<p>因此，在键或值的基础上排序HashMap是一个很难的问题，如果你不知道如何解决的话。下面让我们看看如何解决这个问题。</p>
+<a id="more"></a>
+<p><img src="http://s2.51cto.com/wyfs02/M00/72/BF/wKioL1Xs6BGB8yEoAAA_KG1JwzI252.jpg-wh_651x-s_1651521267.jpg" alt=""></p>
+<h4 id="1-HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，"><a href="#1-HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，" class="headerlink" title="1. HashMap存储每对键和值作为一个Entry对象。例如，给出一个HashMap，"></a>1. HashMap存储每对键和值作为一个Entry<k，v>对象。例如，给出一个HashMap，</k，v></h4><pre><code>`Map&lt;String,Integer&gt; aMap = new HashMap&lt;String,Integer&gt;(); `
+</code></pre><p>键的每次插入，都会有值对应到散列映射上，生成一个Entry <k，v>对象。通过使用这个Entry <k，v>对象，我们可以根据值来排序HashMap。</k，v></k，v></p>
+<h4 id="2-创建一个简单的HashMap，并插入一些键和值。"><a href="#2-创建一个简单的HashMap，并插入一些键和值。" class="headerlink" title="2.创建一个简单的HashMap，并插入一些键和值。"></a>2.创建一个简单的HashMap，并插入一些键和值。</h4><pre><code>`
+Map&lt;String,Integer&gt; map=new HashMap&lt;String,Integer&gt;();
+// adding keys and values 
+map.put(&quot;Five&quot;, 5);
+map.put(&quot;Six&quot;, 6);
+map.put(&quot;One&quot;, 1);
+map.put(&quot;Four&quot;, 4);
+map.put(&quot;Three&quot;, 3);
+map.put(&quot;TWO&quot;, 2);
+`
+</code></pre><h4 id="3-从HashMap恢复entry集合，如下所示。"><a href="#3-从HashMap恢复entry集合，如下所示。" class="headerlink" title="3.从HashMap恢复entry集合，如下所示。"></a>3.从HashMap恢复entry集合，如下所示。</h4><pre><code>`Set&lt;Entry&lt;String,Integer&gt;&gt; mapEntries=map.entrySet();`
+</code></pre><h4 id="4-从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快"><a href="#4-从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快" class="headerlink" title="4.从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快"></a>4.从上述mapEntries创建LinkedList。我们将排序这个链表来解决顺序问题。我们之所以要使用链表来实现这个目的，是因为在链表中插入元素比数组列表更快</h4><pre><code>`List&lt;Entry&lt;String,Integer&gt;&gt; list=new LinkedList&lt;Entry&lt;String,Integer&gt;&gt;(mapEntries);`
+</code></pre><h4 id="5-通过传递链表和自定义比较器来使用Collections-sort-方法排序链表。"><a href="#5-通过传递链表和自定义比较器来使用Collections-sort-方法排序链表。" class="headerlink" title="5.通过传递链表和自定义比较器来使用Collections.sort()方法排序链表。"></a>5.通过传递链表和自定义比较器来使用Collections.sort()方法排序链表。</h4><pre><code> Collections.sort(list,new Comparator&lt;Entry&lt;String,Integer&gt;&gt;() {
+
+    @Override
+    public int compare(Entry&lt;String, Integer&gt; o1, Entry&lt;String, Integer&gt; o2) {
+        return o1.getValue().compareTo(o2.getValue());
+    }
+});
+</code></pre><h4 id="6-使用自定义比较器，基于entry的值（Entry-getValue-），来排序链表。"><a href="#6-使用自定义比较器，基于entry的值（Entry-getValue-），来排序链表。" class="headerlink" title="6.使用自定义比较器，基于entry的值（Entry.getValue()），来排序链表。"></a>6.使用自定义比较器，基于entry的值（Entry.getValue()），来排序链表。</h4><h4 id="7-ele1-getValue-compareTo-ele2-getValue-——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。"><a href="#7-ele1-getValue-compareTo-ele2-getValue-——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。" class="headerlink" title="7.ele1.getValue(). compareTo(ele2.getValue())——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。"></a>7.ele1.getValue(). compareTo(ele2.getValue())——比较这两个值，返回0——如果这两个值完全相同的话；返回1——如果第一个值大于第二个值；返回-1——如果第一个值小于第二个值。</h4><h4 id="8-Collections-sort-是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是"><a href="#8-Collections-sort-是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是" class="headerlink" title="8. Collections.sort()是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是"></a>8. Collections.sort()是一个内置方法，仅排序值的列表。它在Collections类中重载。这两种个方法是</h4><pre><code>`public static &lt;T extends Comparable&lt;? super T&gt;&gt; void sort(List&lt;T&gt; list) 
+
+public static &lt;T&gt; void sort(List&lt;T&gt; list, Comparator&lt;? super T&gt; c) `
+</code></pre><h4 id="9-现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。"><a href="#9-现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。" class="headerlink" title="9.现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。"></a>9.现在你已经排序链表，我们需要存储键和值信息对到新的映射中。由于HashMap不保持顺序，因此我们要使用LinkedHashMap。</h4><pre><code>`Map&lt;String,Integer&gt; map2=new LinkedHashMap&lt;String,Integer&gt;();
+    for(Entry&lt;String, Integer&gt; entry:list){
+        map2.put(entry.getKey(), entry.getValue());
+    }`
+</code></pre><h4 id="10-完整的代码如下。"><a href="#10-完整的代码如下。" class="headerlink" title="10.完整的代码如下。"></a>10.完整的代码如下。</h4><pre><code>`
+package io.github.hashmap;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public class SortMapByValues {
+    public static void main(String[] args) {
+        Map&lt;String,Integer&gt; map=new HashMap&lt;String,Integer&gt;();
+        // adding keys and values 
+        map.put(&quot;Five&quot;, 5);
+        map.put(&quot;Six&quot;, 6);
+        map.put(&quot;One&quot;, 1);
+        map.put(&quot;Four&quot;, 4);
+        map.put(&quot;Three&quot;, 3);
+        map.put(&quot;TWO&quot;, 2);
+        sortMapByValues(map); 
+    }
+
+    private static void sortMapByValues(Map&lt;String, Integer&gt; map) {
+        Set&lt;Entry&lt;String,Integer&gt;&gt; mapEntries=map.entrySet();
+        System.out.println(&quot;Values and Keys before sorting &quot;); 
+        for(Entry&lt;String,Integer&gt; entry:mapEntries){
+            System.out.println(entry.getValue() + &quot; - &quot;+ entry.getKey()); 
+        }
+        //从mapEntries创建LinkedList
+        List&lt;Entry&lt;String,Integer&gt;&gt; list=new LinkedList&lt;Entry&lt;String,Integer&gt;&gt;(mapEntries);
+        //自定义排序
+        Collections.sort(list,new Comparator&lt;Entry&lt;String,Integer&gt;&gt;() {
+
+            @Override
+            public int compare(Entry&lt;String, Integer&gt; o1, Entry&lt;String, Integer&gt; o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        //将排好序的list放入LinkedHashMap
+        Map&lt;String,Integer&gt; map2=new LinkedHashMap&lt;String,Integer&gt;();
+        for(Entry&lt;String, Integer&gt; entry:list){
+            map2.put(entry.getKey(), entry.getValue());
+        }
+        //打印结果
+        System.out.println(&quot;Values and Keys after sorting&quot;); 
+        for(Entry&lt;String, Integer&gt;entry:map2.entrySet()){
+            System.out.println(entry.getValue()+&quot; - &quot;+entry.getKey());
+        }
+    }
+}
+`
+</code></pre><p>【结果】</p>
+<pre><code>Values and Keys before sorting 
+5 - Five
+6 - Six
+1 - One
+4 - Four
+2 - TWO
+3 - Three
+Values and Keys after sorting
+1 - One
+2 - TWO
+3 - Three
+4 - Four
+5 - Five
+6 - Six
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

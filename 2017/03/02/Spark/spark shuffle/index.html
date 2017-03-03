@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark学习笔记——spark shuffle过程 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="Spark学习总结">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spark学习笔记——spark shuffle过程"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Spark学习笔记——spark shuffle过程</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/03/02/Spark/spark shuffle/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-03-02T14:21:10.786Z">
+          2017-03-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="MapReduce中的shuffle机制"><a href="#MapReduce中的shuffle机制" class="headerlink" title="MapReduce中的shuffle机制"></a>MapReduce中的shuffle机制</h3><p>在MapReduce框架中，shuffle是连接Map和Reduce之间的桥梁，Map的输出要用到Reduce中必须经过shuffle这个环节，shuffle的性能高低直接影响了整个程序的性能和吞吐量。</p>
+<a id="more"></a>
+<p>Shuffle是MapReduce框架中的一个特定的phase，介于Map phase和Reduce phase之间，当Map的输出结果要被Reduce使用时，输出结果需要按key哈希，并且分发到每一个Reducer上去，这个过程就是shuffle。由于shuffle涉及到了磁盘的读写和网络的传输，因此shuffle性能的高低直接影响到了整个程序的运行效率。</p>
+<p>下图描述了MapReduce算法的整个流程，其中shuffle phase是介于Map phase和Reduce phase之间：</p>
+<p><img src="http://jerryshao.me/img/2014-01-04-spark-shuffle/mapreduce-process.jpg" alt=""></p>
+<p>在Hadoop, 在mapper端每次当memory buffer中的数据快满的时候, 先将memory中的数据, 按partition进行划分, 然后各自存成小文件, 这样当buffer不断的spill的时候, 就会产生大量的小文件。</p>
+<p>所以Hadoop后面直到reduce之前做的所有的事情其实就是不断的merge, 基于文件的多路并归排序,在map端的将相同partition的merge到一起, 在reduce端, 把从mapper端copy来的数据文件进行merge, 以用于最终的reduce多路归并排序, 达到两个目的。</p>
+<p>merge, 把相同key的value都放到一个arraylist里面；sort, 最终的结果是按key排序的。<br>这个方案扩展性很好, 面对大数据也没有问题, 当然问题在效率, 毕竟需要多次进行基于文件的多路归并排序,多轮的和磁盘进行数据读写。</p>
+<p><img src="http://images.cnitblog.com/blog/312753/201401/161133359084.png" alt=""></p>
+<h3 id="Spark的shuffle机制"><a href="#Spark的shuffle机制" class="headerlink" title="Spark的shuffle机制"></a>Spark的shuffle机制</h3><h4 id="1-什么是Spark-Shuffle"><a href="#1-什么是Spark-Shuffle" class="headerlink" title="1.什么是Spark Shuffle?"></a><font color="orange"><b>1.什么是Spark Shuffle?</b></font></h4><p>比如： reduceByKey是一个聚合类的函数（reduceByKey包括groupByKey和reduce），当使用reduceByKey时会产生Shuffle过程，reduceByKey会将上一个RDD中的每一个key对应的所有value聚合成 一个value，然后生成一个新的RDD，元素类型是<key,value>对的形 式，这样每一个key对应一个聚合起来的value。</key,value></p>
+<p>Spark中的Shuffle是把一组无规则的数据尽量转换成一组具有一定规则的数据。</p>
+<h4 id="2-Spark-Shuffle产生的问题"><a href="#2-Spark-Shuffle产生的问题" class="headerlink" title="2.Spark Shuffle产生的问题"></a><font color="orange"><b>2.Spark Shuffle产生的问题</b></font></h4><p>每一个key对应的value不一定都是在一个partition中 ，也不太可能在同一个节点上，因为RDD是分布式的弹性的数据集，它的partition极有可能分布在各个节点上。</p>
+<p>既然出现如上的问题，那么Spark如何进行聚合？</p>
+<p>– <code>Shuffle Write</code>：上一个stage的每个map task就必须保证将自己处理 的当前分区中的数据相同的key写入一个分区文件中，可能会写入多个不同的分区文件中。</p>
+<p>– <code>Shuffle Read</code>：reduce task就会从上一个stage的所有task所在的机器上寻找属于自己的那些分区文件，这样就可以保证每一个key所对应的value都会汇聚到同一个节点上去处理和聚合。</p>
+<h4 id="3-Hash-Based-Shuffle–普通机制-合并机制"><a href="#3-Hash-Based-Shuffle–普通机制-合并机制" class="headerlink" title="3.Hash-Based Shuffle–普通机制||合并机制"></a><font color="orange"><b>3.Hash-Based Shuffle–普通机制||合并机制</b></font></h4><font color="red">HashShuffle普通机制</font>
+
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/SwpH6afCodTx5cMxRA4mxAyeHtpiw7Lv.byJG4uCeXQ!/b/dB8BAAAAAAAA&amp;bo=GwOaAQAAAAADAKY!&amp;rf=viewer_4" alt=""></p>
+<p><code>hashshuffle会产生m*r个磁盘小文件  m:maptask的个数  r:reducetask的个数</code></p>
+<p>如果m=1000,r=1000，磁盘小文件数就是100w。</p>
+<p>磁盘小文件过多会有什么问题？</p>
+<p>shuffle write:写磁盘的对象会增多，100w写磁盘的对象， 耗时低效的I/O操作。</p>
+<p>shuffle read:建立连接(磁盘小文件过多，建立连接会非常的频繁),拉取磁盘小文件(每一次拉取，都需要创建一个读文件的对象)</p>
+<p>jvm中对象过多，对象存储在堆内存中，会引起GC OOM等一系列问题。</p>
+<font color="red">HashShuffle合并机制（针对上述情况的优化）</font>
+
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/YVF0VqKD8Pvs*s3jdM.0bz2DXieJkBdBToY6xjJcaBM!/b/dPYAAAAAAAAA&amp;bo=EwOMAQAAAAADB78!&amp;rf=viewer_4" alt=""></p>
+<p>shuffle file group: task2会复用task1的小文件</p>
+<p>磁盘小文件的数量为：core * reduce的个数</p>
+<h4 id="4-SortShuffle–普通运行机制-bypass运行机制"><a href="#4-SortShuffle–普通运行机制-bypass运行机制" class="headerlink" title="4.SortShuffle–普通运行机制|| bypass运行机制"></a><font color="orange"><b>4.SortShuffle–普通运行机制|| bypass运行机制</b></font></h4><font color="red">SortShuffle–普通机制(排序)</font>
+
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/rYR*2dJm8jWoUQovKz9UetN0yJGOdxTzvDDgEgcT6PE!/b/dB8BAAAAAAAA&amp;bo=fgIWAgAAAAADAE0!&amp;rf=viewer_4" alt=""></p>
+<p>【流程描述】：</p>
+<p>1.map task 计算的结果一条一条的写入内存的数据结构里面去，内存的数据结构初始大小是5M，如果现在内存数据结构的大小超过5M（比如5.01M，它会再次申请5.01*2-5=0.02M的内存，如果现在有空闲的内存就不会溢写，如果没有空闲的空间供它使用，就会发生溢写，在溢写之前会将内存数据结构中的额数据进行排序，排序完成之后分批写入到磁盘，每一批1W条数据，写入磁盘的时候使用了buffer（加速写磁盘的速度)map task 执行完成后，溢写到磁盘上的磁盘小文件会合并为一个大的文件，同时还会创建一个索引（就是这个大文件的一个目录）</p>
+<p>2.reduce task 来数据之前，首先解析这个索引文件,然后拉取大文件中相应的数据</p>
+<font color="red">SortShuffle–bypass机制(不排序)</font>
+
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/Q1C1tuBPs67Jh9cf9WvCVuE81v4B9TH5w9YE1zUrIw8!/b/dLIAAAAAAAAA&amp;bo=nQLJAQAAAAADAHI!&amp;rf=viewer_4" alt=""></p>
+<p><code>注意</code>：shuffle reduce task的数量小于spark.shuffle.sort.bypassMergeThreshold参数的值触发</p>
+<h4 id="5-问题：在reduce-task如何去拉取大文件中相应的数据（shuffle-read）"><a href="#5-问题：在reduce-task如何去拉取大文件中相应的数据（shuffle-read）" class="headerlink" title="5.问题：在reduce task如何去拉取大文件中相应的数据（shuffle read）?"></a><font color="orange"><b>5.问题：在reduce task如何去拉取大文件中相应的数据（shuffle read）?</b></font></h4><p><code>MapOutputTracker</code>–追踪磁盘小文件的位置</p>
+<p>shuffle read过程如何去拉取磁盘中小文件借助于MapOutputTracker</p>
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/oitk7ixdGv3LsgETO0K9vyaJMa5AoaEI6daqZmxP3cA!/b/dLIAAAAAAAAA&amp;bo=6gOAAgAAAAADB0k!&amp;rf=viewer_4" alt=""></p>
+<p>【流程描述】：</p>
+<p>map task: 所在的Executor中的MapOutPutTrackcerSlaver向Driver中的DAGScheduler对象里面的MapOutPutTrackcerMaster汇报task的执行情况，结果封装到一个map status(磁盘小文件的位置)</p>
+<p>reduce task: 执行之前先向Driver获取磁盘小文件的位置，然后通过ConnectionManager与对应的Executor建立连接，借助BlockTransferService来拉取数据</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Spark学习总结/">Spark学习总结</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

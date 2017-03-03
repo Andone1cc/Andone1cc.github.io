@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>先序 中序 后序数组两两结合重构二叉树 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="二叉树">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="先序 中序 后序数组两两结合重构二叉树"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>先序 中序 后序数组两两结合重构二叉树</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/10/28/Tree1/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-10-28T12:30:12.762Z">
+          2016-10-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>【题目】</p>
+<p>已知一棵二叉树的所有节点值都不同，给定这棵二叉树的先序，中序和后序数组。请分别用三个函数实现任意两种数组结合重构原来的二叉树，并返回重构二叉树的头结点。</p>
+<a id="more"></a>
+<p>【分析】</p>
+<p>先序与中序结合重构二叉树的过程如下：</p>
+<p>1、先序数组中最左边的值就是树的头节点的值，记为h，并用h生成头节点，记为head。然后在中序数组中找到h，假设位置是i。那么在中序数组中，i左边的数组就是头节点左子树的中序数组，假设长度为l，则左子树的先序数组就是先序数组中h往右长度也为l的数组。</p>
+<p>   比如：先序数组为[1,2,4,5,8,9,3,6,7],中序数组为[4,2,8,5,9,1,6,3,7]，二叉树头节点的值是1。在中序数组中找到1的位置，1左边的数组为[4,2,8,5,9],是头节点左子树的中序数组，长度为5;先序数组中1的右边长度也为5的数组为[2,4,5,8,9],就是左子树的先序数组。</p>
+<p>2、用左子树的先序和中序数组，递归整个过程建立左子树，返回头节点记为left。</p>
+<p>3、i右边的数组就是头节点右子树的中序数组，假设长度为r，先序数组中右侧等长的部分就是头节点右子树的先序数组。</p>
+<p>比如步骤1的例子，中序数组中1右边的数组为[6,3,7]，长度为3；先序数组右侧等长的部分为[3,6,7]，它们分别为头节点右子树的中序和先序数组。</p>
+<p>4、用右子树的先序和中序数组，递归整个过程建立右子树，返回的头节点记为right。</p>
+<p>5、把head的左孩子和右孩子分别设为left和right，返回head，过程结束。</p>
+<blockquote>
+<p>如果二叉树的节点数为N，在中序数组中找到位置i的过程可以用哈希表来实现，这样整个过程时间复杂度为O(N).</p>
+</blockquote>
+<p>AC代码：</p>
+<pre><code>`//先序和中序结合重构二叉树
+public TreeNode preInToTree(int[] pre,int[] in){
+    if(pre==null||in==null){
+        return null;
+    }
+    HashMap&lt;Integer,Integer&gt; map=new HashMap&lt;Integer,Integer&gt;();
+    for(int i=0;i&lt;in.length;i++){
+        map.put(in[i], i);
+    }
+    return preIn(pre,0,pre.length-1,in,0,in.length-1,map);
+}
+private TreeNode preIn(int[] pre, int pi, int pj, int[] in, int ni, int nj, HashMap&lt;Integer, Integer&gt; map) {
+    if(pi&gt;pj){
+        return null;
+    }
+    TreeNode head=new TreeNode(pre[pi]);
+    int index=map.get(pre[pi]);
+    head.left=preIn(pre,pi+1,pi+index-ni,in,ni,index-1,map);
+    head.right=preIn(pre,pi+index-ni+1,pj,in,index+1,nj,map);
+    return head;
+}`
+</code></pre><p>中序和后序重构的过程与先序和中序的过程类似。先序和中序的过程使用先序数组最左的值来对中序数组进行划分，因为这是头节点的值。后序数组中头节点的值是后序数组最右的值，所以用后序最右的值来划分中序数组即可。</p>
+<p>AC代码：</p>
+<pre><code>`//中序和后序组合重构二叉树
+public TreeNode inPosToTree(int[] in,int[] pos){
+    if(in==null||pos==null){
+        return null;
+    }
+    HashMap&lt;Integer,Integer&gt; map=new HashMap&lt;Integer,Integer&gt;();
+    for(int i=0;i&lt;in.length;i++){
+        map.put(in[i], i);
+    }
+    return inPos(in,0,in.length-1,pos,0,pos.length-1,map);
+}
+private TreeNode inPos(int[] in, int ni, int nj, int[] pos, int si, int sj, HashMap&lt;Integer, Integer&gt; map) {
+    if(si&gt;sj){
+        return null;
+    }
+    TreeNode head=new TreeNode(pos[sj]);
+    int index=map.get(pos[sj]);
+    head.left=inPos(in,ni,index-1,pos,si,si+index-ni-1,map);
+    head.right=inPos(in,index+1,nj,pos,si+index-ni,sj-1,map);
+    return head;
+}`
+</code></pre><p>先序和后序结合重构二叉树。首先需要分析出节点值都不同的二叉树，即便得到正确的先序和后序数组，在大多数情况下也不能通过这两个数组把原来的树重构出来。这是因为很多结构不同的树种，先序与后序数组是一样的。比如，头节点为1，左孩子为2，右孩子为null的树，先序数组为[1,2],后序数组为[2,1]。而头节点为1，左孩子为null，右孩子为2的树也是同样的结果。然后需要分析出什么样的树可以被先序和后序数组重建。<br><code>如果一棵二叉树除叶节点之外，其他所有的节点都有左孩子和右孩子，只有这样的树才可以被先序和后序数组重构出来。</code></p>
+<p>AC代码：</p>
+<pre><code>`//前序和后序组合重构二叉树
+//注意:每个节点的孩子数都为0或2的二叉树才能被先序和后序重构出来
+public TreeNode prePosToTree(int[] pre,int[] pos){
+    if(pre==null||pos==null){
+        return null;
+    }
+    HashMap&lt;Integer,Integer&gt; map=new HashMap&lt;Integer,Integer&gt;();
+    for(int i=0;i&lt;pos.length;i++){
+        map.put(pos[i], i);
+    }
+    return prePos(pre,0,pre.length-1,pos,0,pos.length-1,map);
+}
+private TreeNode prePos(int[] pre, int pi, int pj, int[] pos, int si, int sj, HashMap&lt;Integer, Integer&gt; map) {
+    TreeNode head=new TreeNode(pos[sj--]);
+    if(pi==pj){
+        return head;
+    }
+    int index=map.get(pre[++pi]);
+    head.left=prePos(pre,pi,pi+index-si,pos,si,index,map);
+    head.right=prePos(pre,pi+index-si+1,pj,pos,index+1,sj,map);
+    return head;
+}`
+</code></pre><p><br><br><br><br>【题目升级】</p>
+<p> 已知一棵二叉树所有的节点值都不同，给定这棵树正确的先序和中序数组，<code>不要重建整棵树</code>，而是通过这两个数组直接生成正确的后序数组。</p>
+<p>【分析】</p>
+<p>pre=[1,2,4,5,3,6,7]<br>in=[4,2,5,1,6,3,7]<br>根据当前的先序和中序数组，设置后序数组最右边的值，然后划分出左子树的先序，中序数组，以及右子树的先序，中序数组，先根据右子树的划分设置好后序数组，再根据左子树的划分，从右边到左边依次设置好后序数组的全部位置。</p>
+<p>AC代码：</p>
+<pre><code>`public class Demo {
+    public int[] getPosArray(int[] pre,int[] in){
+        if(pre==null||in==null){
+            return null;
+        }
+        int len=pre.length;
+        int[] pos=new int[len];
+        HashMap&lt;Integer,Integer&gt; map=new HashMap&lt;Integer,Integer&gt;();
+        for(int i=0;i&lt;len;i++){
+            map.put(in[i], i);
+        }
+        setPos(pre,0,len-1,in,0,len-1,pos,len-1,map);
+        return pos;
+    }
+    //从右往左依次填好后序数组pos
+        //sj为后序数组pos该填的位置
+    //返回值为pos该填的下一个位置
+    private int setPos(int[] pre, int pi, int pj, int[] in, int ni, int nj, int[] pos, int sj,HashMap&lt;Integer, Integer&gt; map) {
+        if(pi&gt;pj){
+            return sj;
+        }
+        pos[sj--]=pre[pi];
+        int index=map.get(pre[pi]);
+        sj=setPos(pre,pj+index-nj+1,pj,in,index+1,nj,pos,sj,map);
+        return setPos(pre,pi+1,pi+index-ni,in,ni,index-1,pos,sj,map);
+
+    }
+    public static void main(String[] args) {
+        Demo d=new Demo();
+        int pre[]={1,2,4,5,3,6,7};
+        int in[]={4,2,5,1,6,3,7};
+        int pos[]=d.getPosArray(pre,in);
+        for(int i:pos){
+            System.out.print(i+&quot; &quot;);
+        }
+    }
+}`
+</code></pre><p><br></p>
+<p>二叉树的存储：</p>
+<pre><code>`public class TreeNode {
+    public int data;
+    public TreeNode left;
+    public TreeNode right;
+    public TreeNode(int data){
+        this.data=data;
+    }
+}`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Algorithm/">Algorithm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/二叉树/">二叉树</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

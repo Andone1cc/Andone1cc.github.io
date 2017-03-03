@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入理解类加载器 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="JVM的核心机制">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="深入理解类加载器"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>深入理解类加载器</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/22/java基础/类加载器/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-22T11:41:36.813Z">
+          2016-11-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><p>之前我们提过了类加载的全过程，今天我们就来研究一下类加载器。</p>
+<p><b>类加载器的作用</b></p>
+<p>将class文件字节码内容加载到内存中，并将这个静态数据转换成方法区中的运行时数据，在堆中生成一个代表这个类的java.lang.Class对象，作为方法区类数据的访问入口。</p>
+<a id="more"></a>
+<p><b>类缓存</b></p>
+<p>标准的Java SE类加载器可以按要求查找类，但一旦某个类被加载到类加载器中，他将维持加载（缓存）一段时间，不过，JVM垃圾收集器可以回收这些Class对象。</p>
+<h3 id="一、类加载器的层次结构（树状结构）"><a href="#一、类加载器的层次结构（树状结构）" class="headerlink" title="一、类加载器的层次结构（树状结构）"></a>一、类加载器的层次结构（树状结构）</h3><p>1、引导(启动)类加载器（bootstrap class loader）</p>
+<pre><code>它用来加载Java的核心库(JAVA_HOME/jre/lib/rt.jar或sun.boot.class.path路径下的内容），是用原生代码来实现的（c++）,并不继承自java.lang.ClassLoader.
+
+加载扩展类和应用程序类加载器，并指定他们的父类加载器。
+</code></pre><p>2、扩展类加载器（extensions class loader）</p>
+<pre><code>用来加载Java的扩展库(JAVA_HOME/jre/ext/*.jar或java.ext.dirs路径下的内容).java虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载Java类。
+
+由sun.misc.Launcher$ExtClassLoader实现
+</code></pre><p>3、应用程序类加载器（application class loader）</p>
+<pre><code>它根据Java应用的类路径（classpath,java.class.path）来加载。
+一般来说，Java应用的类都是由它来完成加载的。
+
+由sun.misc.Launcher$AppClassLoader实现
+</code></pre><p>4、自定义类加载器</p>
+<pre><code>开发人员可以通过继承java.lang.ClassLoader类的方式实现自己的类加载器，以满足一些特殊的要求。
+</code></pre><p>注意：除了启动类加载器是由c++编写外，其他都是java编写，且都继承java.lang.ClassLoader。</p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/BkWztrTMPlHR9u4sqg8kog5evnRQ5qX5744OC1CW9hU!/b/dCABAAAAAAAA&amp;bo=BwFCAQcBQgEFByQ!&amp;rf=viewer_4" alt=""></p>
+<p>下面我们一起来试验一下：</p>
+<pre><code>`public class Test02 {
+    public static void main(String[] args) {
+        System.out.println(ClassLoader.getSystemClassLoader());
+        System.out.println(ClassLoader.getSystemClassLoader().getParent());
+        System.out.println(ClassLoader.getSystemClassLoader().getParent().getParent());
+    }
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>`sun.misc.Launcher$AppClassLoader@73d16e93
+sun.misc.Launcher$ExtClassLoader@15db9742
+null`
+</code></pre><p>结果正好验证了上面的树形结构。</p>
+<h3 id="二、类加载器的代理模式"><a href="#二、类加载器的代理模式" class="headerlink" title="二、类加载器的代理模式"></a>二、类加载器的代理模式</h3><p>代理模式：</p>
+<pre><code>交给其他类加载来加载指定的类
+</code></pre><p>类加载器采用了<code>双亲委托机制</code>.就是将某个指定的类加载器在接到加载类的请求时，首先将加载任务委托给父类加载器，依次追溯，直到最高的爷爷辈的，如果父类加载器可以完成类加载任务，就成功返回；只有父类加载器无法完成此加载任务时，才自己去加载。</p>
+<p>双亲委托机制是为了保证Java核心库的类型安全。</p>
+<pre><code>这种机制就保证不会出现用户自己能定义java.lang.Object类的情况。
+</code></pre><p>类加载器除了用户加载类，也是安全的最基本的屏障。</p>
+<p>下面我们一起来测试一下：</p>
+<p>1.我们在工作目录下建一个java.lang的包，然后建一个名为String的类。</p>
+<pre><code>`package java.lang;
+
+public class String {
+    public String toString(){
+        return &quot;cc&quot;;
+    }
+}
+`    
+</code></pre><p>2.测试类</p>
+<pre><code>`public class Test03 {
+    public static void main(String[] args) {
+
+    String a=&quot;aa&quot;;
+    System.out.println(a.getClass().getClassLoader());
+    System.out.println(a);
+    }
+}`
+</code></pre><p>输出结果：</p>
+<pre><code>null
+aa
+</code></pre><p>说明我们自己写的String类没有被调用。是启动类加载器来调用核心库的java.lang.String来实现的。</p>
+<p>【注意】</p>
+<p>双亲委托机制是代理模式的一种。 并不是所有的类加载器都采用双亲委托机制。<code>tomcat服务器类加载器</code>也使用代理模式，所不同的是它是首先尝试去加载某个类，如果找不到再代理给父类加载器。这与一般类加载器的顺序是相反的。</p>
+<h3 id="三、java-class-ClassLoader类API详细介绍"><a href="#三、java-class-ClassLoader类API详细介绍" class="headerlink" title="三、java.class.ClassLoader类API详细介绍"></a>三、java.class.ClassLoader类API详细介绍</h3><p><b>相关方法</b></p>
+<blockquote>
+<p>getParent()  </p>
+</blockquote>
+<p>返回类加载器的父类加载器</p>
+<blockquote>
+<p>loadClass(String name) </p>
+</blockquote>
+<p>加载名称为name的类，返回的结果是java.lang.Class类的实例。此方法负责加载指定名字的类，首先会从已加载的类中去寻找，如果没有找到，从parent ClassLoaderExtClassLoader中加载；如果没有加载到，则从bootstrap ClassLoader 中尝试加载，如果还是失败，则自己加载。如果不能加载，则<code>抛出异常ClassNotFoundException</code>。如果要改变类的加载顺序可以覆盖此方法。</p>
+<blockquote>
+<p>findClass(String name)  </p>
+</blockquote>
+<p>查找名为name的类，返回结果为java.lang.Class的实例。</p>
+<blockquote>
+<p>findLoadedClass(String name) </p>
+</blockquote>
+<p>查找名称为name的已经被加载过的类，返回结果为java.lang.Class的实例。</p>
+<blockquote>
+<p>defineClass(String name,byte[] b,int off,int len) </p>
+</blockquote>
+<p>把字节数组b中的内容转换为java类，返回结果是java.lang.Class类的实例。这个方法被声明为final的。</p>
+<blockquote>
+<p>resolveClass(Class&lt;?&gt; c) </p>
+</blockquote>
+<p>链接指定的Java类。</p>
+<p>【注意:】</p>
+<p>表示类名称的name参数的值是类的名称，需要注意的是内部类的表示。如 com.example.Sample$1和com.example.Sample$Inner等表示形式。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/JVM的核心机制/">JVM的核心机制</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

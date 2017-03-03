@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Integer.valueOf(String) 方法之惑 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="java基础">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Integer.valueOf(String) 方法之惑"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Integer.valueOf(String) 方法之惑</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/06/java基础/Integer方法之惑/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-06T14:17:46.658Z">
+          2016-11-06
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="Integer-valueOf-String-方法之惑"><a href="#Integer-valueOf-String-方法之惑" class="headerlink" title="Integer.valueOf(String) 方法之惑"></a>Integer.valueOf(String) 方法之惑</h3><p>最近刷Java面试笔试题,遇到了这面的题目。一开始被代码搞晕了,为什么它们会有不同的返回值呢？</p>
+<pre><code>`System.out.println(Integer.valueOf(&quot;127&quot;)==Integer.valueOf(&quot;127&quot;));
+ System.out.println(Integer.valueOf(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));
+ System.out.println(Integer.parseInt(&quot;128&quot;)==Integer.valueOf(&quot;128&quot;));`
+</code></pre><p>输出结果：<code>true</code> <code>false</code>    <code>true</code></p>
+<a id="more"></a>
+<p>为什么第一个判断返回了true而第二个判断返回了false？127和128有什么我不知道的区别吗？（当然除了127小于128…）</p>
+<p>Integer.valueOf(String)确有一个不同寻常的行为。</p>
+<p><code>valueOf会返回一个Integer（整型）对象，当被处理的字符串在-128和127（包含边界）之间时，返回的对象是预先缓存的。</code>这就是为什么第一行的调用会返回true-127这个整型对象是被缓存的（所以两次valueOf返回的是同一个对象）——第二行的调用返回false是因为128没有被缓存，所以每次调用，都会生成一个新的整型对象，因此两个128整型对象是不同的对象。</p>
+<p>重要的是你要知道在上面的比较中，你实际进行比较的是integer.valueOf返回的对象引用，所以当你比较缓存外的整型对象时，相等的判断不会返回true，就算你传个valueOf的值是相等的也没用。（就像第二行中Integer.valueOf(128)==Integer.valueOf(128))。想让这个判断返回true，你需要使用equals()方法。</p>
+<p><code>parseInt()返回的不是整型对象，而是一个int型基础元素。</code>这就是为什么最后一个判断会返回true，第三行的判断中，在判断相等时，实际比较的是128 == 128，所以它必然是相等的。</p>
+<p>查看一下JDK源代码验证上面的话：</p>
+<pre><code>`    public static Integer valueOf(int i) {
+        if (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    }`
+</code></pre><p>其中high跟low是静态常量,分别为127跟-128</p>
+<pre><code>`private static class IntegerCache {
+    static final int low = -128;
+    static final int high;
+    static final Integer cache[];
+
+    static {
+        // high value may be configured by property
+        int h = 127;
+        String integerCacheHighPropValue =
+            sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);
+        if (integerCacheHighPropValue != null) {
+            try {
+                int i = parseInt(integerCacheHighPropValue);
+                i = Math.max(i, 127);
+                // Maximum array size is Integer.MAX_VALUE
+                h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+            } catch( NumberFormatException nfe) {
+                // If the property cannot be parsed into an int, ignore it.
+            }
+        }
+        high = h;
+
+        cache = new Integer[(high - low) + 1];
+        int j = low;
+        for(int k = 0; k &lt; cache.length; k++)
+            cache[k] = new Integer(j++);
+
+        // range [-128, 127] must be interned (JLS7 5.1.7)
+        assert IntegerCache.high &gt;= 127;
+    }`
+</code></pre><p>第三个表示式比较的是左边的原始int值128与右边新创建的Integer对象。但是因为int和Integer之间比较是没有意义的，所以Java在进行比较前会<code>将Integer自动拆箱</code>，所以最后进行的是int和int值之间的比较。由于128和自己相等，所以返回true。</p>
+<p>解决了上面的疑惑，我们一起再来做做类似的题吧。</p>
+<pre><code>`
+Integer i01 = 59;
+int i02 = 59;
+Integer i03 =Integer.valueOf(59);
+Integer i04 = new Integer(59)。
+以下输出结果为false的是：
+1.System.out.println(i01== i02);    
+2.System.out.println(i01== i03);
+3.System.out.println(i03== i04);
+4.System.out.println(i02== i04);
+`
+</code></pre><p>【解析】</p>
+<p>Integer i01 = 59. 直接赋值数字，java会自动装箱，自动调用Integer.valueOf(59). </p>
+<p>Integer i03 = Integer.valueOf(59).  Integer.valueOf(int i)会返回一个Integer对象，当i在-128~127之间时，会返回缓存中已创建的Integer对象。</p>
+<p>Integer i04 = new Integer(59) 返回一个新的对象。</p>
+<p>所以这道题中，59在-128~127之间，所以前三条语句返回的是同一个对象（在缓存区已创建的对象），而i04使用new新创建了一个新的对象。</p>
+<p>【结果】</p>
+<p>第三条语句输出为false</p>
+<p><br><br>【总结】</p>
+<p>①无论如何，Integer与new Integer不会相等。不会经历拆箱过程。</p>
+<p>②两个都是非new出来的Integer，如果数在-128到127之间，则是true,否则为false </p>
+<p>③两个都是new出来的,都为false </p>
+<p>④int和integer(无论new否)比，都为true，因为会把Integer自动拆箱为int再去比</p>
+<p><br></p>
+<p>【参考资料】</p>
+<p>牛客网 <a href="https://www.nowcoder.com/questionTerminal/bc5da9d0b8444006a776b7cbfba5d250" target="_blank" rel="external">https://www.nowcoder.com/questionTerminal/bc5da9d0b8444006a776b7cbfba5d250</a></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/JAVA/">JAVA</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java基础/">java基础</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

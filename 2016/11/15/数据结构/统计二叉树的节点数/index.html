@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>统计完全二叉树的节点数 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="二叉树">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="统计完全二叉树的节点数"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>统计完全二叉树的节点数</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/15/数据结构/统计二叉树的节点数/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-15T14:21:33.644Z">
+          2016-11-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>遍历整棵树当然可以求出节点数，但这肯定不是最优解法。</p>
+<p>如果完全二叉树的层数为h,时间复杂度为O（h的平方）</p>
+<a id="more"></a>
+<p>【分析】</p>
+<blockquote>
+<p>1.如果head==null,说明是空树，直接返回0。</p>
+<p>2.如果不是空树，就求树的高度，求法是找到树的最左节点看能到哪一层，层数记为h</p>
+<p>3.递归过程bs(node,l,h).<code>node表示当前节点，l表示node所在的层数，h表示整棵树的层数始终不变。</code></p>
+</blockquote>
+<p>第一种情况：</p>
+<p>找到node<code>右子树的最左节点</code>，如果能到达最后一层，说明node的整棵左子树是满二叉树。其节点数为2的h次方-1.（算上node节点自己）然后再求右子树的节点数bs(node.right,l+1,h)</p>
+<p>第二种情况：</p>
+<p>找到node<code>右子树的最左节点</code>，没有到达最后一层，说明node的整棵右子树都是满二叉树，其节点数为2的h次方-l-1,然后再求左子树的节点数bs（node.left,l+1,h）</p>
+<p>【AC代码】</p>
+<pre><code>`//统计完全二叉树的节点数
+public class Solution {
+    public int nodeNum(TreeNode head){
+        if(head==null){
+            return 0;
+        }
+        return bs(head,1,mostLeftLevel(head,1));
+    }
+    private int bs(TreeNode head, int l, int h) {
+        if(l==h){
+            return 1;
+        }
+        if(mostLeftLevel(head.right,l+1 )==h){
+            return (1&lt;&lt;(h-l))+bs(head.right,l+1,h);
+        }else{
+            return (1&lt;&lt;(h-l-1))+bs(head.left,l+1,h);
+        }
+    }
+    private int mostLeftLevel(TreeNode node, int level) {
+        while(node!=null){
+            level++;
+            node=node.left;
+        }
+        return level-1;
+    }
+    public static void main(String[] args) {
+        Solution d=new Solution();
+        TreeNode head1=new TreeNode(1);
+        TreeNode head2=new TreeNode(2);
+        TreeNode head3=new TreeNode(3);
+        TreeNode head4=new TreeNode(4);
+        TreeNode head5=new TreeNode(5);
+        TreeNode head6=new TreeNode(6);
+        TreeNode head7=new TreeNode(7);
+        TreeNode head8=new TreeNode(8);
+        head1.left=head2;
+        head1.right=head3;
+        head2.left=head4;
+        head2.right=head5;
+        head3.left=head6;
+        head3.right=head7;
+        head4.left=head8;
+        System.out.println(d.nodeNum(head1));
+    }
+}`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Algorithm/">Algorithm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/二叉树/">二叉树</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

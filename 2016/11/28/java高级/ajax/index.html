@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>原生和jQuery的ajax | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="ajax">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="原生和jQuery的ajax"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>原生和jQuery的ajax</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/28/java高级/ajax/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-28T13:46:33.839Z">
+          2016-11-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="什么是Ajax"><a href="#什么是Ajax" class="headerlink" title="什么是Ajax?"></a>什么是Ajax?</h3><p>Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。</p>
+<p>Ajax的本质是一个<code>浏览器端</code>的技术。</p>
+<a id="more"></a>
+<h3 id="为什么要学习Ajax"><a href="#为什么要学习Ajax" class="headerlink" title="为什么要学习Ajax?"></a>为什么要学习Ajax?</h3><p>1.通过异步模式，提升了用户体验。</p>
+<p>2.优化了浏览器和服务器之间的传输，减少不必要的数据往返，减少了带宽占用。</p>
+<p><code>ajax局部刷新技术，其实就是使用js实现局部数据的实时变更，解决了不同响应之间的数据共享问题。</code></p>
+<h3 id="创建ajax程序的基本流程"><a href="#创建ajax程序的基本流程" class="headerlink" title="创建ajax程序的基本流程"></a>创建ajax程序的基本流程</h3><blockquote>
+<p>1.创建XMLHttpRequest对象(有浏览器差异问题)</p>
+</blockquote>
+<pre><code>var request;
+if(window.XMLHttpRequest){//Mozilla
+    request=new XMLHttpRequest();
+}else if(window.ActiveXObject){    //IE
+    request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+}
+</code></pre><blockquote>
+<p>2.使用XMLHttpRequest对象创建请求</p>
+</blockquote>
+<pre><code>request.open(&quot;get&quot;,&quot;testAjaxServlet&quot;);
+</code></pre><blockquote>
+<p>3.复写onreadystatechange函数,监视response的状态,处理服务器返回的数据。</p>
+</blockquote>
+<p>接收响应结果：</p>
+<blockquote>
+<blockquote>
+<p>响应数据的类型：</p>
+</blockquote>
+</blockquote>
+<p>1.普通文本：就是字符串</p>
+<p>2.<code>json格式的数据</code>：就是使用了json数据格式拼接的字符串，这样在客户端我们就可以使用eval()方法将响应的字符串数据转换成可执行的js代码。极力推荐使用json数据格式来做响应</p>
+<p>3.XML数据：使用JSP页面来书写XML数据，设置响应头为XML类型的数据。在客户端使用responseXML来接收响应的xml数据（返回document对象）。使用document对象来操作xml数据。<br>doc.getElementsByTagName(“标签名”)[角标].firstChild.data</p>
+<p>按照readyState的值为4来接收，4表示响应数据成功接收</p>
+<p>status：200表示一切OK</p>
+<p>404表示资源未找到</p>
+<p>500表示服务器内部错误</p>
+<pre><code>    `request.onreadystatechange=function(){
+        //readyState的值为4表示数据成功接收
+        if(request.readyState==4){
+            if(request.status==200){
+                var result=request.responseText;//接收数据
+                eval(&quot;var arr=&quot;+result);//使用eval强转
+                /*使用js操作文档结构..*/
+            }
+    }`
+</code></pre><blockquote>
+<p>4.使用XMLHttpRequest对象创建请求</p>
+</blockquote>
+<pre><code>get：
+    请求数据以问号的形式拼接在url后面，键值对。
+    因为浏览器差异的问题，在send的时候一定是：send(null)
+
+    request.open(&quot;get&quot;,&quot;uri?用户请求数据&quot;);
+    request.send(null);        
+post：
+    post是有请求实体的，用户数据使用send直接发送
+
+    request.open(&quot;post&quot;,&quot;uri&quot;);
+    request.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+    request.send(&quot;用户数据&quot;);    
+</code></pre><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/VePJ9a3sphWLK3k0b1QogTo*IPJvIS*WZNQuIRAc5BE!/m/dLIAAAAAAAAAnull&amp;bo=rAQZAgAAAAAFB5c!&amp;rf=photolist&amp;t=5" alt=""></p>
+<h3 id="ajax应用实例"><a href="#ajax应用实例" class="headerlink" title="ajax应用实例"></a>ajax应用实例</h3><p>需求：在一个页面加载完成后，在页面上获取到权限信息，显示到下拉框中。</p>
+<h4 id="1-jQuery的ajax"><a href="#1-jQuery的ajax" class="headerlink" title="1.jQuery的ajax"></a>1.jQuery的ajax</h4><p>JSP:</p>
+<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
+    //页面加载的时候发送请求
+    $(document).ready(function(){
+        getPower();
+    })
+    //获取权限信息
+    function getPower(){
+
+        $.get(&quot;user.action&quot;,{oper:&quot;power&quot;},function(result){
+            //使用eval强转
+            eval(&quot;var power=&quot;+result);
+            //获取权限下拉框对象
+            var sel=$(&quot;#sel&quot;);
+            sel.empty();
+            //遍历
+            for(var i=0;i&lt;power.length;i++){
+                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
+            }
+        });
+    }
+&lt;/script&gt;    
+`
+</code></pre><h4 id="2-原生的ajax"><a href="#2-原生的ajax" class="headerlink" title="2.原生的ajax"></a>2.原生的ajax</h4><p>JSP:</p>
+<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
+//页面加载的时候发送请求
+window.onload(function(){
+    getPower();
+})
+//获取权限信息
+function getPower(){
+    //1创建XMLHttpRequest对象
+    var request;
+    if(window.XMLHttpRequest){
+        request=new XMLHttpRequest();
+    }else if(window.ActiveXObject){
+        request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+    }
+    //2创建请求
+    request.open(&quot;get&quot;,&quot;user.action&quot; + (data==&quot;&quot; ? &quot;&quot; : &quot;?search=&quot;+data));
+    //3复写onreadystatechange
+    request.onreadystatechange=function(){
+    //readyState的值为4表示数据成功接收
+    if(request.readyState==4){
+        if(request.status==200){
+            var result=request.responseText;
+            //使用eval强转
+            eval(&quot;var power=&quot;+result);
+            var sel=document.getElementById(&quot;sel&quot;);
+            sel.innerHTML=&quot;&quot;;
+            for(var i=0;i&lt;power.length;i++){
+                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
+            }
+        }
+    }
+    //4发送请求
+    request.send(null);
+}            
+&lt;/script&gt;`
+</code></pre><p>servlet:</p>
+<pre><code>`
+private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    //查询所有的权限信息
+    ArrayList&lt;Power&gt; list=new UserDao().getPowerInfo();
+    System.out.println(&quot;权限信息为：&quot;+list);
+    resp.getWriter().write(new Gson().toJson(list));
+}`
+</code></pre><p><br></p>
+<p>【其他应用场合】</p>
+<blockquote>
+<p>百度搜索的提示下拉框</p>
+<p>注册验证邮箱是否已经存在</p>
+</blockquote>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/ajax/">ajax</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

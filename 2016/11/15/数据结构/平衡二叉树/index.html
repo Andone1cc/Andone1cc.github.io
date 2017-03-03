@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>判断二叉树是否为平衡二叉树 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="二叉树">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="判断二叉树是否为平衡二叉树"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>判断二叉树是否为平衡二叉树</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/15/数据结构/平衡二叉树/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-15T14:12:30.446Z">
+          2016-11-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="判断二叉树是否为平衡二叉树"><a href="#判断二叉树是否为平衡二叉树" class="headerlink" title="判断二叉树是否为平衡二叉树"></a>判断二叉树是否为平衡二叉树</h3><p>平衡二叉树的性质为：要么是一棵空树，要么任何一个节点的左右子树高度差的绝对值不超过1,。给定一棵二叉树的头节点head，判断这棵二叉树是否为平衡二叉树。</p>
+<a id="more"></a>
+<p>时间复杂度：O（N）  节点数为N</p>
+<p>【分析】</p>
+<p>解法的整体过程为<code>二叉树的后序遍历</code>，对任何一个节点Node来说，先遍历node的左子树，遍历过程中收集两个信息，node的左子树是否为平衡二叉树，node的左子树最深到哪一层记为<code>lh</code>,如果发现node的左子树不是平衡二叉树，无须进行任何后续过程，此时返回什么并不重要，因为已经发现整棵树不是平衡二叉树，退出遍历过程。如果node的左子树是平衡二叉树，再遍历node的右子树，遍历过程中再收集两个信息，node的右子树是否为平衡二叉树，node的右子树最深到哪一层记为<code>rh</code>。如果node的右子树也是平衡二叉树，<code>就看lh和rh差的绝对值是否小于1，如果大于1，不是平衡二叉树。</code>返回lh和rh较大的那一个。</p>
+<p>【AC代码】</p>
+<pre><code>`public class Solution {
+    public  boolean isBalance(TreeNode head){
+        //定义全局变量boolean
+        boolean[] res=new boolean[1];
+        res[0]=true;
+        getHeight(head,1,res);
+        return res[0];
+
+    }
+    private int getHeight(TreeNode head, int level, boolean[] res) {
+        if(head==null){
+            return level;
+        }
+        int lh=getHeight(head.left,level+1,res);
+        if(!res[0]){
+            return level;
+        }
+        int rh=getHeight(head.right,level+1,res);
+        if(!res[0]){
+            return level;
+        }
+        if(Math.abs(lh-rh)&gt;1){
+            res[0]=false;
+        }
+        return Math.max(lh, rh);
+    }
+    public static void main(String[] args) {
+        Solution d=new Solution();
+        TreeNode head1=new TreeNode(1);
+        TreeNode head2=new TreeNode(2);
+        TreeNode head3=new TreeNode(3);
+        TreeNode head4=new TreeNode(4);
+        TreeNode head5=new TreeNode(5);
+        TreeNode head6=new TreeNode(6);
+        TreeNode head7=new TreeNode(7);
+        TreeNode head8=new TreeNode(8);
+        head1.left=head2;
+        head1.right=head3;
+        head2.left=head4;
+        head2.right=head7;
+        head3.left=head8;
+        head4.left=head5;
+        head5.left=head6;
+        System.out.println(d.isBalance(head1)==true?&quot;该二叉树是平衡二叉树&quot;:&quot;该二叉树不是平衡二叉树&quot;);
+    }
+}`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Algorithm/">Algorithm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/二叉树/">二叉树</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

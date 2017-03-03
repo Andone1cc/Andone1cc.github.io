@@ -1,0 +1,260 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>解析Spring IOC原理——工厂模式与反射机制的综合应用 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="SSH">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="解析Spring IOC原理——工厂模式与反射机制的综合应用"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>解析Spring IOC原理——工厂模式与反射机制的综合应用</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/11/12/java高级/ioc原理/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-11-12T11:24:06.673Z">
+          2016-11-12
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="一、工厂模式"><a href="#一、工厂模式" class="headerlink" title="一、工厂模式"></a>一、工厂模式</h3><p>我们从一个例子开始讲起：</p>
+<p>首先我们创建一个Chinese.java类，该类的sayHelloWorld(String name)方法，用中文对名为name的人问好。其代码如下：</p>
+<a id="more"></a>
+<pre><code>`public class Chinese {  
+    /**-- 用中文对某人问好. --*/  
+    public void sayHelloWorld(String name) {  
+           String helloWorld = &quot;你好，&quot; + name;  
+           System.out.println(helloWorld);  
+    }  
+}  `
+</code></pre><p>下面我们接着建立一个American.java类，该类的sayHelloWorld(String name)方法，用英文对名为name的人问好，其内容如下：下面我们接着建立一个American.java类，该类的sayHelloWorld(String name)方法，用英文对名为name的人问好，其代码如下：</p>
+<pre><code>`public class American {  
+    /*-- 用英文对某人问好 --*/  
+    public void sayHelloWorld(String name) {  
+           String helloWorld = &quot;Hello，&quot; + name;  
+        System.out.println(helloWorld);  
+    }  
+}  `
+</code></pre><p>最后我们编写一个测试类对这两个类的sayHelloWorld(String name)方法进行测试，下面是该类的代码：</p>
+<pre><code>`publicclass HelloWorldTest {  
+
+    /*-- 测试Chinese和American的sayHelloWorld()方法 --*/  
+    publicstaticvoid main(String[] args) {  
+        Chinese chinese = new Chinese();  
+            chinese.sayHelloWorld(&quot;畅辰&quot;);  
+
+           American american = new American();  
+           american.sayHelloWorld(&quot;changchen&quot;);  
+    }  
+}  `
+</code></pre><p>现实生活中我们总是把同一类产品放在一个工厂中生产，消费者只需要告诉工厂自己需要这一类产品中的哪一种产品，工厂就能够生产出对应的产品，从而完成交易。</p>
+<p>这里我们把上面例子中的<code>HelloWorldTest类想象为消费者，而Chinese和American类想象为产品，根据上面的例子，我们可以看到每当HelloWorldTest这个消费者需要一个产品时都要去自己去生产（new），这样消费者就不得不去了解各个产品的内部结构及生产过程。显然对于消费者来说这样是很麻烦的。</code></p>
+<p>而在程序设计领域中这个问题就叫做<code>强耦合问题</code>，HelloWorldTest类与Chinese和American这两个类都存在强耦合关系。设想一下，如果程序中的很多类都需要用到Chinese和American类这两个类，那么每个类就必须和这两个类强耦合，而且现实的项目中类似于Chinese这种类往往不仅两个，这样会使得整个程序的耦合度很高，增大程序的复杂度。这时我们就想到，能否也使用一个工厂来生产这些类，这样如果某个类需要用到工厂中的哪个类，就只要通过和工厂生产就行了，从而降低了整个程序的耦合度。</p>
+<p>下面看看工厂模式是如何实现的:</p>
+<p>首先建立接口类Human.java，其代码如下：</p>
+<pre><code>`public interface Human {  
+
+    /** *//** 
+     * 对某人问好. 
+     * @param name 姓名 
+     */  
+    public void sayHelloWorld(String name);  
+}  `
+</code></pre><p>并将American.java类和Chinese.java类改为实现该接口，即类头分别改成：public class American implements Human和public class Chinese implements Human。</p>
+<p>接着编写HumanFactory.java工厂类，其代码为：</p>
+<pre><code>`public class HumanFactory {  
+
+       /** *//** 
+        * 通过类型字段获取人的相应实例 
+        * @param type 类型 
+        * @return 返回相应实例 
+        */  
+   public Human getHuman(String type) {  
+          if (&quot;chinese&quot;.equals(type)) {  
+                 return new Chinese();  
+          } else {  
+                 return new American();  
+          }  
+   }  
+}  `
+</code></pre><p>最后我们还需要修改测试类HelloWorld.java类，修改后的内容如下：</p>
+<pre><code>`public class HelloWorldTest {  
+
+       /** *//** 
+        * 测试sayHelloWorld()方法. 
+        * @param args 
+        */  
+   public static void main(String[] args) {  
+          HumanFactory factory = new HumanFactory();  
+          Human human1 = factory.getHuman(&quot;chinese&quot;);  
+          human1.sayHelloWorld(&quot;畅辰&quot;);  
+
+          Human human2 = factory.getHuman(&quot;american&quot;);  
+          human2.sayHelloWorld(&quot;changchen&quot;);  
+          }  
+}  `
+</code></pre><p>通过上面的例子可以看到，使用工厂模式实现的方式， HelloWorldTest 不再与Chinese类和American类耦合，而<code>只是和他们共同的接口耦合</code>，从而很大程度的降低的程序的耦合性。<code>到这里或许很多人会有一点疑虑，使用工厂模式的HelloWorldTest 类也是需要耦合两个类（即HumanFactory 类和Human 接口）那么为什么能说降低耦合度呢，这就要是何时要使用工厂模式的问题了。</code>假如类似于我们这个例子，HumanFactory 这个工厂只生产两个类，那的确没有什么必要使用工厂模式，但是现实的项目中往往有更多和Chinese类类似的类，比如English，Japanese，这时候就能体现出工厂模式的优势了。</p>
+<h3 id="Spring-IOC的原理"><a href="#Spring-IOC的原理" class="headerlink" title="Spring IOC的原理"></a>Spring IOC的原理</h3><p>首先我们来讲下为什么要引入IOC：</p>
+<p><code>假设上面举例的那个程序已经部署到服务器中，并已经上线运行，这时项目来了这样一个新需求：增加一个Japanese类，并且在HelloWorldTest 类中调用Japanese的sayHelloWorld方法。在没有引入IOC之前，很显然我们为了这个新需求，必须把项目停止下来，然后从新编译HumanFactory 和HelloWorldTest这两个类，最后再重新上线运行。</code></p>
+<p>而使用IOC，则能够在不重新编译部署的情况下实现上面的新需求！</p>
+<p>那么我们来看一下IOC是去怎么实现这个新需求的：</p>
+<p>首先我们在io.github.cc.pojo包内创建一个Japanese类：</p>
+<pre><code>`public class Japanese implements Human{  
+     private String name;  
+
+
+     public void sayHelloWorld(String string){  
+         System.out.println(&quot;你好，&quot;+string);  
+     }  
+     public String getName() {  
+         return name;  
+    }  
+     public void setName(String name) {  
+       this.name = name;  
+     }  
+}  `
+</code></pre><p>然后对HelloWorldTest 类做如下修改</p>
+<pre><code>`public class HelloWorldTest {  
+
+   public static void main(String[] args) {  
+         ApplicationContext ac = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);  
+         Human human=ac.getBean(&quot;japanese&quot;);  
+         human.sayHelloWorld(&quot;畅辰&quot;);  
+         }  
+} `    
+</code></pre><p>然后我们在applicationContext.xml中做如下配置：</p>
+<pre><code>`&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+
+
+    &lt;bean id=&quot;japanese&quot; class=&quot;io.github.cc.pojo.Japanese&quot;&gt;&lt;/bean&gt;
+         &lt;property name=&quot;name&quot;&gt;  
+               &lt;value&gt;畅辰&lt;/value&gt;  
+           &lt;/property&gt;  
+&lt;/beans&gt;`
+</code></pre><p>这样，HelloWorldTest 便会去调用Japanese类的sayHelloWorld()方法；用这种形式，我们只要修改applicationContext.xml的配置便可以改变HelloWorldTest 类中human对象，并且不需要重新部署项目，这样就实现了human对象的热拔插。</p>
+<p><br><br>【总结】<br>IOC的标准定义：<br>(Inversion of Control)<br>中文译为： 控制反转<br>IOC的基本概念是：不创建对象，但是描述创建它们的方式。在代码中不直接与对象和服务连接，但在配置文件中描述哪一个组件需要哪一项服务。<code>IOC容器负责实例化、定位、配置应用程序中的对象及建立这些对象间的依赖。交由Spring来管理这些，实现解耦。</code></p>
+<p>所谓控制反转，<code>就是把原先我们代码里面需要实现的对象创建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们可配置的文件。</code></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java高级/">java高级</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/SSH/">SSH</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>双端队列--生成窗口最大值数组 | Andone1cc | 一个有梦想的CS小白</title>
+
+  
+  <meta name="author" content="QDU-scc">
+  
+
+  
+  <meta name="description" content="一个有梦想的CS小白">
+  
+
+  
+  
+  <meta name="keywords" content="栈和队列">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="双端队列--生成窗口最大值数组"/>
+
+  <meta property="og:site_name" content="Andone1cc"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Andone1cc" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Andone1cc</a>
+    </h1>
+    <p class="site-description">一个有梦想的CS小白</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>双端队列--生成窗口最大值数组</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/02/09/数据结构/窗口最大值数组/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-02-09T15:47:46.959Z">
+          2017-02-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h3 id="生成窗口最大值数组"><a href="#生成窗口最大值数组" class="headerlink" title="生成窗口最大值数组"></a>生成窗口最大值数组</h3><p>【题目】</p>
+<p>有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。</p>
+<a id="more"></a>
+<p>例如，数组为【4,3,5,4,3,3,6,7】,窗口大小为3时：</p>
+<p>[4,3,5],4,3,3,6,7        窗口中最大值为5</p>
+<p>4,[3,5,4],3,3,6,7        窗口中最大值为5</p>
+<p>4,3,[5,4,3],3,6,7        窗口中最大值为5</p>
+<p>4,3,5,[4,3,3],6,7        窗口中最大值为4</p>
+<p>4,3,5,4,[3,3,6],7        窗口中最大值为6</p>
+<p>4,3,5,4,3,[3,6,7]        窗口中最大值为7</p>
+<p>如果数组长度为n,窗口大小为w,则一共产生<code>n-w+1</code>个窗口的最大值。</p>
+<p>请实现一个函数：</p>
+<p>1.输入：整型数组arr，窗口大小为w</p>
+<p>2.输出：一个长度为n-w+1的数组res，res[i]表示每一种窗口状态下的最大值。</p>
+<p>以本题为例，结果应该返回{5,5,5,4,6,7}。</p>
+<p>【分析】</p>
+<p><code>时间复杂度为O(n).</code></p>
+<p>本题的关键在于利用<code>双端队列来实现窗口最大值的更新</code>。首先生成双端队列qmax,qmax中存放数组arr中的下标。</p>
+<p>假设遍历到arr[i],qmax的<code>放入规则</code>为：</p>
+<blockquote>
+<p>1.如果qmax为空，直接把下标i放进qmax，放入过程结束。</p>
+<p>2.如果qmax不为空，取出当前qmax队尾存放的下标，假设为j。</p>
+<p>1）.如果arr[j]&gt;arr[i],直接把下标i放进qmax的队尾，放入过程结束。</p>
+<p>2）.如果arr[j]&lt;=arr[i],把j从qmax中弹出，继续qmax的放入规则。</p>
+</blockquote>
+<p>假设遍历到arr[i],qmax的<code>弹出规则</code>为：</p>
+<p>如果qmax队头的下标等于i-w,说明当前qmax队头的下标已过期，弹出当前队头的下标即可。</p>
+<p>【AC代码】</p>
+<pre><code>`
+public class MaxWindow {
+public static int[] getMaxWindow(int[] arr, int w) {
+    if (arr == null || w &lt; 1 || arr.length &lt; w) {
+        return null;
+    }
+    LinkedList&lt;Integer&gt; qmax = new LinkedList&lt;Integer&gt;();
+    int index = 0;
+    int res[] = new int[arr.length - w + 1];
+    for (int i = 0; i &lt; arr.length; i++) {
+        while (!qmax.isEmpty() &amp;&amp; arr[qmax.peekLast()] &lt;= arr[i]) {
+            qmax.pollLast();
+        }
+        qmax.addLast(i);
+        if (qmax.peekFirst() == i - w) {
+            qmax.pollFirst();
+        }
+        if (i &gt;= w - 1) {
+            res[index++] = arr[qmax.peekFirst()];
+        }
+    }
+    return res;
+}
+public static void main(String[] args){
+    int arr[]={4,3,5,4,3,3,6,7};
+    System.out.println(Arrays.toString(getMaxWindow(arr, 3)));
+}
+}
+`
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Algorithm/">Algorithm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/栈和队列/">栈和队列</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 QDU-scc
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
