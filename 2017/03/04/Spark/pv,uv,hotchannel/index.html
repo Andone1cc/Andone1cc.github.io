@@ -1,0 +1,734 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、PV对某一个页面的访问量，在页面中进行刷新一次就是一次pv
+PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计，用户可以重复">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——PV,UV,hotChannel">
+<meta property="og:url" content="http://yoursite.com/2017/03/04/Spark/pv,uv,hotchannel/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="一、PV对某一个页面的访问量，在页面中进行刷新一次就是一次pv
+PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计，用户可以重复">
+<meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/eO3KQkssdembZENZL4z9JrGLtUD.41pK3y2VPPqg2hA!/b/dCUAAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
+<meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/ajJ3OoteMwsGGA66orkXpB.OrJyhBYxhoYm5ywlLxwg!/b/dIEBAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
+<meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/wq*BTFZC5fJXH4JHD5qxKGROcrKwDc0D*tkUdX7HKUU!/b/dN8AAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
+<meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/gmAaK7WGK4VOp*NtjVkfjilwMDI6qjsecDg.dCFHQV4!/b/dIEBAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
+<meta property="og:updated_time" content="2017-03-04T10:19:54.491Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——PV,UV,hotChannel">
+<meta name="twitter:description" content="一、PV对某一个页面的访问量，在页面中进行刷新一次就是一次pv
+PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计，用户可以重复">
+<meta name="twitter:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/eO3KQkssdembZENZL4z9JrGLtUD.41pK3y2VPPqg2hA!/b/dCUAAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/04/Spark/pv,uv,hotchannel/"/>
+
+
+
+
+
+  <title> Spark学习笔记——PV,UV,hotChannel | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/04/Spark/pv,uv,hotchannel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——PV,UV,hotChannel
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-04T18:00:48+08:00">
+                2017-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/04/Spark/pv,uv,hotchannel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/04/Spark/pv,uv,hotchannel/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、PV"><a href="#一、PV" class="headerlink" title="一、PV"></a>一、PV</h3><p>对某一个页面的访问量，在页面中进行刷新一次就是一次pv</p>
+<p>PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计，用户可以重复</p>
+<a id="more"></a>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">	public class PV_ANA &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        SparkConf conf = new SparkConf()</div><div class="line">                .setAppName(&quot;PV_ANA&quot;)</div><div class="line">                .setMaster(&quot;local&quot;)</div><div class="line">                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);</div><div class="line">        JavaSparkContext sc = new JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(&quot;f:/userLog&quot;);</div><div class="line">        String str = &quot;View&quot;;</div><div class="line">        final Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        pvAnalyze(logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static void pvAnalyze(JavaRDD&lt;String&gt; logRDD,</div><div class="line">                                  final Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (new Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public Boolean call(String s) throws Exception &#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = s.split(&quot;\t&quot;)[5];</div><div class="line">                        return actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; pariLogRDD = filteredLogRDD.mapToPair</div><div class="line">                (new PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public Tuple2&lt;String, String&gt; call(String s)</div><div class="line">                            throws Exception &#123;</div><div class="line">                        String pageId = s.split(&quot;\t&quot;)[3];</div><div class="line">                        return new Tuple2&lt;String, String&gt;(pageId, null);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        pariLogRDD.groupByKey().foreach(new VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line">            private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public void call(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</div><div class="line">                    throws Exception &#123;</div><div class="line">                String pageId = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                long count = 0L;</div><div class="line">                while (iterator.hasNext()) &#123;</div><div class="line">                    iterator.next();</div><div class="line">                    count++;</div><div class="line">                &#125;</div><div class="line">                System.out.println(&quot;PAGEID:&quot; + pageId + &quot;\t PV_COUNT:&quot; + count);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><h3 id="二、UV"><a href="#二、UV" class="headerlink" title="二、UV"></a>二、UV</h3><p>UV   {p1, (u1,u2,u3,u4,u5…)}         对一个页面有多少用户访问，用户不可以重复</p>
+<p>【方式一】</p>
+<p>【流程图】</p>
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/eO3KQkssdembZENZL4z9JrGLtUD.41pK3y2VPPqg2hA!/b/dCUAAAAAAAAA&amp;bo=lwTMAQAAAAADAHs!&amp;rf=viewer_4" alt=""></p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UV_ANA</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"UV_ANA"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(<span class="string">"f:/userLog"</span>);</div><div class="line">        String str = <span class="string">"View"</span>;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        uvAnalyze(logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">uvAnalyze</span><span class="params">(JavaRDD&lt;String&gt; logRDD,</span></span></div><div class="line">                                  <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = s.split(<span class="string">"\t"</span>)[<span class="number">5</span>];</div><div class="line">                        <span class="keyword">return</span> actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; pairLogRDD = filteredLogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String pageId = s.split(<span class="string">"\t"</span>)[<span class="number">3</span>];</div><div class="line">                        String userId = s.split(<span class="string">"\t"</span>)[<span class="number">2</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(pageId, userId);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        pairLogRDD.groupByKey().foreach(<span class="keyword">new</span> VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line">            <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</span></span></div><div class="line">                    <span class="keyword">throws</span> Exception &#123;</div><div class="line">                String pageId = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                Set&lt;String&gt; userSets = <span class="keyword">new</span> HashSet&lt;&gt;();</div><div class="line">                <span class="keyword">while</span> (iterator.hasNext()) &#123;</div><div class="line">                    String userId = iterator.next();</div><div class="line">                    userSets.add(userId);</div><div class="line">                &#125;</div><div class="line">                System.out.println(<span class="string">"PAGEID:"</span> + pageId + <span class="string">"\t "</span> +</div><div class="line">                        <span class="string">"UV_COUNT:"</span> + userSets.size());</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>【方式二】</p>
+<p>【流程图】</p>
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/ajJ3OoteMwsGGA66orkXpB.OrJyhBYxhoYm5ywlLxwg!/b/dIEBAAAAAAAA&amp;bo=lwTMAQAAAAADAHs!&amp;rf=viewer_4" alt=""></p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UV_ANAoptz</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"UV_ANAoptz"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(<span class="string">"f:/userLog"</span>);</div><div class="line">        String str = <span class="string">"View"</span>;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        uvAnalyzeOptz(logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">uvAnalyzeOptz</span><span class="params">(JavaRDD&lt;String&gt; logRDD,</span></span></div><div class="line">                                      <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = s.split(<span class="string">"\t"</span>)[<span class="number">5</span>];</div><div class="line">                        <span class="keyword">return</span> actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; pairRDD = filteredLogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String s)</span></span></div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String pageId = s.split(<span class="string">"\t"</span>)[<span class="number">3</span>];</div><div class="line">                        String userId = s.split(<span class="string">"\t"</span>)[<span class="number">2</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(pageId + <span class="string">"_"</span> +</div><div class="line">                                userId, <span class="keyword">null</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, Iterable&lt;String&gt;&gt; groupUp2LogRDD = pairRDD.groupByKey();</div><div class="line">        Map&lt;String, Object&gt; countByKey = groupUp2LogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;,</div><div class="line">                        String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(Tuple2&lt;String,</span></span></div><div class="line">                            Iterable&lt;String&gt;&gt; tuple)</div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String pu = tuple._1;</div><div class="line">                        String[] spilted = pu.split(<span class="string">"_"</span>);</div><div class="line">                        String pageId = spilted[<span class="number">0</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(pageId, <span class="keyword">null</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;).countByKey();</div><div class="line">        Set&lt;String&gt; keySet = countByKey.keySet();</div><div class="line">        <span class="keyword">for</span> (String key : keySet) &#123;</div><div class="line">            System.out.println(<span class="string">"PAGEID:"</span> + key + <span class="string">"\tUV_COUNT："</span> +</div><div class="line">                    countByKey.get(key));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><h3 id="三、热门版块下用户访问的数量"><a href="#三、热门版块下用户访问的数量" class="headerlink" title="三、热门版块下用户访问的数量"></a>三、热门版块下用户访问的数量</h3><p>【方式一】</p>
+<p>【流程图】</p>
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/wq*BTFZC5fJXH4JHD5qxKGROcrKwDc0D*tkUdX7HKUU!/b/dN8AAAAAAAAA&amp;bo=lwTMAQAAAAADAHs!&amp;rf=viewer_4" alt=""></p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HotChannel</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"HotChannel"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(<span class="string">"f:/userLog"</span>);</div><div class="line">        String str = <span class="string">"View"</span>;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        hotChannel(sc, logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hotChannel</span><span class="params">(JavaSparkContext sc, JavaRDD&lt;String&gt; logRDD,</span></span></div><div class="line">                                   <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String v1)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = v1.split(<span class="string">"\t"</span>)[<span class="number">5</span>];</div><div class="line">                        <span class="keyword">return</span> actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; channel2nullRDD = filteredLogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String channel = s.split(<span class="string">"\t"</span>)[<span class="number">4</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(channel, <span class="keyword">null</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        Map&lt;String, Object&gt; channelPVMap = channel2nullRDD.countByKey();</div><div class="line">        Set&lt;String&gt; keySet = channelPVMap.keySet();</div><div class="line">        List&lt;SortObj&gt; channels = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (String channel : keySet) &#123;</div><div class="line">            channels.add(<span class="keyword">new</span> SortObj(channel, Integer.valueOf</div><div class="line">                    (channelPVMap.get(channel) + <span class="string">""</span>)));</div><div class="line">        &#125;</div><div class="line">        Collections.sort(channels, <span class="keyword">new</span> Comparator&lt;SortObj&gt;() &#123;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(SortObj o1, SortObj o2)</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> o2.getValue() - o1.getValue();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        List&lt;String&gt; hotChannelList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</div><div class="line">            hotChannelList.add(channels.get(i).getKey());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (String channel : hotChannelList) &#123;</div><div class="line">            System.out.println(<span class="string">"channel:"</span> + channel);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;List&lt;String&gt;&gt; hotChannelListBroadcast =</div><div class="line">                sc.broadcast(hotChannelList);</div><div class="line">        JavaRDD&lt;String&gt; filterRDD = logRDD.filter(<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                List&lt;String&gt; hostChannels = hotChannelListBroadcast.value();</div><div class="line">                String channel = s.split(<span class="string">"\t"</span>)[<span class="number">4</span>];</div><div class="line">                String userId = s.split(<span class="string">"\t"</span>)[<span class="number">2</span>];</div><div class="line">                <span class="keyword">return</span> hostChannels.contains(channel) &amp;&amp; !<span class="string">"null"</span>.equals(userId);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; channel2UserRDD = filterRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String s)</span></span></div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String[] splited = s.split(<span class="string">"\t"</span>);</div><div class="line">                        String channel = splited[<span class="number">4</span>];</div><div class="line">                        String userId = splited[<span class="number">2</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(channel, userId);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        channel2UserRDD.groupByKey().foreach(<span class="keyword">new</span> VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</span></span></div><div class="line">                    <span class="keyword">throws</span> Exception &#123;</div><div class="line">                String channel = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                Map&lt;String, Integer&gt; userNumMap = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line">                <span class="keyword">while</span> (iterator.hasNext()) &#123;</div><div class="line">                    String userId = iterator.next();</div><div class="line">                    Integer count = userNumMap.get(userId);</div><div class="line">                    <span class="keyword">if</span> (count == <span class="keyword">null</span>) &#123;</div><div class="line">                        count = <span class="number">1</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        count++;</div><div class="line">                    &#125;</div><div class="line">                    userNumMap.put(userId, count);</div><div class="line">                &#125;</div><div class="line">                List&lt;SortObj&gt; lists = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">                Set&lt;String&gt; keys = userNumMap.keySet();</div><div class="line">                <span class="keyword">for</span> (String key : keys) &#123;</div><div class="line">                    lists.add(<span class="keyword">new</span> SortObj(key, userNumMap.get(key)));</div><div class="line">                &#125;</div><div class="line">                Collections.sort(lists, <span class="keyword">new</span> Comparator&lt;SortObj&gt;() &#123;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(SortObj O1, SortObj O2)</span> </span>&#123;</div><div class="line">                        <span class="keyword">return</span> O2.getValue() - O1.getValue();</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">                System.out.println(<span class="string">"HOT_CHANNEL:"</span> + channel);</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</div><div class="line">                    SortObj sortObj = lists.get(i);</div><div class="line">                    System.out.println(sortObj.getKey() + <span class="string">"=="</span></div><div class="line">                            + sortObj.getValue());</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>【方式二】</p>
+<p>【流程图】</p>
+<p><img src="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/gmAaK7WGK4VOp*NtjVkfjilwMDI6qjsecDg.dCFHQV4!/b/dIEBAAAAAAAA&amp;bo=lwTMAQAAAAADAHs!&amp;rf=viewer_4" alt=""></p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HotChannelOpz</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"hotChannelOpz"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(<span class="string">"f:/userLog"</span>);</div><div class="line">        String str = <span class="string">"View"</span>;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        hotChannelOpz(sc, logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hotChannelOpz</span><span class="params">(JavaSparkContext sc, JavaRDD&lt;String&gt; logRDD,</span></span></div><div class="line">                                      <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String v1)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = v1.split(<span class="string">"\t"</span>)[<span class="number">5</span>];</div><div class="line">                        <span class="keyword">return</span> actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line"></div><div class="line">        JavaPairRDD&lt;String, String&gt; channel2nullRDD = filteredLogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String val)</span></span></div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String channel = val.split(<span class="string">"\t"</span>)[<span class="number">4</span>];</div><div class="line"></div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(channel, <span class="keyword">null</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        Map&lt;String, Object&gt; channelPVMap = channel2nullRDD.countByKey();</div><div class="line">        Set&lt;String&gt; keySet = channelPVMap.keySet();</div><div class="line">        List&lt;SortObj&gt; channels = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (String channel : keySet) &#123;</div><div class="line">            channels.add(<span class="keyword">new</span> SortObj(channel, Integer.valueOf</div><div class="line">                    (channelPVMap.get(channel) + <span class="string">""</span>)));</div><div class="line">        &#125;</div><div class="line">        Collections.sort(channels, <span class="keyword">new</span> Comparator&lt;SortObj&gt;() &#123;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(SortObj o1, SortObj o2)</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> o2.getValue() - o1.getValue();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        List&lt;String&gt; hotChannelList = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</div><div class="line">            hotChannelList.add(channels.get(i).getKey());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;List&lt;String&gt;&gt; hotChannelListBroadcast =</div><div class="line">                sc.broadcast(hotChannelList);</div><div class="line">        JavaRDD&lt;String&gt; filtedRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String v1)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        List&lt;String&gt; hostChannels = hotChannelListBroadcast.value();</div><div class="line">                        String channel = v1.split(<span class="string">"\t"</span>)[<span class="number">4</span>];</div><div class="line">                        String userId = v1.split(<span class="string">"\t"</span>)[<span class="number">2</span>];</div><div class="line">                        <span class="keyword">return</span> hostChannels.contains(channel) &amp;&amp;</div><div class="line">                                !<span class="string">"null"</span>.equals(userId);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; user2ChannelRDD = filtedRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String val)</span></span></div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String[] splited = val.split(<span class="string">"\t"</span>);</div><div class="line">                        String userId = splited[<span class="number">2</span>];</div><div class="line">                        String channel = splited[<span class="number">4</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(userId, channel);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; userVistChannelsRDD =</div><div class="line">                user2ChannelRDD.groupByKey().</div><div class="line">                flatMapToPair(<span class="keyword">new</span> PairFlatMapFunction</div><div class="line">                        &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="keyword">public</span> Iterable&lt;Tuple2&lt;String, String&gt;&gt; call</div><div class="line">                            (Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String userId = tuple._1;</div><div class="line">                        Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                        Map&lt;String, Integer&gt; channelMap = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line">                        <span class="keyword">while</span> (iterator.hasNext()) &#123;</div><div class="line">                            String channel = iterator.next();</div><div class="line">                            Integer count = channelMap.get(channel);</div><div class="line">                            <span class="keyword">if</span> (count == <span class="keyword">null</span>)</div><div class="line">                                count = <span class="number">1</span>;</div><div class="line">                            <span class="keyword">else</span></div><div class="line">                                count++;</div><div class="line">                            channelMap.put(channel, count);</div><div class="line">                        &#125;</div><div class="line">                        List&lt;Tuple2&lt;String, String&gt;&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">                        Set&lt;String&gt; keys = channelMap.keySet();</div><div class="line">                        <span class="keyword">for</span> (String channel : keys) &#123;</div><div class="line">                            Integer channelNum = channelMap.get(channel);</div><div class="line">                            list.add(<span class="keyword">new</span> Tuple2&lt;String, String&gt;(channel,</div><div class="line">                                    userId + <span class="string">"_"</span> + channelNum));</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">return</span> list;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        userVistChannelsRDD.groupByKey().foreach(<span class="keyword">new</span> VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</span></span></div><div class="line">                    <span class="keyword">throws</span> Exception &#123;</div><div class="line">                String channel = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                List&lt;SortObj&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">                <span class="keyword">while</span> (iterator.hasNext()) &#123;</div><div class="line">                    String ucs = iterator.next();</div><div class="line">                    String[] splited = ucs.split(<span class="string">"_"</span>);</div><div class="line">                    String userId = splited[<span class="number">0</span>];</div><div class="line">                    Integer num = Integer.valueOf(splited[<span class="number">1</span>]);</div><div class="line">                    list.add(<span class="keyword">new</span> SortObj(userId, num));</div><div class="line">                &#125;</div><div class="line">                Collections.sort(list, <span class="keyword">new</span> Comparator&lt;SortObj&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(SortObj o1, SortObj o2)</span> </span>&#123;</div><div class="line">                        <span class="keyword">return</span> o2.getValue() - o1.getValue();</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">                System.out.println(<span class="string">"HOT_CHANNLE:"</span> + channel);</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</div><div class="line">                    SortObj sortObj = list.get(i);</div><div class="line">                    System.out.println(sortObj.getKey() + <span class="string">"==="</span></div><div class="line">                            + sortObj.getValue());</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/04/Spark/二次排序topn/" rel="next" title="Spark学习笔记——二次排序，TopN，TopNByGroup">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——二次排序，TopN，TopNByGroup
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/04/Spark/pv,uv,hotchannel/"
+           data-title="Spark学习笔记——PV,UV,hotChannel" data-url="http://yoursite.com/2017/03/04/Spark/pv,uv,hotchannel/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">Kategorien</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、PV"><span class="nav-number">1.</span> <span class="nav-text">一、PV</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、UV"><span class="nav-number">2.</span> <span class="nav-text">二、UV</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、热门版块下用户访问的数量"><span class="nav-number">3.</span> <span class="nav-text">三、热门版块下用户访问的数量</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
