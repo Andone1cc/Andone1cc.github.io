@@ -93,7 +93,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/03/04/Spark/二次排序topn/index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="一、二次排序使用sortByKey实现二次排序。">
-<meta property="og:updated_time" content="2017-03-04T09:39:54.812Z">
+<meta property="og:updated_time" content="2017-03-04T09:43:20.556Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——二次排序，TopN，TopNByGroup">
 <meta name="twitter:description" content="一、二次排序使用sortByKey实现二次排序。">
@@ -196,7 +196,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -206,7 +206,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -283,7 +283,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-04T17:01:48+08:00">
                 2017-03-04
@@ -304,7 +304,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">in</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -384,7 +384,7 @@
 3 10
 1 4
 `
-</code></pre><h3 id="二、TopN"><a href="#二、TopN" class="headerlink" title="二、TopN"></a>二、TopN</h3><pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">object TopN &#123;</div><div class="line">  def main(args: Array[String]): Unit = &#123;</div><div class="line">    val conf = new SparkConf()</div><div class="line">      .setAppName(&quot;TopN&quot;)</div><div class="line">      .setMaster(&quot;local&quot;)</div><div class="line">      .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">    val lines = sc.textFile(&quot;top.txt&quot;)</div><div class="line">    val lineList = lines.map(x =&gt; (x.split(&quot;,&quot;)(0), x))</div><div class="line">    val sortRDD = lineList.sortByKey(false)</div><div class="line">    val resultRDD = sortRDD.map(x =&gt; x._2)</div><div class="line">    for (a &lt;- resultRDD.take(5)) &#123;</div><div class="line">      println(a)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><h3 id="二、TopN"><a href="#二、TopN" class="headerlink" title="二、TopN"></a>二、TopN</h3><pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">TopN</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">      .setAppName(<span class="string">"TopN"</span>)</div><div class="line">      .setMaster(<span class="string">"local"</span>)</div><div class="line">      .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> lines = sc.textFile(<span class="string">"top.txt"</span>)</div><div class="line">    <span class="keyword">val</span> lineList = lines.map(x =&gt; (x.split(<span class="string">","</span>)(<span class="number">0</span>), x))</div><div class="line">    <span class="keyword">val</span> sortRDD = lineList.sortByKey(<span class="literal">false</span>)</div><div class="line">    <span class="keyword">val</span> resultRDD = sortRDD.map(x =&gt; x._2)</div><div class="line">    <span class="keyword">for</span> (a &lt;- resultRDD.take(<span class="number">5</span>)) &#123;</div><div class="line">      println(a)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><p>【测试数据】</p>
 <pre><code>`
 3,zhangsan
@@ -407,7 +407,7 @@
 6,zdh
 5,lisi
 `
-</code></pre><h3 id="三、TopNByGroup"><a href="#三、TopNByGroup" class="headerlink" title="三、TopNByGroup"></a>三、TopNByGroup</h3><pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">object TopNByGroup &#123;</div><div class="line">  def main(args: Array[String]): Unit = &#123;</div><div class="line">    val conf = new SparkConf()</div><div class="line">      .setAppName(&quot;TopNByGroup&quot;)</div><div class="line">      .setMaster(&quot;local&quot;)</div><div class="line">      .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;)</div><div class="line">    val sc = new SparkContext(conf)</div><div class="line">    val lines = sc.textFile(&quot;scores.txt&quot;)</div><div class="line">    val lineList = lines.map(x =&gt; (x.split(&quot;\t&quot;)(0),</div><div class="line">      x.split(&quot;\t&quot;)(1))).groupByKey()</div><div class="line">    //lineList.foreach(println)</div><div class="line">    /*(class3,CompactBuffer(70, 70, 98))</div><div class="line">    (class1,CompactBuffer(100, 102, 45, 16, 95, 99))</div><div class="line">    (class2,CompactBuffer(85, 65, 85, 88, 37, 23))*/</div><div class="line"></div><div class="line">    val topList = lineList.map(x =&gt; &#123;</div><div class="line">      var t = List[Int]()</div><div class="line">      for (a &lt;- x._2) &#123;</div><div class="line">        t = t.::(a.toInt)</div><div class="line">      &#125;</div><div class="line">      t.sortBy(x =&gt; -x).take(3)</div><div class="line">    &#125;)</div><div class="line">    topList.foreach(println)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><h3 id="三、TopNByGroup"><a href="#三、TopNByGroup" class="headerlink" title="三、TopNByGroup"></a>三、TopNByGroup</h3><pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">TopNByGroup</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">      .setAppName(<span class="string">"TopNByGroup"</span>)</div><div class="line">      .setMaster(<span class="string">"local"</span>)</div><div class="line">      .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> lines = sc.textFile(<span class="string">"scores.txt"</span>)</div><div class="line">    <span class="keyword">val</span> lineList = lines.map(x =&gt; (x.split(<span class="string">"\t"</span>)(<span class="number">0</span>),</div><div class="line">      x.split(<span class="string">"\t"</span>)(<span class="number">1</span>))).groupByKey()</div><div class="line">    <span class="comment">//lineList.foreach(println)</span></div><div class="line">    <span class="comment">/*(class3,CompactBuffer(70, 70, 98))</span></div><div class="line">    (class1,CompactBuffer(100, 102, 45, 16, 95, 99))</div><div class="line">    (class2,CompactBuffer(85, 65, 85, 88, 37, 23))*/</div><div class="line"></div><div class="line">    <span class="keyword">val</span> topList = lineList.map(x =&gt; &#123;</div><div class="line">      <span class="keyword">var</span> t = <span class="type">List</span>[<span class="type">Int</span>]()</div><div class="line">      <span class="keyword">for</span> (a &lt;- x._2) &#123;</div><div class="line">        t = t.::(a.toInt)</div><div class="line">      &#125;</div><div class="line">      t.sortBy(x =&gt; -x).take(<span class="number">3</span>)</div><div class="line">    &#125;)</div><div class="line">    topList.foreach(println)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><p>【测试数据】</p>
 <pre><code>`
 class1    100
@@ -529,10 +529,10 @@ List(88, 85, 85)
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Inhaltsverzeichnis
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Übersicht
+            Overview
           </li>
         </ul>
       
@@ -553,7 +553,7 @@ List(88, 85, 85)
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">40</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -562,7 +562,7 @@ List(88, 85, 85)
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -571,7 +571,7 @@ List(88, 85, 85)
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -637,7 +637,7 @@ List(88, 85, 85)
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
