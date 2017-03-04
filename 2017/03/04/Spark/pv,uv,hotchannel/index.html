@@ -99,7 +99,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
 <meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/ajJ3OoteMwsGGA66orkXpB.OrJyhBYxhoYm5ywlLxwg!/b/dIEBAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
 <meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/wq*BTFZC5fJXH4JHD5qxKGROcrKwDc0D*tkUdX7HKUU!/b/dN8AAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
 <meta property="og:image" content="http://a2.qpic.cn/psb?/V12DoSDy3E1yI8/gmAaK7WGK4VOp*NtjVkfjilwMDI6qjsecDg.dCFHQV4!/b/dIEBAAAAAAAA&bo=lwTMAQAAAAADAHs!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-04T10:21:57.289Z">
+<meta property="og:updated_time" content="2017-03-04T10:22:55.831Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——PV,UV,hotChannel">
 <meta name="twitter:description" content="一、PV对某一个页面的访问量，在页面中进行刷新一次就是一次pv
@@ -204,7 +204,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -214,7 +214,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -291,7 +291,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-04T18:00:48+08:00">
                 2017-03-04
@@ -312,7 +312,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">in</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -364,7 +364,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
         <h3 id="一、PV"><a href="#一、PV" class="headerlink" title="一、PV"></a>一、PV</h3><p>对某一个页面的访问量，在页面中进行刷新一次就是一次pv</p>
 <p>PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计，用户可以重复</p>
 <a id="more"></a>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">public class PV_ANA &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        SparkConf conf = new SparkConf()</div><div class="line">                .setAppName(&quot;PV_ANA&quot;)</div><div class="line">                .setMaster(&quot;local&quot;)</div><div class="line">                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);</div><div class="line">        JavaSparkContext sc = new JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(&quot;f:/userLog&quot;);</div><div class="line">        String str = &quot;View&quot;;</div><div class="line">        final Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        pvAnalyze(logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static void pvAnalyze(JavaRDD&lt;String&gt; logRDD,</div><div class="line">                                  final Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (new Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public Boolean call(String s) throws Exception &#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = s.split(&quot;\t&quot;)[5];</div><div class="line">                        return actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; pariLogRDD = filteredLogRDD.mapToPair</div><div class="line">                (new PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public Tuple2&lt;String, String&gt; call(String s)</div><div class="line">                            throws Exception &#123;</div><div class="line">                        String pageId = s.split(&quot;\t&quot;)[3];</div><div class="line">                        return new Tuple2&lt;String, String&gt;(pageId, null);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        pariLogRDD.groupByKey().foreach(new VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line">            private static final long serialVersionUID = 1L;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public void call(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</div><div class="line">                    throws Exception &#123;</div><div class="line">                String pageId = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                long count = 0L;</div><div class="line">                while (iterator.hasNext()) &#123;</div><div class="line">                    iterator.next();</div><div class="line">                    count++;</div><div class="line">                &#125;</div><div class="line">                System.out.println(&quot;PAGEID:&quot; + pageId + &quot;\t PV_COUNT:&quot; + count);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PV_ANA</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"PV_ANA"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        JavaRDD&lt;String&gt; logRDD = sc.textFile(<span class="string">"f:/userLog"</span>);</div><div class="line">        String str = <span class="string">"View"</span>;</div><div class="line">        <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast = sc.broadcast(str);</div><div class="line">        pvAnalyze(logRDD, broadcast);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pvAnalyze</span><span class="params">(JavaRDD&lt;String&gt; logRDD,</span></span></div><div class="line">                                  <span class="keyword">final</span> Broadcast&lt;String&gt; broadcast) &#123;</div><div class="line">        JavaRDD&lt;String&gt; filteredLogRDD = logRDD.filter</div><div class="line">                (<span class="keyword">new</span> Function&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                        String actionParam = broadcast.value();</div><div class="line">                        String action = s.split(<span class="string">"\t"</span>)[<span class="number">5</span>];</div><div class="line">                        <span class="keyword">return</span> actionParam.equals(action);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        JavaPairRDD&lt;String, String&gt; pariLogRDD = filteredLogRDD.mapToPair</div><div class="line">                (<span class="keyword">new</span> PairFunction&lt;String, String, String&gt;() &#123;</div><div class="line">                    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Tuple2&lt;String, String&gt; <span class="title">call</span><span class="params">(String s)</span></span></div><div class="line">                            <span class="keyword">throws</span> Exception &#123;</div><div class="line">                        String pageId = s.split(<span class="string">"\t"</span>)[<span class="number">3</span>];</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, String&gt;(pageId, <span class="keyword">null</span>);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        pariLogRDD.groupByKey().foreach(<span class="keyword">new</span> VoidFunction</div><div class="line">                &lt;Tuple2&lt;String, Iterable&lt;String&gt;&gt;&gt;() &#123;</div><div class="line">            <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Tuple2&lt;String, Iterable&lt;String&gt;&gt; tuple)</span></span></div><div class="line">                    <span class="keyword">throws</span> Exception &#123;</div><div class="line">                String pageId = tuple._1;</div><div class="line">                Iterator&lt;String&gt; iterator = tuple._2.iterator();</div><div class="line">                <span class="keyword">long</span> count = <span class="number">0L</span>;</div><div class="line">                <span class="keyword">while</span> (iterator.hasNext()) &#123;</div><div class="line">                    iterator.next();</div><div class="line">                    count++;</div><div class="line">                &#125;</div><div class="line">                System.out.println(<span class="string">"PAGEID:"</span> + pageId + <span class="string">"\t PV_COUNT:"</span> + count);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><h3 id="二、UV"><a href="#二、UV" class="headerlink" title="二、UV"></a>二、UV</h3><p>UV   {p1, (u1,u2,u3,u4,u5…)}         对一个页面有多少用户访问，用户不可以重复</p>
 <p>【方式一】</p>
 <p>【流程图】</p>
@@ -479,10 +479,10 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Inhaltsverzeichnis
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Übersicht
+            Overview
           </li>
         </ul>
       
@@ -503,7 +503,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">41</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -512,7 +512,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -521,7 +521,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -587,7 +587,7 @@ PV   {p1, (u1,u2,u3,u1,u2,u4…)}    对同一个页面的浏览量进行统计�
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
