@@ -102,7 +102,7 @@
 2、Key-Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Key-Value型的数据。
 3、Action算子，这类算子会触发SparkContext提交作业。">
 <meta property="og:image" content="http://img.blog.csdn.net/20160226210244430">
-<meta property="og:updated_time" content="2017-03-05T15:27:43.719Z">
+<meta property="og:updated_time" content="2017-03-05T15:31:06.310Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark算子总结及案例">
 <meta name="twitter:description" content="spark算子大致上可分三大类算子：
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -220,7 +220,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -297,7 +297,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-05T20:42:12+08:00">
                 2017-03-05
@@ -318,7 +318,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">in</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -393,7 +393,7 @@
 <pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">JavaRDD&lt;Integer&gt; a=sc.parallelize(Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>),<span class="number">2</span>);</div><div class="line">   JavaRDD&lt;Integer&gt; b=a.flatMap(<span class="keyword">new</span> FlatMapFunction&lt;Integer, Integer&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            <span class="keyword">return</span> Arrays.asList(integer,integer,integer);</div><div class="line">        &#125;</div><div class="line">   &#125;);</div><div class="line">   b.foreach(<span class="keyword">new</span> VoidFunction&lt;Integer&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            System.out.println(integer);</div><div class="line">        &#125;</div><div class="line">   &#125;);</div></pre></td></tr></table></figure>
 </code></pre><p>3) filter</p>
 <p>对RDD中每个元素进行判断，如果返回true则保留，返回false则剔除</p>
-<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">	<span class="keyword">val</span> a = sc.parallelize(<span class="number">1</span> to <span class="number">10</span>)</div><div class="line">    <span class="keyword">val</span> b = a.filter(_ % <span class="number">2</span> == <span class="number">0</span>)</div><div class="line">    b.foreach(println)</div><div class="line">	```	</div><div class="line">&gt;过滤掉集合中的偶数</div><div class="line">&gt;(<span class="number">2</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">10</span>)</div><div class="line"></div><div class="line">	```java</div><div class="line">    <span class="type">JavaRDD</span>&lt;<span class="type">Integer</span>&gt; a = sc.parallelize(<span class="type">Arrays</span>.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>));</div><div class="line">    <span class="type">JavaRDD</span>&lt;<span class="type">Integer</span>&gt; b = a.filter(<span class="keyword">new</span> <span class="type">Function</span>&lt;<span class="type">Integer</span>, <span class="type">Boolean</span>&gt;() &#123;</div><div class="line">         <span class="meta">@Override</span></div><div class="line">         public <span class="type">Boolean</span> call(<span class="type">Integer</span> integer) <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</div><div class="line">              <span class="keyword">return</span> integer % <span class="number">2</span> == <span class="number">0</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;);</div><div class="line">    b.foreach(<span class="keyword">new</span> <span class="type">VoidFunction</span>&lt;<span class="type">Integer</span>&gt;() &#123;</div><div class="line">         <span class="meta">@Override</span></div><div class="line">         public void call(<span class="type">Integer</span> integer) <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</div><div class="line">              <span class="type">System</span>.out.println(integer);</div><div class="line">         &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">	<span class="keyword">val</span> a = sc.parallelize(<span class="number">1</span> to <span class="number">10</span>)</div><div class="line">    <span class="keyword">val</span> b = a.filter(_ % <span class="number">2</span> == <span class="number">0</span>)</div><div class="line">    b.foreach(println)</div><div class="line">	```	</div><div class="line"></div><div class="line">&gt;过滤掉集合中的偶数</div><div class="line">(<span class="number">2</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">10</span>)</div><div class="line"></div><div class="line">	```java</div><div class="line">    <span class="type">JavaRDD</span>&lt;<span class="type">Integer</span>&gt; a = sc.parallelize(<span class="type">Arrays</span>.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>));</div><div class="line">    <span class="type">JavaRDD</span>&lt;<span class="type">Integer</span>&gt; b = a.filter(<span class="keyword">new</span> <span class="type">Function</span>&lt;<span class="type">Integer</span>, <span class="type">Boolean</span>&gt;() &#123;</div><div class="line">         <span class="meta">@Override</span></div><div class="line">         public <span class="type">Boolean</span> call(<span class="type">Integer</span> integer) <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</div><div class="line">              <span class="keyword">return</span> integer % <span class="number">2</span> == <span class="number">0</span>;</div><div class="line">          &#125;</div><div class="line">    &#125;);</div><div class="line">    b.foreach(<span class="keyword">new</span> <span class="type">VoidFunction</span>&lt;<span class="type">Integer</span>&gt;() &#123;</div><div class="line">         <span class="meta">@Override</span></div><div class="line">         public void call(<span class="type">Integer</span> integer) <span class="keyword">throws</span> <span class="type">Exception</span> &#123;</div><div class="line">              <span class="type">System</span>.out.println(integer);</div><div class="line">         &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
 </code></pre><p>4) union</p>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> a = sc.parallelize(<span class="number">1</span> to <span class="number">3</span>, <span class="number">1</span>)</div><div class="line"><span class="keyword">val</span> b = sc.parallelize(<span class="number">5</span> to <span class="number">7</span>, <span class="number">1</span>)</div><div class="line">(a ++ b).collect</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
@@ -435,8 +435,8 @@
 <p>1</p>
 <p>2</p>
 <p>3</p>
-<h3 id="二、Key-Value型Transformation算子"><a href="#二、Key-Value型Transformation算子" class="headerlink" title="二、Key-Value型Transformation算子"></a>二、Key-Value型Transformation算子</h3></blockquote>
-<p>1) groupByKey</p>
+</blockquote>
+<h3 id="二、Key-Value型Transformation算子"><a href="#二、Key-Value型Transformation算子" class="headerlink" title="二、Key-Value型Transformation算子"></a>二、Key-Value型Transformation算子</h3><p>1) groupByKey</p>
 <p>根据key进行分组，每个key对应一个Iterable</p>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> scoreList=<span class="type">Array</span>(<span class="type">Tuple2</span>(<span class="string">"zhangsan"</span>,<span class="number">100</span>),<span class="type">Tuple2</span>(<span class="string">"lisi"</span>,<span class="number">90</span>),</div><div class="line">     <span class="type">Tuple2</span>(<span class="string">"lisi"</span>,<span class="number">91</span>),<span class="type">Tuple2</span>(<span class="string">"wangwu"</span>,<span class="number">80</span>))</div><div class="line">   <span class="keyword">val</span> scores=sc.parallelize(scoreList)</div><div class="line">   <span class="keyword">val</span> groupedScores=scores.groupByKey()</div><div class="line">   groupedScores.foreach(score=&gt;&#123;</div><div class="line">     println(score._1)</div><div class="line">     score._2.foreach(everyscore=&gt;println(everyscore))</div><div class="line">     println(<span class="string">" "</span>)</div><div class="line">   &#125;)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
@@ -654,10 +654,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Inhaltsverzeichnis
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Übersicht
+            Overview
           </li>
         </ul>
       
@@ -678,7 +678,7 @@
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">44</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -687,7 +687,7 @@
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -696,7 +696,7 @@
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -762,7 +762,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
