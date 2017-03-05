@@ -1,0 +1,794 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1.SparkSQL与DataFrameSparkSQL之所以是除了SparkCore外最大的和最受关注的组件，原因是： 
+A）处理一切存储介质和各种格式的数据（同时可以方便地扩展SparkSQL的功能来支持更多类型的数据，例如Kudo，Kudo在存储和计算效率间取得了完美的平衡），包括实时数据处理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——SparkSQL与DataFrame原理解析与实现">
+<meta property="og:url" content="http://yoursite.com/2017/03/04/Spark/sparksql与dataframe/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="1.SparkSQL与DataFrameSparkSQL之所以是除了SparkCore外最大的和最受关注的组件，原因是： 
+A）处理一切存储介质和各种格式的数据（同时可以方便地扩展SparkSQL的功能来支持更多类型的数据，例如Kudo，Kudo在存储和计算效率间取得了完美的平衡），包括实时数据处理。">
+<meta property="og:image" content="http://cdn1.infoqstatic.com/statics_s2_20170228-0434_4/resource/articles/in-depth-analysis-of-parquet-column-storage-format/zh/resources/0724052.png">
+<meta property="og:image" content="http://cdn1.infoqstatic.com/statics_s2_20170228-0434_4/resource/articles/in-depth-analysis-of-parquet-column-storage-format/zh/resources/0724053.png">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/SE6Kd.7M3Zs2Unqb64iuegHYireKhtdW0lO5FwlC7ps!/b/dB8BAAAAAAAA&bo=ZQPcAAAAAAAFB54!&rf=viewer_4">
+<meta property="og:updated_time" content="2017-03-05T02:24:17.483Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——SparkSQL与DataFrame原理解析与实现">
+<meta name="twitter:description" content="1.SparkSQL与DataFrameSparkSQL之所以是除了SparkCore外最大的和最受关注的组件，原因是： 
+A）处理一切存储介质和各种格式的数据（同时可以方便地扩展SparkSQL的功能来支持更多类型的数据，例如Kudo，Kudo在存储和计算效率间取得了完美的平衡），包括实时数据处理。">
+<meta name="twitter:image" content="http://cdn1.infoqstatic.com/statics_s2_20170228-0434_4/resource/articles/in-depth-analysis-of-parquet-column-storage-format/zh/resources/0724052.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/04/Spark/sparksql与dataframe/"/>
+
+
+
+
+
+  <title> Spark学习笔记——SparkSQL与DataFrame原理解析与实现 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/04/Spark/sparksql与dataframe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——SparkSQL与DataFrame原理解析与实现
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-04T21:07:08+08:00">
+                2017-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/04/Spark/sparksql与dataframe/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/04/Spark/sparksql与dataframe/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-SparkSQL与DataFrame"><a href="#1-SparkSQL与DataFrame" class="headerlink" title="1.SparkSQL与DataFrame"></a>1.SparkSQL与DataFrame</h3><p>SparkSQL之所以是除了<code>SparkCore</code>外最大的和最受关注的组件，原因是： </p>
+<p>A）处理一切存储介质和各种格式的数据（同时可以方便地扩展SparkSQL的功能来支持更多类型的数据，例如Kudo，Kudo在存储和计算效率间取得了完美的平衡），包括实时数据处理。</p>
+<a id="more"></a>
+<p>B）SparkSQL把<code>数据仓库的计算能力</code>推向了新的高度。不仅有无敌的计算速度（SparkSQL比Shark快了至少一个数量级，而Shark比Hive快了至少一个数量级。尤其是在Tungsten成熟以后会更加无可匹敌）。更为重要的是把数据仓库的计算复杂度推向了历史上全新的高度（SparkSQL后续推出的DataFrame可以让数据仓库直接使用机器学习图计算等复杂的算法库来对数据仓库进行深度数据价值挖掘）</p>
+<p>Hive只是进行数据多维度查询。SparkSQL可以进行机器学习、图计算，所以是里程碑式的技术。</p>
+<blockquote>
+<p>Shark为什么会被放弃？<br>=&gt; Shark依赖的Hive不是官方原生版本，版本维护非常麻烦，Hive官方版本更新慢，所以决定中断Shark开发。</p>
+</blockquote>
+<p>C）SparkSQL(DataFrame、DataSet）不仅是数据仓库的引擎，也是数据挖掘的引擎，更为重要的是SparkSQL是数据科学计算和分析引擎！！！</p>
+<p>D） 后来的DataFrame让Spark（SQL）一举成为大数据计算引擎的技术实现霸主（尤其是在Tungsten的强力支持下）<br>传统数据库仅剩的应用场景：实时事务性分析。<br>数据库的死穴是扩展性差。数据库也不能分布式计算，</p>
+<p>E）Hive+SparkSQL+DataFrame是目前至少在中国所有的大数据项目至少90%无法逃脱该技术组合， </p>
+<ul>
+<li>Hive负责廉价的数据仓库存储 </li>
+<li>SparkSQL负责高速计算 </li>
+<li>DataFrame负责复杂的数据挖掘<br><code>DataFrame是一个新的API</code></li>
+</ul>
+<font color="red">SparkSQL：通过交互式的sql语句在海量数据中查询。</font>
+
+
+<h3 id="2、DataFrame与RDD"><a href="#2、DataFrame与RDD" class="headerlink" title="2、DataFrame与RDD"></a>2、DataFrame与RDD</h3><font color="red">1）</font> R和Python中都有DataFrame，Spark中的DataFrame从形式上看<code>最大的不同点是其天生是分布式的</code>。可以简单认为Spark中的DaraFrame是一个<code>分布式的Table</code>。形式如下所述：<br><br>    <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Name    Age Tel</div><div class="line">String  Int Long</div><div class="line">String  Int Long</div><div class="line">String  Int Long</div><div class="line">...</div><div class="line">String  Int Long</div><div class="line">String  Int Long</div><div class="line">String  Int Long</div></pre></td></tr></table></figure><br><br>而RDD是形如以下所述：<br><br>    <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Person</div><div class="line">Person</div><div class="line">Person</div><div class="line">...</div><div class="line">Person</div><div class="line">Person</div><div class="line">Person</div></pre></td></tr></table></figure><br><br>DataFrame的每一列都有名称和类型。<br><br>&gt;DataFrame 与 RDD 类似，DataFrame 是一个分布式数据容器，更像传统数据库的二维表格，除了数据以外，还掌握数据的结构信息， 即 schema。同时，与 Hive 类似，DataFrame 也支持嵌套数据类型（struct、 array 和 map）。 从 API 易用性的角度上 看，DataFrameAPI 提供的是一套高层的关系操作，比函数式的 RDDAPI 要更加友好，门槛更低。<br><br><br><font color="red">2）</font> RDD和DataFrame的根本差异：<br><br>A）RDD是以Record为单位的，Spark在优化时无法洞悉Record内部细节，所以也就无法进行更深度的优化，这极大限制了SparkSQL性能的提升！<br><br>B）DataFrame包含了每个Record的MetaData信息，即DataFrame的优化是基于列内部的优化，而不是像RDD一样只能基于行进行优化。<br><br>&gt;Hive包含元数据和数据本身，DataFrame也包含元数据和数据本身。<br><br>    DataFrame的底层是一个个的RDD<br>    只不过DataFrame底层RDD的泛型是Row<br>    DataFrame = RDD<row><br><br><font color="red">3）</font>SparkSQL企业级最佳实践<br><br>第一阶段：最开始阶段，文件存储在FileSystem中，用c代码处理数据。<br><br>第二阶段：javaEE加数据库。<br><br>瓶颈：数据库不能分布式（扩展性），企业只能处理部分数据，数据需要经过过滤后再放进数据库中。<br><br>第三阶段：Hive。数据库局限太多导致转向hive，但hive计算能力有限，速度性能问题<br><br>第四阶段：hive 转向sparksql+Hive，计算能力是一个问题<br><br>第五阶段：hive+SparkSQL+dataFrame<br><br>第六阶段：hive+SparkSQL+dataFrame+dataSet<br><br><br>### 3. 使用Java和Scala两种语言实战DataFrame<br><br>创建DataFrame的时候，DataFrame可以来源于其他RDD，也可以来自于Hive表，或者其他数据来源。一般基于数据来源直接构造DataFrame。例如JSON文件，那么读取JSON文件的时候就会自动创建DataFrame。<br><br>SQLContext操作数据SQL的时候：有一个弊端就是，只支持SQL一种方言。<br>但是如果使用HiveContext的时候就可以支持不同种方言。 SQLcontext 是 HiveContext 的父类。<br><br><br><font color="blue"> 1.利用json文件创建DataFrame</font>
+
+<p>people.json内容如下：</p>
+<pre><code>`
+{&quot;name&quot;:&quot;Michael&quot;}
+{&quot;name&quot;:&quot;Andy&quot;, &quot;age&quot;:30}
+{&quot;name&quot;:&quot;Justin&quot;, &quot;age&quot;:19}
+`
+</code></pre><font color="yellow"><b>注意：读取的json文件中格式不能是json套json。</b></font>
+
+<font color="red"> Java</font>版本代码如下：<br><br>【代码示例】<br><br>    <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataFrameSQL</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="comment">//创建SparkConf用于读取系统配置信息并设置当前应用程序名称</span></div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"DataFrameSQL"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        <span class="comment">//创建JavaSparkContext对象实例作为整个Driver核心基石</span></div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        <span class="comment">//创建SQLContext上下文对象用于SQL分析</span></div><div class="line">        SQLContext sqlContext = <span class="keyword">new</span> SQLContext(sc);</div><div class="line">        <span class="comment">//创建DataFrame,可以简答的认为DataFrame是一张表</span></div><div class="line">        <span class="comment">//DataFrame可以来源于多种格式，如Json，可以直接穿件DataFrame</span></div><div class="line">        <span class="comment">//SQLContext只支持SQL一种方言，用HiveContext就可以支持多种方言（默认HQL，可以设置）</span></div><div class="line">        DataFrame df = sqlContext.read().json(<span class="string">"people.json"</span>);</div><div class="line">        df.registerTempTable(<span class="string">"people"</span>);</div><div class="line">        DataFrame sql = sqlContext.sql(<span class="string">"SELECT * FROM people WHERE age IS NOT NULL"</span>);</div><div class="line">        sql.show();</div><div class="line">        <span class="comment">//DataFrame API</span></div><div class="line">        <span class="comment">//select * from table;</span></div><div class="line">        df.show();</div><div class="line">        <span class="comment">//describe table;</span></div><div class="line">        df.printSchema();</div><div class="line">        df.select(<span class="string">"name"</span>).show();</div><div class="line">        <span class="comment">//select name, age+1 from table;</span></div><div class="line">        df.select(df.col(<span class="string">"name"</span>), df.col(<span class="string">"age"</span>).plus(<span class="number">10</span>)).show();</div><div class="line">        <span class="comment">//select * from table where age &gt; 20;</span></div><div class="line">        df.filter(df.col(<span class="string">"age"</span>).gt(<span class="number">20</span>)).show();</div><div class="line">        <span class="comment">//select count(1) from table group by age;</span></div><div class="line">        df.groupBy(df.col(<span class="string">"age"</span>)).count().show();	</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br>【结果示例】<br><br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">+----+-------+</div><div class="line">| age|   name|</div><div class="line">+----+-------+</div><div class="line">|null|   Andy|</div><div class="line">|null|Michael|</div><div class="line">|  19| Justin|</div><div class="line">+----+-------+</div><div class="line"></div><div class="line">root</div><div class="line"> |-- age: long (nullable = true)</div><div class="line"> |-- name: string (nullable = true)</div></pre></td></tr></table></figure><br><br><font color="red"> Scala</font>版本代码如下：<br><br>    <figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">DataFrameSQL</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">    conf.setAppName(<span class="string">"DataFrameSQL"</span>).setMaster(<span class="string">"local"</span>)</div><div class="line">      .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    conf.setMaster(<span class="string">"local"</span>)</div><div class="line">    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">SQLContext</span>(sc)</div><div class="line">    <span class="keyword">val</span> df = sqlContext.read.json(<span class="string">"people.json"</span>)</div><div class="line">    df.registerTempTable(<span class="string">"people"</span>);</div><div class="line">    sqlContext.sql(<span class="string">"select * from people where age &gt; 10"</span>).show();</div><div class="line"></div><div class="line">    df.show();</div><div class="line">    df.printSchema();</div><div class="line">    df.select(<span class="string">"name"</span>).show()</div><div class="line">    df.select(df(<span class="string">"name"</span>),df(<span class="string">"age"</span>)+<span class="number">10</span>).show()</div><div class="line">    df.filter(df(<span class="string">"age"</span>)&gt;<span class="number">10</span>).show()</div><div class="line">    df.groupBy(<span class="string">"age"</span>).count().show()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure><br><br><font color="blue"> 2.利用parquet文件创建DataFrame</font>
+
+<p>parquet是一个列存储格式的数据模型。</p>
+<p>我们以一个下面这样的schema和数据为例来说明这个问题。</p>
+<pre><code> `
+message AddressBook {
+ required string owner;
+ repeated string ownerPhoneNumbers;
+ repeated group contacts {
+   required string name;
+   optional string phoneNumber;
+ }
+}
+`
+</code></pre><p><img src="http://cdn1.infoqstatic.com/statics_s2_20170228-0434_4/resource/articles/in-depth-analysis-of-parquet-column-storage-format/zh/resources/0724052.png" alt=""></p>
+<p>Parquet文件的存储格式</p>
+<p><img src="http://cdn1.infoqstatic.com/statics_s2_20170228-0434_4/resource/articles/in-depth-analysis-of-parquet-column-storage-format/zh/resources/0724053.png" alt=""></p>
+<p>【代码示例】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParquetPartitionDiscovery</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">				.setAppName(<span class="string">"ParquetPartitionDiscovery"</span>)</div><div class="line">				.setMaster(<span class="string">"local"</span>);  </div><div class="line">		JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">		SQLContext sqlContext = <span class="keyword">new</span> SQLContext(sc);</div><div class="line">		</div><div class="line">		DataFrame usersDF = sqlContext.read().parquet(</div><div class="line">				<span class="string">"hdfs://hadoop1:9000/users"</span>);</div><div class="line">		usersDF.printSchema();</div><div class="line">		usersDF.show();</div><div class="line">	 	usersDF.registerTempTable(<span class="string">"users"</span>);  </div><div class="line">	 	usersDF.printSchema();</div><div class="line"></div><div class="line">		DataFrame userNamesDF = sqlContext.sql(<span class="string">"select * from users"</span>);  </div><div class="line"></div><div class="line">		List&lt;String&gt; userNames = userNamesDF.javaRDD().</div><div class="line">			map(<span class="keyword">new</span> Function&lt;Row, String&gt;() &#123;</div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">(Row row)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">				<span class="keyword">return</span> <span class="string">"Name: "</span> + row.getString(<span class="number">0</span>);</div><div class="line">			&#125;	</div><div class="line">		&#125;).collect();</div><div class="line">		</div><div class="line">		<span class="keyword">for</span>(String userName : userNames) &#123;</div><div class="line">			System.out.println(userName);  </div><div class="line">		&#125;		</div><div class="line">		userNamesDF.show(); 	</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><font color="blue"> 3.利用json格式的RDD创建DataFrame</font>
+
+<p><font color="red"> Java</font>版本代码如下：</p>
+<p>【代码示例】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataFrameOpsFromJsonRdd</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">                .setAppName(<span class="string">"DataFrameSQL"</span>)</div><div class="line">                .setMaster(<span class="string">"local"</span>)</div><div class="line">                .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        SQLContext sqlContext = <span class="keyword">new</span> SQLContext(sc);</div><div class="line">        List&lt;String&gt; nameList = Arrays.asList(</div><div class="line">                <span class="string">"&#123;'name':'zhangsan', 'age':55&#125;"</span>,</div><div class="line">                <span class="string">"&#123;'name':'lisi', 'age':30&#125;"</span>,</div><div class="line">                <span class="string">"&#123;'name':'lisisi', 'age':30&#125;"</span>,</div><div class="line">                <span class="string">"&#123;'name':'wangwu', 'age':19&#125;"</span>);</div><div class="line">        List&lt;String&gt; scoreList = Arrays.asList(</div><div class="line">                <span class="string">"&#123;'name':'zhangsan','score':100&#125;"</span>,</div><div class="line">                <span class="string">"&#123;'name':'lisi','score':99&#125;"</span>);</div><div class="line">        <span class="comment">//并行化成一个rdd  现在rdd中元素格式    json</span></div><div class="line">        JavaRDD&lt;String&gt; nameRDD = sc.parallelize(nameList);</div><div class="line">        JavaRDD&lt;String&gt; scoreRDD = sc.parallelize(scoreList);</div><div class="line">        DataFrame nameDF = sqlContext.read().json(nameRDD);</div><div class="line">        DataFrame scoreDF = sqlContext.read().json(scoreRDD);</div><div class="line"></div><div class="line">        nameDF.select(nameDF.col(<span class="string">"name"</span>).alias(<span class="string">"ttName"</span>)).show();</div><div class="line">        nameDF.select(nameDF.col(<span class="string">"age"</span>).plus(<span class="number">10</span>).alias(<span class="string">"plusAge"</span>)).show();</div><div class="line">        nameDF.filter(nameDF.col(<span class="string">"age"</span>).gt(<span class="number">30</span>)).show();</div><div class="line">        nameDF.join(scoreDF, nameDF.col(<span class="string">"name"</span>).$eq$eq$eq(scoreDF.col(<span class="string">"name"</span>)))</div><div class="line">                .select(nameDF.col(<span class="string">"name"</span>), nameDF.col(<span class="string">"age"</span>),</div><div class="line">                        scoreDF.col(<span class="string">"score"</span>)).show();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p><font color="red"> Scala</font>版本代码如下：</p>
+<p>【代码示例】</p>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">	<span class="class"><span class="keyword">object</span> <span class="title">DataFrameOpsFromJsonRdd</span> </span>&#123;</div><div class="line">	  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">	    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">	    conf.setAppName(<span class="string">"DataFrameOpsFromJsonRdd"</span>).setMaster(<span class="string">"local"</span>)</div><div class="line">	      .set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">	    conf.setMaster(<span class="string">"local"</span>)</div><div class="line">	    <span class="keyword">val</span> sc = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</div><div class="line">	    <span class="keyword">val</span> sqlContext = <span class="keyword">new</span> <span class="type">SQLContext</span>(sc)</div><div class="line">	    <span class="keyword">val</span> infos = <span class="type">Array</span>(<span class="string">"&#123;'name':'zhangsan', 'age':55&#125;"</span>,</div><div class="line">	      <span class="string">"&#123;'name':'lisi', 'age':30&#125;"</span>,</div><div class="line">	      <span class="string">"&#123;'name':'wangwu', 'age':19&#125;"</span>)</div><div class="line">	    <span class="keyword">val</span> scores = <span class="type">Array</span>(<span class="string">"&#123;'name':'zhangsan', 'score':155&#125;"</span>,</div><div class="line">	      <span class="string">"&#123;'name':'lisi', 'score':130&#125;"</span>)</div><div class="line">	    <span class="keyword">val</span> infoRDD = sc.parallelize(infos)</div><div class="line">	    <span class="keyword">val</span> scoreRDD = sc.parallelize(scores)</div><div class="line">	    <span class="keyword">val</span> infoDF = sqlContext.read.json(infoRDD)</div><div class="line">	    <span class="keyword">val</span> scoreDF = sqlContext.read.json(scoreRDD)</div><div class="line">	    infoDF.join(scoreDF,infoDF(<span class="string">"name"</span>).===(scoreDF(<span class="string">"name"</span>))).</div><div class="line">	      select(infoDF(<span class="string">"name"</span>),infoDF(<span class="string">"age"</span>),scoreDF(<span class="string">"score"</span>)).show()</div><div class="line">	  &#125;</div><div class="line">	&#125;</div><div class="line">	```	</div><div class="line"></div><div class="line">【结果示例】</div></pre></td></tr></table></figure>
+
++--------+---+-----+
+|    name|age|score|
++--------+---+-----+
+|zhangsan| 55|  155|
+|    lisi| 30|  130|
++--------+---+-----+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 4.RDD与DataFrame转换操作</div><div class="line"></div><div class="line">&lt;font color=&apos;red&apos;&gt;1）&lt;/font&gt;RDD与DataFrame转换的重大意义</div><div class="line"></div><div class="line">&gt;在Spark中RDD可以直接转换成DataFrame。SparkCore的核心是RDD，所有的调度都是基于RDD完成的，对RDD的操作都可以转换成基于DataFrame使用SparkSQL来操作。RDD可能接上数据库，接上NoSQL，其他文件系统等各种数据来源，然后将数据转换为DataFrame，极大简化了大数据的开发，原来写Scala\Java，现在只需要写SparkSQL。</div><div class="line"></div><div class="line">&gt;同时对DataFrame的操作又可以转换成RDD，基于DataFrame对数据进行SQL或机器学习等操作后又可以转换为RDD，这对于保存数据、格式化非常方便。</div><div class="line"></div><div class="line">&lt;font color=&apos;green&apos;&gt;&lt;b&gt;通过反射，推断RDD元素中的元数据。 &lt;/b&gt;&lt;/font&gt;</div><div class="line"></div><div class="line">RDD中的数据本身是没有元数据的，例如一个Person的信息里有id/name/age，RDD的Record不知道id/name/age这些信息，但如果变成DataFrame的话，DataFrame必须知道这些信息。如何在RDD和DataFrame转换时拥有这些元数据信息呢？最简单的就是通过反射。 </div><div class="line"></div><div class="line">在Scala中就是Case Class映射。写一个Case Class，描述RDD中不同列的元数据是什么。 </div><div class="line"></div><div class="line">在Java中就是通过JavaBean。 </div><div class="line"></div><div class="line">Scala：case class映射。 </div><div class="line"></div><div class="line"></div><div class="line">【代码实战】</div><div class="line"></div><div class="line">	```java</div><div class="line">	/**</div><div class="line">	 * 使用反射的方式将RDD转换成为DataFrame</div><div class="line">	 * Person [id=1, name=Spark, age=7]</div><div class="line">	 * Person [id=2, name=Hadoop, age=10]</div><div class="line">	 */</div><div class="line">	public class RDDToDataFrameByReflection &#123;</div><div class="line">	    public static void main(String[] args) &#123;</div><div class="line">	        SparkConf conf = new SparkConf().setMaster(&quot;local&quot;)</div><div class="line">	                .setAppName(&quot;RDDToDataFrameByReflection&quot;)</div><div class="line">	                .set(&quot;spark.testing.memory&quot;, &quot;2147480000&quot;);</div><div class="line">	        JavaSparkContext sc = new JavaSparkContext(conf);</div><div class="line">	        SQLContext sqlContext = new SQLContext(sc);</div><div class="line">	        //读取数据</div><div class="line">	        JavaRDD&lt;String&gt; lines = sc.textFile(&quot;Peoples.txt&quot;);</div><div class="line">	        JavaRDD&lt;Person&gt; persons = lines.map</div><div class="line">	                (new Function&lt;String, Person&gt;() &#123;</div><div class="line">	                    private static final long serialVersionUID = 1L;</div><div class="line">	</div><div class="line">	                    @Override</div><div class="line">	                    public Person call(String line) throws Exception &#123;</div><div class="line">	                        String[] splited = line.split(&quot;,&quot;);</div><div class="line">	                        Person p = new Person();</div><div class="line">	                        p.setId(Integer.valueOf(splited[0].trim()));</div><div class="line">	                        p.setName(splited[1].trim());</div><div class="line">	                        p.setAge(Integer.valueOf(splited[2].trim()));</div><div class="line">	                        return p;</div><div class="line">	                    &#125;</div><div class="line">	                &#125;);</div><div class="line">	        //第一个参数：RDD，第二个参数是JavaBean，Person类</div><div class="line">	        //第二参数就是封装的JavaBean，JavaBean中封装了Person的元数据信息，</div><div class="line">	        //通过第二个参数DataFrame也就获得了元数据信息。</div><div class="line">	        //在底层通过反射的方式获得Person的所有Fields，结合RDD本身，就生成了DataFrame</div><div class="line">	        DataFrame df = sqlContext.createDataFrame(persons, Person.class);</div><div class="line">	        df.registerTempTable(&quot;persons&quot;);</div><div class="line">	        DataFrame bigDatas = sqlContext.sql(&quot;select * from &quot; +</div><div class="line">	                &quot;persons where age &gt;= 6&quot;);</div><div class="line">	        //DataFrame =&gt; RDD</div><div class="line">	        JavaRDD&lt;Row&gt; bigDataRDD = bigDatas.javaRDD();</div><div class="line">	        JavaRDD&lt;Person&gt; result = bigDataRDD.map(new Function&lt;Row, Person&gt;() &#123;</div><div class="line">	            private static final long serialVersionUID = 1L;</div><div class="line">	</div><div class="line">	            @Override</div><div class="line">	            public Person call(Row row) throws Exception &#123;</div><div class="line">	                //返回具体每条记录</div><div class="line">	                Person p = new Person();</div><div class="line">	                /**</div><div class="line">	                 * 由于数据在DataFrame会进行优化，里面会对元数据进行排序</div><div class="line">	                 * 顺序可能就不是id name age的顺序了。</div><div class="line">	                 */</div><div class="line">	                p.setId(row.getInt(1));</div><div class="line">	                p.setName(row.getString(2));</div><div class="line">	                p.setAge(row.getInt(0));</div><div class="line">	                return p;</div><div class="line">	            &#125;</div><div class="line">	        &#125;);</div><div class="line">	        List&lt;Person&gt; personList = result.collect();</div><div class="line">	        for (Person p : personList) &#123;</div><div class="line">	            System.out.println(p);</div><div class="line">	        &#125;</div><div class="line">	    &#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>People.java源码如下：</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//因为底层是反射，要求JavaBean是public</span></div><div class="line"><span class="comment">//此时需要序列化，因为是分布式方式。</span></div><div class="line"><span class="comment">//自定义的类必须是public</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> id;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.id = id;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> age;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    &#125;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"Person [id="</span> + id + <span class="string">", name="</span> + name + <span class="string">", age="</span> + age + <span class="string">"]"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>如果出现错误：</p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/SE6Kd.7M3Zs2Unqb64iuegHYireKhtdW0lO5FwlC7ps!/b/dB8BAAAAAAAA&amp;bo=ZQPcAAAAAAAFB54!&amp;rf=viewer_4" alt=""></p>
+<h3 id="5-RDD和DataFrame动态转换操作"><a href="#5-RDD和DataFrame动态转换操作" class="headerlink" title="5. RDD和DataFrame动态转换操作"></a>5. RDD和DataFrame动态转换操作</h3><p>1）非动态转换和动态转换</p>
+<blockquote>
+<p>什么是非动态转换？<br>=&gt; 提前已经知道了RDD具体数据的元数据信息，可以通过JavaBean或Case Class的方式提前创建DataFrame时，通过反射的方式获得元数据信息。</p>
+<p>什么是动态转换？<br>=&gt; 无法提前知道具体的RDD每个Record的列的个数及每列的类型只有在运行时才能知道。</p>
+</blockquote>
+<p>这种情况在生产环境下更常见。因为在生产环境下提前知道数据的元数据信息的可能性不大。另外，生产环境下业务会变化，业务变化时列就会变化，或列的数据类型变化 ，如果采用静态的方式的话，每次业务变化时代码需要大幅度的修改。如果采用动态的方式，元数据来自于数据库或文件或其他方式，业务变化时代码的业务逻辑不会发生过多变化。</p>
+<p>Scala实现的两种方式： </p>
+<p>1 在main方法中 </p>
+<p>2 继承app去写代码。</p>
+<p>2）Java实现RDD与DataFrame的动态转换</p>
+<p>【代码实战】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RDDToDataFrameByProgrammatically</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf().setMaster(<span class="string">"local"</span>).</div><div class="line">                setAppName(<span class="string">"RDDToDataFrameByReflection"</span>).</div><div class="line">                set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>);</div><div class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line">        SQLContext sqlContext = <span class="keyword">new</span> SQLContext(sc);</div><div class="line">        <span class="comment">//读取数据</span></div><div class="line">        JavaRDD&lt;String&gt; lines = sc.textFile(<span class="string">"Peoples.txt"</span>);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第一步：在RDD的基础上创建类型为Row的RDD</div><div class="line">         */</div><div class="line">        <span class="comment">//首先，必须将RDD变成以Row为类型的RDD。Row可以简单理解为Table的一行数据</span></div><div class="line">        JavaRDD&lt;Row&gt; personsRDD = lines.map(<span class="keyword">new</span> Function&lt;String, Row&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Row <span class="title">call</span><span class="params">(String line)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">                String[] splited = line.split(<span class="string">","</span>);</div><div class="line">                <span class="keyword">return</span> RowFactory.create(Integer.valueOf(splited[<span class="number">0</span>]),</div><div class="line">                        splited[<span class="number">1</span>], Integer.valueOf(splited[<span class="number">2</span>]));</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第二步：动态构造DataFrame的元数据，一般而言，有多少列以及每列的具体类型</div><div class="line">         * 可能来自于JSON文件，也可能来自于DB</div><div class="line">         */</div><div class="line">        <span class="comment">//对Row具体指定元数据信息。</span></div><div class="line">        List&lt;StructField&gt; structFields = <span class="keyword">new</span> ArrayList&lt;StructField&gt;();</div><div class="line">        <span class="comment">//列名称  列的具体类型（Integer Or String） 是否为空一般为true，</span></div><div class="line">        <span class="comment">// 实际在开发环境是通过for循环，而不是手动添加</span></div><div class="line">        structFields.add(DataTypes.createStructField(<span class="string">"id"</span>,</div><div class="line">                DataTypes.IntegerType, <span class="keyword">true</span>));</div><div class="line">        structFields.add(DataTypes.createStructField(<span class="string">"name"</span>,</div><div class="line">                DataTypes.StringType, <span class="keyword">true</span>));</div><div class="line">        structFields.add(DataTypes.createStructField(<span class="string">"age"</span>,</div><div class="line">                DataTypes.IntegerType, <span class="keyword">true</span>));</div><div class="line">        <span class="comment">//构建StructType,用于最后DataFrame元数据的描述</span></div><div class="line">        StructType structType = DataTypes.createStructType(structFields);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第三步：基于已有的MetaData以及RDD&lt;Row&gt;来构造DataFrame</div><div class="line">         */</div><div class="line">        DataFrame personsDF = sqlContext.createDataFrame(personsRDD, structType);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第四步：注册成临时表以供后续的SQL查询操作</div><div class="line">         */</div><div class="line">        personsDF.registerTempTable(<span class="string">"persons"</span>);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第五步：进行数据的多维度分析</div><div class="line">         */</div><div class="line">        DataFrame result = sqlContext.sql(<span class="string">"select * from persons"</span>);</div><div class="line">        <span class="comment">/**</span></div><div class="line">         * 第六步：对结果进行处理，包括由DataFrame转换成为RDD&lt;Row&gt;,以及结果的持久化</div><div class="line">         */</div><div class="line">        List&lt;Row&gt; listRow = result.javaRDD().collect();</div><div class="line">        <span class="keyword">for</span> (Row row : listRow) &#123;</div><div class="line">            System.out.println(row);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>【输出结果】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[<span class="number">1</span>,Spark,<span class="number">7</span>]</div><div class="line">[<span class="number">2</span>,Hadoop,<span class="number">11</span>]</div><div class="line">[<span class="number">3</span>,Flink,<span class="number">5</span>]</div></pre></td></tr></table></figure>
+</code></pre></row>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/04/Spark/pv,uv,hotchannel/" rel="next" title="Spark学习笔记——PV,UV,hotChannel">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——PV,UV,hotChannel
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/04/Spark/sparksql与dataframe/"
+           data-title="Spark学习笔记——SparkSQL与DataFrame原理解析与实现" data-url="http://yoursite.com/2017/03/04/Spark/sparksql与dataframe/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">Kategorien</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SparkSQL与DataFrame"><span class="nav-number">1.</span> <span class="nav-text">1.SparkSQL与DataFrame</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、DataFrame与RDD"><span class="nav-number">2.</span> <span class="nav-text">2、DataFrame与RDD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-RDD和DataFrame动态转换操作"><span class="nav-number">3.</span> <span class="nav-text">5. RDD和DataFrame动态转换操作</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
