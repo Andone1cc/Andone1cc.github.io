@@ -99,7 +99,7 @@ Load：可以创建DataFrame。
 Save：把DataFrame中的数据保存到文件或者说与具体的格式来指明我们要读取的文件的类型以及与具体的格式来指出我们要输出的文件是什么类型。">
 <meta property="og:image" content="http://img.blog.csdn.net/20160418122518845">
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/t3ehiliZd3REbzq7vvCudql8zJ1MNYt4xmcPc*Wdoys!/b/dB8BAAAAAAAA&bo=pgL1AAAAAAADB3M!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-05T07:07:09.263Z">
+<meta property="og:updated_time" content="2017-03-05T07:13:12.490Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark SQL的操作实例">
 <meta name="twitter:description" content="1. Spark SQL数据加载和保存Spark SQL重要是操作DataFrame，DataFrame本身提供了save和load的操作。
@@ -205,7 +205,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -215,7 +215,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -292,7 +292,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-05T11:17:51+08:00">
                 2017-03-05
@@ -313,7 +313,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">in</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -380,17 +380,17 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
 </code></pre><blockquote>
 <p>3、通过DataFrameReader中load方法通过路径把传入过来的输入变成DataFrame</p>
 </blockquote>
-<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * Loads input in as a [[DataFrame]], for data sources that require a path (e.g. data backed by</div><div class="line">  * a local or distributed file system).</div><div class="line">  *</div><div class="line">  * @since 1.4.0</div><div class="line">  */</div><div class="line"> <span class="comment">// <span class="doctag">TODO:</span> Remove this one in Spark 2.0.</span></div><div class="line"> <span class="function"><span class="keyword">def</span> <span class="title">load</span></span>(path: <span class="type">String</span>): <span class="type">DataFrame</span> = &#123;</div><div class="line">   option(<span class="string">"path"</span>, path).load()</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * Loads input in as a [[DataFrame]], for data sources </div><div class="line">  * that require a path (e.g. data backed by</div><div class="line">  * a local or distributed file system).</div><div class="line">  *</div><div class="line">  * @since 1.4.0</div><div class="line">  */</div><div class="line"> <span class="comment">// <span class="doctag">TODO:</span> Remove this one in Spark 2.0.</span></div><div class="line"> <span class="function"><span class="keyword">def</span> <span class="title">load</span></span>(path: <span class="type">String</span>): <span class="type">DataFrame</span> = &#123;</div><div class="line">   option(<span class="string">"path"</span>, path).load()</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
 </code></pre><p>至此，数据的读取工作就完成了，下面就对DataFrame进行操作。<br>下面就是写操作。</p>
 <p>3） 写入过程分析</p>
 <blockquote>
 <p>1、调用DataFrame中select函数进行队列筛选</p>
 </blockquote>
-<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">   * Selects a set of columns. This is a variant of `select` that can only select</div><div class="line">   * existing columns using column names (i.e. cannot construct expressions).</div><div class="line">   *</div><div class="line">   * &#123;&#123;&#123;</div><div class="line">   *   // The following two are equivalent:</div><div class="line">   *   df.select("colA", "colB")</div><div class="line">   *   df.select($"colA", $"colB")</div><div class="line">   * &#125;&#125;&#125;</div><div class="line">   * @group dfops</div><div class="line">   * @since 1.3.0</div><div class="line">   */</div><div class="line">  <span class="meta">@scala</span>.annotation.varargs</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">select</span></span>(col: <span class="type">String</span>, cols: <span class="type">String</span>*): <span class="type">DataFrame</span> = select((col +: cols).map(<span class="type">Column</span>(_)) : _*)</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">   * Selects a set of columns. This is a variant of `select` </div><div class="line">   * that can only select</div><div class="line">   * existing columns using column names (i.e. </div><div class="line">   * cannot construct expressions).</div><div class="line">   *</div><div class="line">   * &#123;&#123;&#123;</div><div class="line">   *   // The following two are equivalent:</div><div class="line">   *   df.select("colA", "colB")</div><div class="line">   *   df.select($"colA", $"colB")</div><div class="line">   * &#125;&#125;&#125;</div><div class="line">   * @group dfops</div><div class="line">   * @since 1.3.0</div><div class="line">   */</div><div class="line">  <span class="meta">@scala</span>.annotation.varargs</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">select</span></span>(col: <span class="type">String</span>, cols: <span class="type">String</span>*): <span class="type">DataFrame</span> =</div><div class="line">	 select((col +: cols).map(<span class="type">Column</span>(_)) : _*)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
 <p>2.然后通过write将结果写入到外部存储系统中</p>
 </blockquote>
-<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">   * :: Experimental ::</div><div class="line">   * Interface for saving the content of the [[DataFrame]] out into external storage.</div><div class="line">   *</div><div class="line">   * @group output</div><div class="line">   * @since 1.4.0</div><div class="line">   */</div><div class="line">  <span class="meta">@Experimental</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">write</span></span>: <span class="type">DataFrameWriter</span> = <span class="keyword">new</span> <span class="type">DataFrameWriter</span>(<span class="keyword">this</span>)</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">   * :: Experimental ::</div><div class="line">   * Interface for saving the content of the [[DataFrame]] </div><div class="line">   * out into external storage.</div><div class="line">   *</div><div class="line">   * @group output</div><div class="line">   * @since 1.4.0</div><div class="line">   */</div><div class="line">  <span class="meta">@Experimental</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">write</span></span>: <span class="type">DataFrameWriter</span> = <span class="keyword">new</span> <span class="type">DataFrameWriter</span>(<span class="keyword">this</span>)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
 <p>3.在保持文件的时候mode指定追加文件的方式</p>
 </blockquote>
@@ -414,7 +414,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
 </blockquote>
 <p>注：student_info和student_scores的文件内容以Tab键为分隔符。</p>
 <p>【代码实战】</p>
-<pre><code><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">	public class HiveDataSource &#123;</div><div class="line">		public static void main(String[] args) &#123;</div><div class="line">			SparkConf conf = new SparkConf()</div><div class="line">					.setAppName("HiveDataSource");</div><div class="line">					</div><div class="line">			JavaSparkContext sc = new JavaSparkContext(conf);</div><div class="line">		</div><div class="line">			//是SQLContext的子类。</div><div class="line">			SQLContext hiveContext = new HiveContext(sc);</div><div class="line">			//删除hive中的student_infos表</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS student_infos");</div><div class="line">			</div><div class="line">			//在hive中创建student_infos表</div><div class="line">			hiveContext.sql("CREATE TABLE IF NOT EXISTS student_infos "</div><div class="line">					+ "(name STRING, age INT) "</div><div class="line">					+ "row format delimited fields terminated by '\t'");</div><div class="line">			</div><div class="line">			hiveContext.sql("LOAD DATA "</div><div class="line">					+ "LOCAL INPATH '/root/resource/student_infos' "</div><div class="line">					+ "INTO TABLE student_infos");</div><div class="line">			</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS student_scores"); </div><div class="line">			hiveContext.sql("CREATE TABLE IF NOT EXISTS student_scores "</div><div class="line">					+ "(name STRING, score INT) "</div><div class="line">					+ "row format delimited fields terminated by '\t'");  </div><div class="line">			hiveContext.sql("LOAD DATA "</div><div class="line">					+ "LOCAL INPATH '/root/resource/student_scores'"</div><div class="line">					+ "INTO TABLE student_scores");</div><div class="line">			DataFrame goodStudentsDF = hiveContext.sql("SELECT si.name, "</div><div class="line">					+ "si.age, ss.score "</div><div class="line">					+ "FROM student_infos si "</div><div class="line">					+ "JOIN student_scores ss ON si.name=ss.name "</div><div class="line">					+ "WHERE ss.score&gt;=80");</div><div class="line">			</div><div class="line">			hiveContext.sql("USE result");			</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS good_student_infos"); </div><div class="line">			//通过saveAsTable创建一张Hive Managed Table，</div><div class="line">			//数据放在什么地方、元数据都是Hive管理的 		</div><div class="line">			goodStudentsDF.write().saveAsTable("good_student_infos");</div><div class="line">			//使用HivewContext的Table方法可以直接</div><div class="line">			//去读Hive中的Table并生成DaraFrame</div><div class="line">			Row[] goodStudentRows = hiveContext.table("good_student_infos")</div><div class="line">					.collect();  </div><div class="line">			for(Row goodStudentRow : goodStudentRows) &#123;</div><div class="line">				System.out.println(goodStudentRow);  </div><div class="line">			&#125;</div><div class="line">			sc.close();</div><div class="line">		&#125;</div><div class="line">	&#125;		</div><div class="line">	```	</div><div class="line"></div><div class="line">&gt;&gt;将上面的java代码打包jar,上传到liunx文件目录下。</div><div class="line"></div><div class="line">&gt;通过./spark-submit --master spark://node03:7077 ~/HiveDataSource.jar 命令来执行</div><div class="line"></div><div class="line">&lt;font color='red'&gt;&lt;b&gt;【报错】&lt;/b&gt;&lt;/font&gt;</div><div class="line"></div><div class="line">	```java</div><div class="line">	java.lang.IllegalArgumentException: java.net.UnknownHostException: sxt</div><div class="line">	at org.apache.hadoop.security.SecurityUtil.buildTokenService(SecurityUtil.java:374)</div><div class="line">	at org.apache.hadoop.hdfs.NameNodeProxies.createNonHAProxy(NameNodeProxies.java:312)</div><div class="line">	at org.apache.hadoop.hdfs.NameNodeProxies.createProxy(NameNodeProxies.java:178)</div></pre></td></tr></table></figure>
+<pre><code><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">	public class HiveDataSource &#123;</div><div class="line">		public static void main(String[] args) &#123;</div><div class="line">			SparkConf conf = new SparkConf()</div><div class="line">					.setAppName("HiveDataSource");</div><div class="line">					</div><div class="line">			JavaSparkContext sc = new JavaSparkContext(conf);</div><div class="line">		</div><div class="line">			//是SQLContext的子类。</div><div class="line">			SQLContext hiveContext = new HiveContext(sc);</div><div class="line">			//删除hive中的student_infos表</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS student_infos");</div><div class="line">			</div><div class="line">			//在hive中创建student_infos表</div><div class="line">			hiveContext.sql("CREATE TABLE IF NOT EXISTS student_infos "</div><div class="line">					+ "(name STRING, age INT) "</div><div class="line">					+ "row format delimited fields terminated by '\t'");</div><div class="line">			</div><div class="line">			hiveContext.sql("LOAD DATA "</div><div class="line">					+ "LOCAL INPATH '/root/resource/student_infos' "</div><div class="line">					+ "INTO TABLE student_infos");</div><div class="line">			</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS student_scores"); </div><div class="line">			hiveContext.sql("CREATE TABLE IF NOT EXISTS student_scores "</div><div class="line">					+ "(name STRING, score INT) "</div><div class="line">					+ "row format delimited fields terminated by '\t'");  </div><div class="line">			hiveContext.sql("LOAD DATA "</div><div class="line">					+ "LOCAL INPATH '/root/resource/student_scores'"</div><div class="line">					+ "INTO TABLE student_scores");</div><div class="line">			DataFrame goodStudentsDF = hiveContext.sql("SELECT si.name, "</div><div class="line">					+ "si.age, ss.score "</div><div class="line">					+ "FROM student_infos si "</div><div class="line">					+ "JOIN student_scores ss ON si.name=ss.name "</div><div class="line">					+ "WHERE ss.score&gt;=80");</div><div class="line">			</div><div class="line">			hiveContext.sql("USE result");			</div><div class="line">			hiveContext.sql("DROP TABLE IF EXISTS good_student_infos"); </div><div class="line">			//通过saveAsTable创建一张Hive Managed Table，</div><div class="line">			//数据放在什么地方、元数据都是Hive管理的 		</div><div class="line">			goodStudentsDF.write().saveAsTable("good_student_infos");</div><div class="line">			//使用HivewContext的Table方法可以直接</div><div class="line">			//去读Hive中的Table并生成DaraFrame</div><div class="line">			Row[] goodStudentRows = hiveContext.table("good_student_infos")</div><div class="line">					.collect();  </div><div class="line">			for(Row goodStudentRow : goodStudentRows) &#123;</div><div class="line">				System.out.println(goodStudentRow);  </div><div class="line">			&#125;</div><div class="line">			sc.close();</div><div class="line">		&#125;</div><div class="line">	&#125;		</div><div class="line">	```	</div><div class="line"></div><div class="line"></div><div class="line">&gt; 将上面的java代码打包jar,上传到liunx文件目录下。</div><div class="line"></div><div class="line">&gt; 通过./spark-submit --master spark://node03:7077 ~/HiveDataSource.jar 命令来执行</div><div class="line"></div><div class="line">&lt;font color='red'&gt;&lt;b&gt;【报错】&lt;/b&gt;&lt;/font&gt;</div><div class="line"></div><div class="line">	```java</div><div class="line">	java.lang.IllegalArgumentException: java.net.UnknownHostException: sxt</div><div class="line">	at org.apache.hadoop.security.SecurityUtil.buildTokenService(SecurityUtil.java:374)</div><div class="line">	at org.apache.hadoop.hdfs.NameNodeProxies.createNonHAProxy(NameNodeProxies.java:312)</div><div class="line">	at org.apache.hadoop.hdfs.NameNodeProxies.createProxy(NameNodeProxies.java:178)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
 <p>需要将HADOOP_HOME/etc/hadoop下的hdfs-site.xml拷贝到SPARK_HOME/conf下。</p>
 </blockquote>
@@ -517,10 +517,10 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Inhaltsverzeichnis
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Übersicht
+            Overview
           </li>
         </ul>
       
@@ -541,7 +541,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">43</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -550,7 +550,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -559,7 +559,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -625,7 +625,7 @@ Save：把DataFrame中的数据保存到文件或者说与具体的格式来指�
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
