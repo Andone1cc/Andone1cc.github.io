@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ajax," />
+  <meta name="keywords" content="Spark学习总结," />
 
 
 
@@ -87,21 +87,28 @@
 
 
 
-<meta name="description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
-Ajax的本质是一个浏览器端的技术。">
+<meta name="description" content="spark算子大致上可分三大类算子：
+
+1、Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Value型的数据。
+2、Key-Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Key-Value型的数据。
+3、Action算子，这类算子会触发SparkContext提交作业。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="原生和jQuery的ajax">
-<meta property="og:url" content="http://yoursite.com/2016/11/28/java高级/ajax/index.html">
+<meta property="og:title" content="Spark学习笔记——Spark算子总结及案例">
+<meta property="og:url" content="http://yoursite.com/2017/03/05/Spark/spark算子/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
-Ajax的本质是一个浏览器端的技术。">
-<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/VePJ9a3sphWLK3k0b1QogTo*IPJvIS*WZNQuIRAc5BE!/m/dLIAAAAAAAAAnull&bo=rAQZAgAAAAAFB5c!&rf=photolist&t=5">
-<meta property="og:updated_time" content="2016-11-28T14:48:16.829Z">
+<meta property="og:description" content="spark算子大致上可分三大类算子：
+
+1、Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Value型的数据。
+2、Key-Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Key-Value型的数据。
+3、Action算子，这类算子会触发SparkContext提交作业。">
+<meta property="og:updated_time" content="2017-03-05T13:29:37.110Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="原生和jQuery的ajax">
-<meta name="twitter:description" content="什么是Ajax?Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。
-Ajax的本质是一个浏览器端的技术。">
-<meta name="twitter:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/VePJ9a3sphWLK3k0b1QogTo*IPJvIS*WZNQuIRAc5BE!/m/dLIAAAAAAAAAnull&bo=rAQZAgAAAAAFB5c!&rf=photolist&t=5">
+<meta name="twitter:title" content="Spark学习笔记——Spark算子总结及案例">
+<meta name="twitter:description" content="spark算子大致上可分三大类算子：
+
+1、Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Value型的数据。
+2、Key-Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Key-Value型的数据。
+3、Action算子，这类算子会触发SparkContext提交作业。">
 
 
 
@@ -129,13 +136,13 @@ Ajax的本质是一个浏览器端的技术。">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/11/28/java高级/ajax/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/03/05/Spark/spark算子/"/>
 
 
 
 
 
-  <title> 原生和jQuery的ajax | Andone1cc </title>
+  <title> Spark学习笔记——Spark算子总结及案例 | Andone1cc </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -254,7 +261,7 @@ Ajax的本质是一个浏览器端的技术。">
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/28/java高级/ajax/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/05/Spark/spark算子/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="QDU-scc">
@@ -275,7 +282,7 @@ Ajax的本质是一个浏览器端的技术。">
             
             
               
-                原生和jQuery的ajax
+                Spark学习笔记——Spark算子总结及案例
               
             
           </h1>
@@ -290,8 +297,8 @@ Ajax的本质是一个浏览器端的技术。">
               
                 <span class="post-meta-item-text">Veröffentlicht am</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-28T21:46:33+08:00">
-                2016-11-28
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-05T20:42:12+08:00">
+                2017-03-05
               </time>
             
 
@@ -313,8 +320,8 @@ Ajax的本质是一个浏览器端的技术。">
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java高级/" itemprop="url" rel="index">
-                    <span itemprop="name">java高级</span>
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
                   </a>
                 </span>
 
@@ -331,8 +338,8 @@ Ajax的本质是一个浏览器端的技术。">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2016/11/28/java高级/ajax/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/28/java高级/ajax/" itemprop="commentCount"></span>
+                <a href="/2017/03/05/Spark/spark算子/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/05/Spark/spark算子/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -358,140 +365,32 @@ Ajax的本质是一个浏览器端的技术。">
       
 
       
-        <h3 id="什么是Ajax"><a href="#什么是Ajax" class="headerlink" title="什么是Ajax?"></a>什么是Ajax?</h3><p>Ajax全称为”Asynchronous JavaScript and XML”（异步JavaScript和XML）,是一种创建交互式网页应用的网页开发技术。</p>
-<p>Ajax的本质是一个<code>浏览器端</code>的技术。</p>
+        <font color="red"><b>spark算子大致上可分三大类算子：</b></font>
+
+<p>1、Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Value型的数据。</p>
+<p>2、Key-Value数据类型的Transformation算子，这种变换不触发提交作业，针对处理的数据项是Key-Value型的数据。</p>
+<p>3、Action算子，这类算子会触发SparkContext提交作业。</p>
 <a id="more"></a>
-<h3 id="为什么要学习Ajax"><a href="#为什么要学习Ajax" class="headerlink" title="为什么要学习Ajax?"></a>为什么要学习Ajax?</h3><p>1.通过异步模式，提升了用户体验。</p>
-<p>2.优化了浏览器和服务器之间的传输，减少不必要的数据往返，减少了带宽占用。</p>
-<p><code>ajax局部刷新技术，其实就是使用js实现局部数据的实时变更，解决了不同响应之间的数据共享问题。</code></p>
-<h3 id="创建ajax程序的基本流程"><a href="#创建ajax程序的基本流程" class="headerlink" title="创建ajax程序的基本流程"></a>创建ajax程序的基本流程</h3><blockquote>
-<p>1.创建XMLHttpRequest对象(有浏览器差异问题)</p>
+<h3 id="一、Value型Transformation算子"><a href="#一、Value型Transformation算子" class="headerlink" title="一、Value型Transformation算子"></a>一、Value型Transformation算子</h3><blockquote>
+<p>1、集合中创建RDD，Spark主要提供了两中函数：parallelize和makeRDD<br>2、下划线 ‘_’ 代表集合中所有值<br>3、map、filter为Transformation算子<br>4、parallelize(1 to 10,6)，位产生1到10的集合，且分六个区<br>5、toDebugString查看一下RDD依赖关系<br>6、cache()加入缓存，unpersist()清除缓存<br>7、foreach(line=&gt;println(line))查看每一行结果  </p>
 </blockquote>
-<pre><code>var request;
-if(window.XMLHttpRequest){//Mozilla
-    request=new XMLHttpRequest();
-}else if(window.ActiveXObject){    //IE
-    request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
-}
+<p>1）map</p>
+<p>将RDD中的每个元素传入自定义函数，获取一个新的元素，然后用新的元素组成新的RDD</p>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> a=sc.parallelize(<span class="type">List</span>(<span class="string">"dog"</span>, <span class="string">"pig"</span>, <span class="string">"salmon"</span>, <span class="string">"rat"</span>, <span class="string">"elephant"</span>), <span class="number">3</span>)</div><div class="line">   <span class="keyword">val</span> b=a.map(_.length)</div><div class="line">   <span class="keyword">val</span> c=a.zip(b)</div><div class="line">   c.foreach(println)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
-<p>2.使用XMLHttpRequest对象创建请求</p>
+<p>(dog,3),(pig,3),(salmon,6),(rat,3),(elephant,8)</p>
 </blockquote>
-<pre><code>request.open(&quot;get&quot;,&quot;testAjaxServlet&quot;);
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">JavaRDD&lt;String&gt; a=sc.parallelize(Arrays.asList</div><div class="line">			 (<span class="string">"dog"</span>, <span class="string">"pig"</span>, <span class="string">"salmon"</span>, <span class="string">"rat"</span>, <span class="string">"elephant"</span>), <span class="number">3</span>);</div><div class="line">	 JavaRDD&lt;Integer&gt; b=a.map(<span class="keyword">new</span> Function&lt;String, Integer&gt;() &#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(String str)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">			<span class="keyword">return</span> str.length();</div><div class="line">		&#125;</div><div class="line">	 &#125;);</div><div class="line">	 JavaPairRDD&lt;String,Integer&gt; c=a.zip(b);</div><div class="line">	 c.foreach(<span class="keyword">new</span> VoidFunction&lt;Tuple2&lt;String,Integer&gt;&gt;() &#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Tuple2&lt;String, Integer&gt; tuple)</span> </span></div><div class="line">				<span class="keyword">throws</span> Exception &#123;</div><div class="line">			System.out.println(tuple);</div><div class="line">		&#125;</div><div class="line">	&#125;);</div></pre></td></tr></table></figure>
+</code></pre><p>2）flatMap</p>
+<p>与map类似，但是对每个元素都可以返回一个或多个新元素</p>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> a = sc.parallelize(<span class="number">1</span> to <span class="number">10</span>, <span class="number">5</span>)</div><div class="line">   a.flatMap(<span class="number">1</span> to _).foreach(println)</div><div class="line">   sc.parallelize(<span class="type">List</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>),<span class="number">2</span>).flatMap(x=&gt;<span class="type">List</span>(x,x,x)).foreach(println)</div></pre></td></tr></table></figure>
 </code></pre><blockquote>
-<p>3.复写onreadystatechange函数,监视response的状态,处理服务器返回的数据。</p>
+<p>Array(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</p>
+<p>Array(1, 1, 1, 2, 2, 2, 3, 3, 3)</p>
 </blockquote>
-<p>接收响应结果：</p>
-<blockquote>
-<blockquote>
-<p>响应数据的类型：</p>
-</blockquote>
-</blockquote>
-<p>1.普通文本：就是字符串</p>
-<p>2.<code>json格式的数据</code>：就是使用了json数据格式拼接的字符串，这样在客户端我们就可以使用eval()方法将响应的字符串数据转换成可执行的js代码。极力推荐使用json数据格式来做响应</p>
-<p>3.XML数据：使用JSP页面来书写XML数据，设置响应头为XML类型的数据。在客户端使用responseXML来接收响应的xml数据（返回document对象）。使用document对象来操作xml数据。<br>doc.getElementsByTagName(“标签名”)[角标].firstChild.data</p>
-<p>按照readyState的值为4来接收，4表示响应数据成功接收</p>
-<p>status：200表示一切OK</p>
-<p>404表示资源未找到</p>
-<p>500表示服务器内部错误</p>
-<pre><code>`request.onreadystatechange=function(){
-    //readyState的值为4表示数据成功接收
-    if(request.readyState==4){
-        if(request.status==200){
-            var result=request.responseText;//接收数据
-            eval(&quot;var arr=&quot;+result);//使用eval强转
-            /*使用js操作文档结构..*/
-        }
-}`
-</code></pre><blockquote>
-<p>4.使用XMLHttpRequest对象创建请求</p>
-</blockquote>
-<pre><code>get：
-    请求数据以问号的形式拼接在url后面，键值对。
-    因为浏览器差异的问题，在send的时候一定是：send(null)
-
-    request.open(&quot;get&quot;,&quot;uri?用户请求数据&quot;);
-    request.send(null);        
-post：
-    post是有请求实体的，用户数据使用send直接发送
-
-    request.open(&quot;post&quot;,&quot;uri&quot;);
-    request.setRequestHeader(&quot;Content-Type&quot;,&quot;application/x-www-form-urlencoded&quot;);
-    request.send(&quot;用户数据&quot;);    
-</code></pre><p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/VePJ9a3sphWLK3k0b1QogTo*IPJvIS*WZNQuIRAc5BE!/m/dLIAAAAAAAAAnull&amp;bo=rAQZAgAAAAAFB5c!&amp;rf=photolist&amp;t=5" alt=""></p>
-<h3 id="ajax应用实例"><a href="#ajax应用实例" class="headerlink" title="ajax应用实例"></a>ajax应用实例</h3><p>需求：在一个页面加载完成后，在页面上获取到权限信息，显示到下拉框中。</p>
-<h4 id="1-jQuery的ajax"><a href="#1-jQuery的ajax" class="headerlink" title="1.jQuery的ajax"></a>1.jQuery的ajax</h4><p>JSP:</p>
-<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
-    //页面加载的时候发送请求
-    $(document).ready(function(){
-        getPower();
-    })
-    //获取权限信息
-    function getPower(){
-
-        $.get(&quot;user.action&quot;,{oper:&quot;power&quot;},function(result){
-            //使用eval强转
-            eval(&quot;var power=&quot;+result);
-            //获取权限下拉框对象
-            var sel=$(&quot;#sel&quot;);
-            sel.empty();
-            //遍历
-            for(var i=0;i&lt;power.length;i++){
-                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
-            }
-        });
-    }
-&lt;/script&gt;    
-`
-</code></pre><h4 id="2-原生的ajax"><a href="#2-原生的ajax" class="headerlink" title="2.原生的ajax"></a>2.原生的ajax</h4><p>JSP:</p>
-<pre><code>`&lt;script type=&quot;text/javascript&quot;&gt;
-//页面加载的时候发送请求
-window.onload(function(){
-    getPower();
-})
-//获取权限信息
-function getPower(){
-    //1创建XMLHttpRequest对象
-    var request;
-    if(window.XMLHttpRequest){
-        request=new XMLHttpRequest();
-    }else if(window.ActiveXObject){
-        request=new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
-    }
-    //2创建请求
-    request.open(&quot;get&quot;,&quot;user.action&quot; + (data==&quot;&quot; ? &quot;&quot; : &quot;?search=&quot;+data));
-    //3复写onreadystatechange
-    request.onreadystatechange=function(){
-    //readyState的值为4表示数据成功接收
-    if(request.readyState==4){
-        if(request.status==200){
-            var result=request.responseText;
-            //使用eval强转
-            eval(&quot;var power=&quot;+result);
-            var sel=document.getElementById(&quot;sel&quot;);
-            sel.innerHTML=&quot;&quot;;
-            for(var i=0;i&lt;power.length;i++){
-                sel.append(&quot;&lt;option value=&quot;+power[i].pid+&quot;&gt;&quot;+power[i].pname+&quot;&lt;/option&gt;&quot;);                
-            }
-        }
-    }
-    //4发送请求
-    request.send(null);
-}            
-&lt;/script&gt;`
-</code></pre><p>servlet:</p>
-<pre><code>`
-private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    //查询所有的权限信息
-    ArrayList&lt;Power&gt; list=new UserDao().getPowerInfo();
-    System.out.println(&quot;权限信息为：&quot;+list);
-    resp.getWriter().write(new Gson().toJson(list));
-}`
-</code></pre><p><br></p>
-<p>【其他应用场合】</p>
-<blockquote>
-<p>百度搜索的提示下拉框</p>
-<p>注册验证邮箱是否已经存在</p>
-</blockquote>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">JavaRDD&lt;Integer&gt; a=sc.parallelize(Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>),<span class="number">2</span>);</div><div class="line">   JavaRDD&lt;Integer&gt; b=a.flatMap(<span class="keyword">new</span> FlatMapFunction&lt;Integer, Integer&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Iterable&lt;Integer&gt; <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            <span class="keyword">return</span> Arrays.asList(integer,integer,integer);</div><div class="line">        &#125;</div><div class="line">   &#125;);</div><div class="line">   b.foreach(<span class="keyword">new</span> VoidFunction&lt;Integer&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            System.out.println(integer);</div><div class="line">        &#125;</div><div class="line">   &#125;);</div></pre></td></tr></table></figure>
+</code></pre><p>3) filter</p>
+<p>对RDD中每个元素进行判断，如果返回true则保留，返回false则剔除</p>
 
       
     </div>
@@ -515,7 +414,7 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
       
         <div class="post-tags">
           
-            <a href="/tags/ajax/" rel="tag"># ajax</a>
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
           
         </div>
       
@@ -528,8 +427,8 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/11/22/java基础/类加载器/" rel="next" title="深入理解类加载器">
-                <i class="fa fa-chevron-left"></i> 深入理解类加载器
+              <a href="/2017/03/05/Spark/sparksql/" rel="next" title="Spark学习笔记——Spark SQL的操作实例">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——Spark SQL的操作实例
               </a>
             
           </div>
@@ -537,10 +436,6 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/11/29/java基础/Hashmap排序/" rel="prev" title="如何对HashMap按键值排序">
-                如何对HashMap按键值排序 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -566,8 +461,8 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/11/28/java高级/ajax/"
-           data-title="原生和jQuery的ajax" data-url="http://yoursite.com/2016/11/28/java高级/ajax/">
+      <div class="ds-thread" data-thread-key="2017/03/05/Spark/spark算子/"
+           data-title="Spark学习笔记——Spark算子总结及案例" data-url="http://yoursite.com/2017/03/05/Spark/spark算子/">
       </div>
     
   </div>
@@ -669,7 +564,7 @@ private void getPowerInfo(HttpServletRequest req, HttpServletResponse resp) thro
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Ajax"><span class="nav-number">1.</span> <span class="nav-text">什么是Ajax?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要学习Ajax"><span class="nav-number">2.</span> <span class="nav-text">为什么要学习Ajax?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建ajax程序的基本流程"><span class="nav-number">3.</span> <span class="nav-text">创建ajax程序的基本流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ajax应用实例"><span class="nav-number">4.</span> <span class="nav-text">ajax应用实例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-jQuery的ajax"><span class="nav-number">4.1.</span> <span class="nav-text">1.jQuery的ajax</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-原生的ajax"><span class="nav-number">4.2.</span> <span class="nav-text">2.原生的ajax</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、Value型Transformation算子"><span class="nav-number">1.</span> <span class="nav-text">一、Value型Transformation算子</span></a></li></ol></div>
             
 
           </div>
