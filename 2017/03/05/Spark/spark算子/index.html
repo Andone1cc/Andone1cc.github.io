@@ -105,7 +105,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160226210207740">
 <meta property="og:image" content="http://img.blog.csdn.net/20160226210244430">
 <meta property="og:image" content="http://img.blog.csdn.net/20160226211432569">
-<meta property="og:updated_time" content="2017-03-05T15:46:04.827Z">
+<meta property="og:updated_time" content="2017-03-05T15:47:38.216Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark算子总结及案例">
 <meta name="twitter:description" content="spark算子大致上可分三大类算子：
@@ -401,8 +401,7 @@ val a = sc.parallelize(1 to 10)
 val b = a.filter(_ % 2 == 0)
 b.foreach(println)
 `    
-</code></pre><p>&gt;</p>
-<blockquote>
+</code></pre><blockquote>
 <p>过滤掉集合中的偶数(2,4,6,8,10)</p>
 </blockquote>
 <pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">JavaRDD&lt;Integer&gt; a = sc.parallelize(Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>));</div><div class="line">JavaRDD&lt;Integer&gt; b = a.filter(<span class="keyword">new</span> Function&lt;Integer, Boolean&gt;() &#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">          <span class="keyword">return</span> integer % <span class="number">2</span> == <span class="number">0</span>;</div><div class="line">      &#125;</div><div class="line">&#125;);</div><div class="line">b.foreach(<span class="keyword">new</span> VoidFunction&lt;Integer&gt;() &#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">          System.out.println(integer);</div><div class="line">     &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
