@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta name="description" content="SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
 <meta property="og:url" content="http://yoursite.com/2017/03/06/Spark/sparkstreaming2/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta property="og:description" content="SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能">
 <meta property="og:image" content="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:updated_time" content="2017-03-06T16:29:24.679Z">
+<meta property="og:updated_time" content="2017-03-06T16:33:12.415Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
-<meta name="twitter:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta name="twitter:description" content="SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
 
 
@@ -355,7 +355,7 @@
       
 
       
-        <p>SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也更好。</p>
+        <p>SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也更好。</p>
 <a id="more"></a>
 <h3 id="1-Spark-streaming基于kafka以Receiver方式获取数据"><a href="#1-Spark-streaming基于kafka以Receiver方式获取数据" class="headerlink" title="1.Spark streaming基于kafka以Receiver方式获取数据"></a>1.Spark streaming基于kafka以Receiver方式获取数据</h3><p>实际上做kafka receiver的时候，通过receiver来获取数据，这个时候，kafka receiver是使用的kafka高层次的comsumer api来实现的。receiver会从kafka中获取数据，然后把它存储到我们具体的Executor内存中。然后Spark streaming也就是driver中，会根据这获取到的数据，启动job去处理。</p>
 <p><img src="" alt=""></p>
