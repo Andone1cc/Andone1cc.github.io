@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
 <meta property="og:image" content="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:updated_time" content="2017-03-06T16:22:10.590Z">
+<meta property="og:updated_time" content="2017-03-06T16:29:24.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
 <meta name="twitter:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
@@ -198,7 +198,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -208,7 +208,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -285,7 +285,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-06T23:50:50+08:00">
                 2017-03-06
@@ -306,7 +306,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">in</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -399,10 +399,11 @@ Time: 1488815425000 ms
 </code></pre><p>【补充】</p>
 <blockquote>
 <p>并行度问题：</p>
+<p>并行度和RDD中的partition个数有关系。可以通过repartition增加。</p>
 <ul>
-<li><p>1、linesDStram里面封装到的是RDD， RDD里面有partition与这个topic的parititon数是一致的。</p>
+<li><p>1、receiver模式：并行度与block Interval(默认200ms)有关系,但是建议不低于50ms。</p>
 </li>
-<li><p>2、从kafka中读来的数据封装一个DStram里面，可以对这个DStream重分区 reaprtitions(numpartition)</p>
+<li><p>2、direct模式：并行度与kafak中topic的partition数据有关。增加kafka中的topic的partition数量可以提高并行度。</p>
 </li>
 </ul>
 </blockquote>
@@ -514,10 +515,10 @@ Time: 1488815425000 ms
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
+            Inhaltsverzeichnis
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
+            Übersicht
           </li>
         </ul>
       
@@ -538,7 +539,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">47</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -547,7 +548,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">categories</span>
+                <span class="site-state-item-name">Kategorien</span>
               
             </div>
           
@@ -556,7 +557,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">tags</span>
+                <span class="site-state-item-name">Tags</span>
               </a>
             </div>
           
@@ -622,7 +623,7 @@ Time: 1488815425000 ms
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
