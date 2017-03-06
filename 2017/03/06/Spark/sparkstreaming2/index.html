@@ -1,0 +1,770 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Derict，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
+<meta property="og:url" content="http://yoursite.com/2017/03/06/Spark/sparkstreaming2/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Derict，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/FJVeQlBKWYH.o0YuO46Fvj4XmeU5ZPEH2hNcM9s.ZRk!/b/dCABAAAAAAAA&bo=cwWAAgAAAAADB9Y!&rf=viewer_4">
+<meta property="og:image" content="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:updated_time" content="2017-03-06T16:09:26.774Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
+<meta name="twitter:description" content="SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Derict，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也">
+<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/FJVeQlBKWYH.o0YuO46Fvj4XmeU5ZPEH2hNcM9s.ZRk!/b/dCABAAAAAAAA&bo=cwWAAgAAAAADB9Y!&rf=viewer_4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/06/Spark/sparkstreaming2/"/>
+
+
+
+
+
+  <title> Spark学习笔记——Spark Streaming基于kafka获取数据 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/06/Spark/sparkstreaming2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——Spark Streaming基于kafka获取数据
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-06T23:50:50+08:00">
+                2017-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/06/Spark/sparkstreaming2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/06/Spark/sparkstreaming2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>SparkSteaming基于kafka获取数据的方式，主要有俩种，即Receiver和Derict，基于Receiver的方式，是sparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在sparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能也更好。</p>
+<a id="more"></a>
+<h3 id="1-Spark-streaming基于kafka-以Receiver方式获取数据"><a href="#1-Spark-streaming基于kafka-以Receiver方式获取数据" class="headerlink" title="1.Spark streaming基于kafka 以Receiver方式获取数据"></a>1.Spark streaming基于kafka 以Receiver方式获取数据</h3><p>实际上做kafka receiver的时候，通过receiver来获取数据，这个时候，kafka receiver是使用的kafka高层次的comsumer api来实现的。receiver会从kafka中获取数据，然后把它存储到我们具体的Executor内存中。然后Spark streaming也就是driver中，会根据这获取到的数据，启动job去处理。</p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/FJVeQlBKWYH.o0YuO46Fvj4XmeU5ZPEH2hNcM9s.ZRk!/b/dCABAAAAAAAA&amp;bo=cwWAAgAAAAADB9Y!&amp;rf=viewer_4" alt=""></p>
+<blockquote>
+<p>注意事项：</p>
+</blockquote>
+<p>1）在通过kafka receiver去获取kafka的数据，在正在获取数据的过程中，这台机器有可能崩溃了。如果来不及做备份，数据就会丢失，切换到另外一台机器上，也没有相关数据。这时候，为了数据安全，采用WAL的方式。write  ahead log，预写日志的方式会同步的将接收到的kafka数据，写入到分布式文件系统中。但是预写日志的方式消耗时间，所以存储时建议Memory_and_Disc2.如果是写到hdfs，会自动做副本。如果是写到本地，这其实有个风险，就是如果这台机器崩溃了，再想恢复过来，这个是需要时间的。</p>
+<p>2）我们的kafka receiver接收数据的时候，通过线程或者多线程的方式，kafka中的topic是以partition的方式存在的。sparkstreaming中的kafka receiver接收kafka中topic中的数据，也是通过线程并发的方式去获取的不同的partition，例如用五条线程同时去读取kafka中的topics中的不同的partition数据，这时你这个读取数据的并发线程数，和RDD实际处理数据的并发线程数是没任何关系的。因为获取数据时都还没产生RDD呢。RDD是Driver端决定产生RDD的。</p>
+<p>3）默认情况下，一个Executor中是不是只有一个receiver去接收kafka中的数据。那能不能多找一些Executor去更高的并发度，就是使用更多的机器去接收数据，当然可以，基于kafa的api去创建更多的Dstream就可以了。很多的Dstream接收kafka不同topics中的不同的数据，最后你计算的时候，再把他优联就行了。其实这是非常灵活的，因为可以自由的组合。</p>
+<p>【代码实战】</p>
+<p>producer端：</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkStreamingDataManuallyProducerForKafka</span> <span class="keyword">extends</span> <span class="title">Thread</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span> String[] channelNames = <span class="keyword">new</span>  String[]&#123;</div><div class="line">    	<span class="string">"Spark"</span>,<span class="string">"Scala"</span>,<span class="string">"Kafka"</span>,<span class="string">"Flink"</span>,<span class="string">"Hadoop"</span>,<span class="string">"Storm"</span>,</div><div class="line">    	<span class="string">"Hive"</span>,<span class="string">"Impala"</span>,<span class="string">"HBase"</span>,<span class="string">"ML"</span></div><div class="line">    &#125;;</div><div class="line">    <span class="keyword">static</span> String[] actionNames = <span class="keyword">new</span> String[]&#123;<span class="string">"View"</span>, <span class="string">"Register"</span>&#125;;</div><div class="line">    <span class="keyword">private</span> String topic; <span class="comment">//发送给Kafka的数据的类别</span></div><div class="line">    <span class="keyword">private</span> Producer&lt;Integer, String&gt; producerForKafka;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String dateToday;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Random random;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SparkStreamingDataManuallyProducerForKafka</span><span class="params">(String topic)</span></span>&#123;</div><div class="line">    	dateToday = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>).format(<span class="keyword">new</span> Date());</div><div class="line">        <span class="keyword">this</span>.topic = topic;</div><div class="line">        random = <span class="keyword">new</span> Random();</div><div class="line">        Properties conf = <span class="keyword">new</span> Properties();</div><div class="line">        conf.put(<span class="string">"metadata.broker.list"</span>,<span class="string">"node03:9092,node04:9092,node05:9092"</span>);</div><div class="line">        conf.put(<span class="string">"serializer.class"</span>,  StringEncoder.class.getName());</div><div class="line">        producerForKafka = <span class="keyword">new</span> Producer&lt;Integer, String&gt;</div><div class="line">        (<span class="keyword">new</span> ProducerConfig(conf)) ;</div><div class="line">    &#125;  </div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    	<span class="keyword">int</span> counter = <span class="number">0</span>;</div><div class="line">    	<span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</div><div class="line">    		counter++;</div><div class="line">			String userLog = userlogs();</div><div class="line">			<span class="comment">//System.out.println("product:"+userLog+"   ");</span></div><div class="line">			producerForKafka.send(<span class="keyword">new</span> KeyedMessage&lt;Integer, String&gt;</div><div class="line">			(topic, userLog));</div><div class="line">			<span class="keyword">if</span>(<span class="number">0</span> == counter%<span class="number">500</span>)&#123;</div><div class="line">				counter = <span class="number">0</span>;</div><div class="line">				<span class="keyword">try</span> &#123;</div><div class="line">					Thread.sleep(<span class="number">1000</span>);</div><div class="line">				&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			&#125;</div><div class="line">    	&#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span></span></div><div class="line">    &#123;</div><div class="line">    	<span class="keyword">new</span> SparkStreamingDataManuallyProducerForKafka(<span class="string">"kfk"</span>).start();</div><div class="line">    &#125;</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">userlogs</span><span class="params">()</span> </span>&#123;	</div><div class="line">		StringBuffer userLogBuffer = <span class="keyword">new</span> StringBuffer(<span class="string">""</span>);</div><div class="line">		<span class="keyword">int</span>[] unregisteredUsers = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;;</div><div class="line">		<span class="keyword">long</span> timestamp = <span class="keyword">new</span> Date().getTime();</div><div class="line">			Long userID = <span class="number">0L</span>;</div><div class="line">			<span class="keyword">long</span> pageID = <span class="number">0L</span>;</div><div class="line">			</div><div class="line">			<span class="comment">//随机生成的用户ID </span></div><div class="line">			<span class="keyword">if</span>(unregisteredUsers[random.nextInt(<span class="number">8</span>)] == <span class="number">1</span>) &#123;</div><div class="line">				userID = <span class="keyword">null</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				userID = (<span class="keyword">long</span>) random.nextInt((<span class="keyword">int</span>) <span class="number">2000</span>);</div><div class="line">			&#125;			</div><div class="line">			<span class="comment">//随机生成的页面ID</span></div><div class="line">			pageID =  random.nextInt((<span class="keyword">int</span>) <span class="number">2000</span>);</div><div class="line">			</div><div class="line">			<span class="comment">//随机生成Channel</span></div><div class="line">			String channel = channelNames[random.nextInt(<span class="number">10</span>)];</div><div class="line">			</div><div class="line">			<span class="comment">//随机生成action行为</span></div><div class="line">			String action = actionNames[random.nextInt(<span class="number">2</span>)];</div><div class="line">			</div><div class="line">			</div><div class="line">			userLogBuffer.append(dateToday)</div><div class="line">						.append(<span class="string">"\t"</span>)</div><div class="line">						.append(timestamp)</div><div class="line">						.append(<span class="string">"\t"</span>)</div><div class="line">						.append(userID)</div><div class="line">						.append(<span class="string">"\t"</span>)</div><div class="line">						.append(pageID)</div><div class="line">						.append(<span class="string">"\t"</span>)</div><div class="line">						.append(channel)</div><div class="line">						.append(<span class="string">"\t"</span>)</div><div class="line">						.append(action);</div><div class="line">	<span class="comment">//						.append("\n");				</span></div><div class="line">		<span class="keyword">return</span> userLogBuffer.toString();	</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>consumer端：</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkStreamingOnKafkaReceiver</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">				.setAppName(<span class="string">"SparkStreamingOnKafkaReceiver"</span>)</div><div class="line">				.setMaster(<span class="string">"local[2]"</span>)</div><div class="line"> 				.set(<span class="string">"spark.streaming.receiver.writeAheadLog.enable"</span>,<span class="string">"true"</span>);	 </div><div class="line">		JavaStreamingContext jsc = <span class="keyword">new</span> JavaStreamingContext(conf, </div><div class="line">				Durations.seconds(<span class="number">5</span>));</div><div class="line"> 		jsc.checkpoint(<span class="string">"hdfs://node02:8020/checkpoint"</span>);</div><div class="line">		Map&lt;String, Integer&gt; topicConsumerConcurrency =</div><div class="line">				<span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</div><div class="line">		topicConsumerConcurrency.put(<span class="string">"kfk"</span>, <span class="number">1</span>);</div><div class="line">		</div><div class="line">		JavaPairReceiverInputDStream&lt;String,String&gt; lines = </div><div class="line">				KafkaUtils.createStream(jsc,</div><div class="line">				<span class="string">"node02:2181,node03:2181,node04:2181"</span>, </div><div class="line">				<span class="string">"MyFiestConsumerGroup"</span>, topicConsumerConcurrency);</div><div class="line">		</div><div class="line">		</div><div class="line">		JavaDStream&lt;String&gt; words = lines.flatMap(<span class="keyword">new</span></div><div class="line">				FlatMapFunction&lt;Tuple2&lt;String,String&gt;, String&gt;() &#123; </div><div class="line">			<span class="comment">//如果是Scala，由于SAM转换，所以可以写成val words = </span></div><div class="line">			<span class="comment">//lines.flatMap &#123; line =&gt; line.split(" ")&#125;</span></div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">call</span><span class="params">(Tuple2&lt;String,String&gt; tuple)</span> </span></div><div class="line">					<span class="keyword">throws</span> Exception &#123;</div><div class="line">				<span class="keyword">return</span> Arrays.asList(tuple._2.split(<span class="string">"\t"</span>));</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">	  </div><div class="line">		JavaPairDStream&lt;String, Integer&gt; pairs = words.mapToPair</div><div class="line">				(<span class="keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;</div><div class="line"></div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="title">call</span><span class="params">(String word)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">				<span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(word, <span class="number">1</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">  </div><div class="line">		JavaPairDStream&lt;String, Integer&gt; wordsCount = pairs.reduceByKey</div><div class="line">				(<span class="keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123; </div><div class="line">					<span class="comment">//对相同的Key，进行Value的累计（包括Local和Reducer级别同时Reduce）</span></div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(Integer v1, Integer v2)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">				<span class="keyword">return</span> v1 + v2;</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">		wordsCount.print();		</div><div class="line">		jsc.start();</div><div class="line">		jsc.awaitTermination();</div><div class="line">		jsc.close();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>【结果展示】</p>
+<pre><code>`
+-------------------------------------------
+Time: 1488815425000 ms
+-------------------------------------------
+(273,1)
+(1148,4)
+(1119,2)
+(1816,1)
+(312,1)
+(62,1)
+(1184,1)
+(1625,1)
+(1566,1)
+(1488815421523,1)
+...
+`
+</code></pre><h3 id="2-sparkStreaming基于kafka的Direct详解"><a href="#2-sparkStreaming基于kafka的Direct详解" class="headerlink" title="2.sparkStreaming基于kafka的Direct详解"></a>2.sparkStreaming基于kafka的Direct详解</h3><p>Direct方式特点：</p>
+<p>1）Direct的方式是会直接操作kafka底层的元数据信息，这样如果计算失败了，可以把数据重新读一下，重新处理。即数据一定会被处理。拉数据，是RDD在执行的时候直接去拉数据。</p>
+<p>2）由于直接操作的是kafka，kafka就相当于你底层的文件系统。这个时候能保证严格的事务一致性，即一定会被处理，而且只会被处理一次。而Receiver的方式则不能保证，因为Receiver和ZK中的数据可能不同步，Spark Streaming可能会重复消费数据，这个调优可以解决，但显然没有Direct方便。而Direct api直接是操作kafka的，spark streaming自己负责追踪消费这个数据的偏移量或者offset，并且自己保存到checkpoint，所以它的数据一定是同步的，一定不会被重复。即使重启也不会重复，因为checkpoint了，但是程序升级的时候，不能读取原先的checkpoint，面对升级checkpoint无效这个问题，怎么解决呢?升级的时候读取我指定的备份就可以了，即手动的指定checkpoint也是可以的，这就再次完美的确保了事务性，有且仅有一次的事务机制。那么怎么手动checkpoint呢？构建SparkStreaming的时候，有getorCreate这个api，它就会获取checkpoint的内容，具体指定下这个checkpoint在哪就好了。或者如下图：</p>
+<p><img src="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>而如果从checkpoint恢复后，如果数据累积太多处理不过来，怎么办?1）限速2）增强机器的处理能力3）放到数据缓冲池中。</p>
+<p>3）由于底层是直接读数据，没有所谓的Receiver，直接是周期性(Batch Intervel)的查询kafka，处理数据的时候，我们会使用基于kafka原生的Consumer  api来获取kafka中特定范围(offset范围)中的数据。这个时候，Direct Api访问kafka带来的一个显而易见的性能上的好处就是，如果你要读取多个partition，Spark也会创建RDD的partition，这个时候RDD的partition和kafka的partition是一致的。而Receiver的方式，这2个partition是没任何关系的。这个优势是你的RDD，其实本质上讲在底层读取kafka的时候，kafka的partition就相当于原先hdfs上的一个block。这就符合了数据本地性。RDD和kafka数据都在这边。所以读数据的地方，处理数据的地方和驱动数据处理的程序都在同样的机器上，这样就可以极大的提高性能。不足之处是由于RDD和kafka的patition是一对一的，想提高并行度就会比较麻烦。提高并行度还是repartition，即重新分区，因为产生shuffle，很耗时。这个问题，以后也许新版本可以自由配置比例，不是一对一。因为提高并行度，可以更好的利用集群的计算资源，这是很有意义的。</p>
+<p>4）不需要开启wal机制，从数据零丢失的角度来看，极大的提升了效率，还至少能节省一倍的磁盘空间。从kafka获取数据，比从hdfs获取数据，因为zero copy的方式，速度肯定更快。</p>
+<p>【代码实战】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkStreamingOnKafkaDirected</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;	</div><div class="line">		SparkConf conf = <span class="keyword">new</span> SparkConf().</div><div class="line">				setAppName(<span class="string">"SparkStreamingOnKafkaDirected"</span>)</div><div class="line">				.setMaster(<span class="string">"local"</span>);	</div><div class="line">		JavaStreamingContext jsc = <span class="keyword">new</span> JavaStreamingContext</div><div class="line">				(conf, Durations.seconds(<span class="number">10</span>));	</div><div class="line">		Map&lt;String, String&gt; kafkaParameters = <span class="keyword">new</span> HashMap</div><div class="line">				&lt;String, String&gt;();</div><div class="line">		kafkaParameters.put(<span class="string">"metadata.broker.list"</span>, </div><div class="line">				<span class="string">"node03:9092,node04:9092,node05:9092"</span>);	</div><div class="line">		HashSet&lt;String&gt; topics = <span class="keyword">new</span> HashSet&lt;String&gt;();</div><div class="line">		topics.add(<span class="string">"kfk"</span>);</div><div class="line">		JavaPairInputDStream&lt;String,String&gt; lines = </div><div class="line">				KafkaUtils.createDirectStream(jsc,</div><div class="line">				String.class, </div><div class="line">				String.class,</div><div class="line">				StringDecoder.class,</div><div class="line">				StringDecoder.class,</div><div class="line">				kafkaParameters,</div><div class="line">				topics);	</div><div class="line"></div><div class="line">		JavaDStream&lt;String&gt; words = lines.flatMap(</div><div class="line">				<span class="keyword">new</span> FlatMapFunction&lt;Tuple2&lt;String,String&gt;, String&gt;() &#123; </div><div class="line">					<span class="comment">//如果是Scala，由于SAM转换，所以可以写成val words = </span></div><div class="line">					<span class="comment">//lines.flatMap &#123; line =&gt; line.split(" ")&#125;</span></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">call</span><span class="params">(Tuple2&lt;String,String&gt; tuple)</span> </span></div><div class="line">					<span class="keyword">throws</span> Exception &#123;</div><div class="line">				<span class="keyword">return</span> Arrays.asList(tuple._2.split(<span class="string">"\t"</span>));</div><div class="line">			&#125;</div><div class="line">		&#125;);		</div><div class="line">		JavaPairDStream&lt;String, Integer&gt; pairs = words.mapToPair(</div><div class="line">				<span class="keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="title">call</span><span class="params">(String word)</span> </span></div><div class="line">					<span class="keyword">throws</span> Exception &#123;</div><div class="line">				<span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(word, <span class="number">1</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">			</div><div class="line">		JavaPairDStream&lt;String, Integer&gt; wordsCount = pairs.reduceByKey(</div><div class="line">				<span class="keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123; </div><div class="line">					<span class="comment">//对相同的Key，进行Value的累计（包括Local和Reducer级别同时Reduce）</span></div><div class="line">			</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(Integer v1, Integer v2)</span> </span></div><div class="line">					<span class="keyword">throws</span> Exception &#123;</div><div class="line">				<span class="keyword">return</span> v1 + v2;</div><div class="line">			&#125;</div><div class="line">		&#125;);	</div><div class="line">		wordsCount.print();	</div><div class="line">		jsc.start();	</div><div class="line">		jsc.awaitTermination();</div><div class="line">		jsc.close();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>【补充】</p>
+<blockquote>
+<p>并行度问题：</p>
+<ul>
+<li><p>1、linesDStram里面封装到的是RDD， RDD里面有partition与这个topic的parititon数是一致的。</p>
+</li>
+<li><p>2、从kafka中读来的数据封装一个DStram里面，可以对这个DStream重分区 reaprtitions(numpartition)</p>
+</li>
+</ul>
+</blockquote>
+<font color="red"><b>receive模式和direct模式最大不同是消费偏移量管理者不同，一个是zookeeper,另一个是SparkStreaming(checkpoint)</b></font>
+
+
+
+
+
+
+
+
+
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/06/Spark/sparkstreaming1/" rel="next" title="Spark学习笔记——Spark Streaming学习整理">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——Spark Streaming学习整理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/06/Spark/sparkstreaming2/"
+           data-title="Spark学习笔记——Spark Streaming基于kafka获取数据" data-url="http://yoursite.com/2017/03/06/Spark/sparkstreaming2/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Spark-streaming基于kafka-以Receiver方式获取数据"><span class="nav-number">1.</span> <span class="nav-text">1.Spark streaming基于kafka 以Receiver方式获取数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-sparkStreaming基于kafka的Direct详解"><span class="nav-number">2.</span> <span class="nav-text">2.sparkStreaming基于kafka的Direct详解</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
