@@ -1,0 +1,837 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="流（Streaming），在大数据时代为数据流处理，就像水流一样，是数据流；既然是数据流处理，就会想到数据的流入、数据的加工、数据的流出。
+日常工作、生活中数据来源很多不同的地方。例如：工业时代的汽车制造、监控设备、工业设备会产生很多源数据；信息时代的电商网站、日志服务器、社交网络、金融交易系统、黑客攻击、垃圾邮件、交通监控等；通信时代的手机、平板、智能设备、物联网等会产生很多实时数据，数据流无处">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——Spark Streaming学习整理">
+<meta property="og:url" content="http://yoursite.com/2017/03/06/Spark/sparkstreaming1/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="流（Streaming），在大数据时代为数据流处理，就像水流一样，是数据流；既然是数据流处理，就会想到数据的流入、数据的加工、数据的流出。
+日常工作、生活中数据来源很多不同的地方。例如：工业时代的汽车制造、监控设备、工业设备会产生很多源数据；信息时代的电商网站、日志服务器、社交网络、金融交易系统、黑客攻击、垃圾邮件、交通监控等；通信时代的手机、平板、智能设备、物联网等会产生很多实时数据，数据流无处">
+<meta property="og:image" content="http://img.blog.csdn.net/20160418114626805?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230354663-650012573.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230622929-120938458.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230646616-1180745008.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230709882-825127800.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230813648-491197390.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231013632-1574150730.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231124991-2045884614.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231133413-1499371881.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231209007-2006587450.jpg">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231314976-2119033916.gif">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/06juKLPtECmOycCq9Y*etlck3sLuf9oIuiEFwwQViCs!/b/dB8BAAAAAAAA&bo=OAT8AQAAAAADB.M!&rf=viewer_4">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001347205-1918052773.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001507002-1927984098.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001541642-2097443983.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001602189-27650640.png">
+<meta property="og:updated_time" content="2017-03-06T14:30:23.625Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——Spark Streaming学习整理">
+<meta name="twitter:description" content="流（Streaming），在大数据时代为数据流处理，就像水流一样，是数据流；既然是数据流处理，就会想到数据的流入、数据的加工、数据的流出。
+日常工作、生活中数据来源很多不同的地方。例如：工业时代的汽车制造、监控设备、工业设备会产生很多源数据；信息时代的电商网站、日志服务器、社交网络、金融交易系统、黑客攻击、垃圾邮件、交通监控等；通信时代的手机、平板、智能设备、物联网等会产生很多实时数据，数据流无处">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160418114626805?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/06/Spark/sparkstreaming1/"/>
+
+
+
+
+
+  <title> Spark学习笔记——Spark Streaming学习整理 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/06/Spark/sparkstreaming1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——Spark Streaming学习整理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-06T20:37:45+08:00">
+                2017-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/06/Spark/sparkstreaming1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/06/Spark/sparkstreaming1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>流（Streaming）</code>，在大数据时代为数据流处理，就像水流一样，是数据流；既然是数据流处理，就会想到数据的流入、数据的加工、数据的流出。</p>
+<p>日常工作、生活中数据来源很多不同的地方。例如：工业时代的汽车制造、监控设备、工业设备会产生很多源数据；信息时代的电商网站、日志服务器、社交网络、金融交易系统、黑客攻击、垃圾邮件、交通监控等；通信时代的手机、平板、智能设备、物联网等会产生很多实时数据，数据流无处不在。</p>
+<a id="more"></a>
+<font color="red">在大数据时代Spark Streaming能做什么？</font>
+
+<p>平时用户都有网上购物的经历，用户在网站上进行的各种操作<code>通过Spark Streaming流处理技术可以被监控，用户的购买爱好、关注度、交易等可以进行行为分析</code>。在金融领域，通过Spark Streaming流处理技术可以对交易量很大的账号进行监控，防止罪犯洗钱、财产转移、防欺诈等。在网络安全性方面，黑客攻击时有发生，通过Spark Streaming流处理技术可以将某类可疑IP进行监控并结合机器学习训练模型匹配出当前请求是否属于黑客攻击。其他方面，如：垃圾邮件监控过滤、交通监控、网络监控、工业设备监控的背后都是Spark Streaming发挥强大流处理的地方。</p>
+<font color="red">大数据时代，数据价值一般怎么定义？</font>
+
+<p><code>所有没经过流处理的数据都是无效数据或没有价值的数据</code>；数据产生之后立即处理产生的价值是最大的，数据放置越久或越滞后其使用价值越低。以前绝大多数电商网站盈利走的是网络流量（即用户的访问量），如今，电商网站不仅仅需要关注流量、交易量，更重要的是要通过数据流技术让电商网站的各种数据流动起来，通过实时流动的数据及时分析、挖掘出各种有价值的数据；比如：对不同交易量的用户指定用户画像，从而提供不同服务质量；准对用户访问电商网站板块爱好及时推荐相关的信息。</p>
+<p><b>1.SparkStreaming VS Hadoop MR：</b></p>
+<p><code>Spark Streaming是一个准实时流处理框架，而Hadoop MR是一个离线、批处理框架</code>；很显然，在数据的价值性角度，Spark Streaming完胜于Hadoop MR。</p>
+<p><b>2.SparkStreaming VS Storm：</b></p>
+<p>Spark Streaming是一个准实时流处理框架，处理响应时间一般以分钟为单位，也就是说处理实时数据的延迟时间是秒级别的；Storm是一个实时流处理框架，处理响应是毫秒级的。所以在流框架选型方面要看具体业务场景。</p>
+<p>storm的优点：数据延迟度很低，Storm的事务机制要比SparkStreaming的事务机制要完善（什么是事务机制？对于一条数据，不多处理也不少处理，对于一条数据恰好处理一次，比如金融，股票等要求实时性比较高，那么就需要选Storm）。</p>
+<p>SparkStreaming的优点：提供了丰富的API，企业中能快速实现各种复杂的业务逻辑。流入Spark Streaming的数据流通过和机器学习算法结合，完成机器模拟和图计算。Spark Streaming基于Spark优秀的血统。吞吐量大。</p>
+<font color="red">SparkStreaming能不能像Storm一样，一条一条处理数据？</font>
+
+<p>Storm处理数据的方式是以条为单位来一条一条处理的，而Spark Streaming基于单位时间处理数据的，SparkStreaming能不能像Storm一样呢？答案是：可以的。</p>
+<p>业界一般的做法是Spark Streaming和Kafka搭档即可达到这种效果,如下图：</p>
+<p><img src="http://img.blog.csdn.net/20160418114626805?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+<p>Kafka业界认同最主流的分布式消息框架，此框架即符合消息广播模式又符合消息队列模式。</p>
+<blockquote>
+<p>Kafka内部使用的技术：</p>
+<p>1、  Cache</p>
+<p>2、  Interface</p>
+<p>3、  Persistence（默认最大持久化一周）</p>
+<p>4、  Zero-Copy技术让Kafka每秒吞吐量几百兆，而且数据只需要加载一次到内核提供其他应用程序使用</p>
+</blockquote>
+<p>外部各种源数据推进（Push）Kafka，然后再通过Spark Streaming抓取（Pull）数据，抓取的数据量可以根据自己的实际情况确定每一秒中要处理多少数据。</p>
+<p>【温馨提示】</p>
+<blockquote>
+<blockquote>
+<p>1.我们就像对RDD编程一样，Spark Streaming基于DStream进行编程，原因是DStream是RDD产生的模板，在Spark Streaming发生计算前，其实质是把每个Batch的DStream的操作翻译成为了RDD操作。</p>
+<p>2.业务逻辑完成后，需要有一个output operator。如print(),foreachRDD()。</p>
+</blockquote>
+</blockquote>
+<h3 id="1-通过Spark-Streaming动手实战wordCount实例"><a href="#1-通过Spark-Streaming动手实战wordCount实例" class="headerlink" title="1.通过Spark Streaming动手实战wordCount实例"></a>1.通过Spark Streaming动手实战wordCount实例</h3><p>这里是运行一个Spark Streaming的程序：统计这个时间段内流进来的单词出现的次数. 它计算的是：他规定的时间段内每个单词出现了多少次。</p>
+<p>【代码实战】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCountOnLine</span> </span>&#123;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">	SparkConf conf = <span class="keyword">new</span> SparkConf()</div><div class="line">			.setMaster(<span class="string">"local[2]"</span>)</div><div class="line">			.setAppName(<span class="string">"WordCountOnLine"</span>);</div><div class="line">	JavaStreamingContext streamingContext = <span class="keyword">new</span> JavaStreamingContext</div><div class="line">			(conf, Durations.seconds(<span class="number">5</span>));	</div><div class="line">	JavaReceiverInputDStream&lt;String&gt; linesDStram = streamingContext.</div><div class="line">			socketTextStream(<span class="string">"node02"</span>, <span class="number">9999</span>);</div><div class="line">	JavaDStream&lt;String&gt; wordsDStream = linesDStram.flatMap(</div><div class="line">			<span class="keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">call</span><span class="params">(String str)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">			<span class="keyword">return</span> Arrays.asList(str.split(<span class="string">" "</span>));</div><div class="line">		&#125;</div><div class="line">	&#125;);		</div><div class="line">	JavaPairDStream&lt;String, Integer&gt; pairDStram = wordsDStream.mapToPair(</div><div class="line">			<span class="keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="title">call</span><span class="params">(String t)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(t,<span class="number">1</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;);</div><div class="line">	</div><div class="line">	JavaPairDStream&lt;String, Integer&gt; resultDStream = pairDStram.reduceByKey(</div><div class="line">			<span class="keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">		<span class="meta">@Override</span></div><div class="line">		<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(Integer v1, Integer v2)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">			<span class="keyword">return</span> v1 + v2;</div><div class="line">		&#125;</div><div class="line">	&#125;);</div><div class="line">	<span class="comment">//output operator</span></div><div class="line">	resultDStream.print();		</div><div class="line">	streamingContext.start();</div><div class="line">	streamingContext.awaitTermination();</div><div class="line">	streamingContext.close();</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>node02 输入命令：<code>nc -lk 9999</code></p>
+<p>输入数据：</p>
+<blockquote>
+<p>hello tom<br>hello scc<br>hello scc</p>
+</blockquote>
+<p>控制台接收的数据：</p>
+<blockquote>
+<p>(tom,1)<br>(hello,3)<br>(scc,2)</p>
+</blockquote>
+<p><b>Spark Streaming流进来的数据是DStream，但Spark Core框架只认RDD，这就产生矛盾了？</b></p>
+<p>Spark Streaming框架中，作业实例的产生都是基于rdd实例来产生，你写的代码是作业的模板，即rdd是作业的模板，模板一运行rdd就会被执行，此时action必须处理数据。RDD的模板就是DStream离散流，RDD之间存在依赖关系，DStream就有了依赖关系，也就构成了DStream 有向无环图。这个DAG图，是模板。<code>Spark Streaming只不过是在附在RDD上面一层薄薄的封装而已</code>。你写的代码不能产生Job,只有框架才能产生Job。</p>
+<h3 id="2-StreamingContext、DStream、Receiver深度剖析"><a href="#2-StreamingContext、DStream、Receiver深度剖析" class="headerlink" title="2.StreamingContext、DStream、Receiver深度剖析"></a>2.StreamingContext、DStream、Receiver深度剖析</h3><h4 id="一、StreamingContext功能及源码剖析："><a href="#一、StreamingContext功能及源码剖析：" class="headerlink" title="一、StreamingContext功能及源码剖析："></a>一、StreamingContext功能及源码剖析：</h4><p>1、  通过Spark Streaming对象jssc，创建应用程序主入口，并连上Driver上的接收数据服务端口9999写入源数据：</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230354663-650012573.png" alt=""></p>
+<p>2、  Spark Streaming的主要功能有：</p>
+<blockquote>
+<p>主程序的入口；</p>
+<p>提供了各种创建DStream的方法接收各种流入的数据源（例如：Kafka、Flume、Twitter、ZeroMQ和简<br>单的TCP套接字等）；</p>
+<p>通过构造函数实例化Spark Streaming对象时，可以指定master URL、appName、或者传入SparkConf配置对象、或者已经创建的SparkContext对象；</p>
+<p>将接收的数据流传入DStreams对象中；</p>
+<p>通过Spark Streaming对象实例的start方法启动当前应用程序的流计算框架或通过stop方法结束当前应用程序的流计算框架；</p>
+</blockquote>
+<h4 id="二、DStream功能及源码剖析："><a href="#二、DStream功能及源码剖析：" class="headerlink" title="二、DStream功能及源码剖析："></a>二、DStream功能及源码剖析：</h4><p>1、  <code>DStream是RDD的模板，DStream是抽象的，RDD也是抽象的。</code></p>
+<p>2、  DStream的具体实现子类如下图所示：</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230622929-120938458.jpg" alt=""></p>
+<p>3、  以StreamingContext实例的socketTextSteam方法为例，其执行完的结果返回DStream对象实例，其源码调用过程如下图：</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230646616-1180745008.jpg" alt=""></p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230709882-825127800.jpg" alt=""></p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418230813648-491197390.jpg" alt=""></p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231013632-1574150730.jpg" alt=""></p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231124991-2045884614.jpg" alt=""></p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231133413-1499371881.jpg" alt=""></p>
+<p>socket.getInputStream获取数据，while循环来存储储蓄数据(内存、磁盘)</p>
+<h4 id="三、Receiver功能及源码剖析："><a href="#三、Receiver功能及源码剖析：" class="headerlink" title="三、Receiver功能及源码剖析："></a>三、Receiver功能及源码剖析：</h4><p>1、Receiver代表数据的输入，接收外部输入的数据，如从Kafka上抓取数据；</p>
+<p>2、Receiver运行在Worker节点上；</p>
+<p>3、Receiver在Worker节点上抓取Kafka分布式消息框架上的数据时，具体实现类是KafkaReceiver;</p>
+<p>4、Receiver是抽象类，其抓取数据的实现子类如下图所示：</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231209007-2006587450.jpg" alt=""></p>
+<p>5、  如果上述实现类都满足不了您的要求，您自己可以定义Receiver类，只需要继承Receiver抽象类来实现自己子类的业务需求。</p>
+<h4 id="四、StreamingContext、DStream、Receiver结合流程分析："><a href="#四、StreamingContext、DStream、Receiver结合流程分析：" class="headerlink" title="四、StreamingContext、DStream、Receiver结合流程分析："></a>四、StreamingContext、DStream、Receiver结合流程分析：</h4><p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160418231314976-2119033916.gif" alt=""></p>
+<p>【总结】</p>
+<blockquote>
+<p>数据在流进来之后最终会生成Job，最终还是基于Spark Core的RDD进行执行：在处理流进来的数据时是DStream进行Transformation由于是StreamingContext所以根本不会去运行，StreamingContext会根据Transformation生成”DStream的链条”及DStreamGraph，而DStreamGraph就是DAG的模板，这个模板是被框架托管的。当我们指定时间间隔的时候，Driver端就会根据这个时间间隔来触发Job而触发Job的方法就是根据OutputDStream中指定的具体的function,例如wordcount中print，这个函数一定会传给ForEachDStream，它会把函数交给最后一个DStream产生的RDD，也就是RDD的print操作，而这个操作就是RDD触发Action。</p>
+</blockquote>
+<h3 id="3-基于HDFS的SparkStreaming案例实战"><a href="#3-基于HDFS的SparkStreaming案例实战" class="headerlink" title="3.基于HDFS的SparkStreaming案例实战"></a>3.基于HDFS的SparkStreaming案例实战</h3><p>【代码实战】</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkStreamingOnHDFS</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		<span class="keyword">final</span> SparkConf conf = <span class="keyword">new</span> SparkConf().</div><div class="line">				setMaster(<span class="string">"local[1]"</span>).</div><div class="line">				setAppName(<span class="string">"SparkStreamingOnHDFS"</span>);</div><div class="line">		</div><div class="line">		<span class="comment">// JavaStreamingContext jsc = new JavaStreamingContext(conf,</span></div><div class="line">		<span class="comment">// Durations.seconds(5));</span></div><div class="line">		</div><div class="line">		<span class="keyword">final</span> String checkpointDirectory = </div><div class="line">				<span class="string">"hdfs://node02:8020/SparkStreaming/CheckPoint_20170301"</span>;	</div><div class="line">		JavaStreamingContextFactory factory = <span class="keyword">new</span> </div><div class="line">				JavaStreamingContextFactory() &#123;</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> JavaStreamingContext <span class="title">create</span><span class="params">()</span> </span>&#123;  </div><div class="line">				<span class="keyword">return</span> createContext(checkpointDirectory,conf);</div><div class="line">			&#125;</div><div class="line">		&#125;;		 </div><div class="line">		JavaStreamingContext jsc = JavaStreamingContext.</div><div class="line">				getOrCreate(checkpointDirectory, factory);</div><div class="line">		jsc.start();</div><div class="line">		jsc.awaitTermination();</div><div class="line">		<span class="comment">// jsc.close();</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="meta">@SuppressWarnings</span>(<span class="string">"deprecation"</span>)</div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JavaStreamingContext <span class="title">createContext</span></span></div><div class="line">	<span class="params">(String checkpointDirectory,SparkConf conf)</span> &#123;</div><div class="line">		<span class="comment">// If you do not see this printed, that means the </span></div><div class="line">		<span class="comment">//StreamingContext has been loaded</span></div><div class="line">		<span class="comment">// from the new checkpoint</span></div><div class="line">		System.out.println(<span class="string">"Creating new context"</span>);</div><div class="line">		SparkConf sparkConf = conf;</div><div class="line">		<span class="comment">// Create the context with a 1 second batch size</span></div><div class="line">		JavaStreamingContext ssc = <span class="keyword">new</span> JavaStreamingContext</div><div class="line">				(sparkConf, Durations.seconds(<span class="number">5</span>));</div><div class="line">		ssc.checkpoint(checkpointDirectory);</div><div class="line">		<span class="comment">/**</span></div><div class="line">		 * 监控的是HDFS上的一个目录，监控文件数量的变化    </div><div class="line">		 *  文件内容如果追加能监控到吗？监控不到。。。。。。。。</div><div class="line">		 */</div><div class="line">		JavaDStream&lt;String&gt; lines = ssc.textFileStream</div><div class="line">				(<span class="string">"hdfs://node02:8020/flume/"</span>);		 </div><div class="line">		JavaDStream&lt;String&gt; words = lines.flatMap(</div><div class="line">				<span class="keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;</div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Iterable&lt;String&gt; <span class="title">call</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">				<span class="keyword">return</span> Arrays.asList(s.split(<span class="string">" "</span>));</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">		JavaPairDStream&lt;String, Integer&gt; ones = words.mapToPair(</div><div class="line">				<span class="keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="title">call</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">				<span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(s, <span class="number">1</span>);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">		JavaPairDStream&lt;String, Integer&gt; counts = ones.reduceByKey(</div><div class="line">				<span class="keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123;</div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(Integer i1, Integer i2)</span> </span>&#123;</div><div class="line">				<span class="keyword">return</span> i1 + i2;</div><div class="line">			&#125;</div><div class="line">		&#125;);	 </div><div class="line">		counts.print();</div><div class="line">		<span class="keyword">return</span> ssc;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>Driver的高可用(HA)：</p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/06juKLPtECmOycCq9Y*etlck3sLuf9oIuiEFwwQViCs!/b/dB8BAAAAAAAA&amp;bo=OAT8AQAAAAADB.M!&amp;rf=viewer_4" alt=""></p>
+<h3 id="4-Spark-Streaming-on-Kafka解析和安装实战"><a href="#4-Spark-Streaming-on-Kafka解析和安装实战" class="headerlink" title="4.Spark Streaming on Kafka解析和安装实战"></a>4.Spark Streaming on Kafka解析和安装实战</h3><p>1.Apache Kafka与传统消息系统相比，有以下不同的特点：</p>
+<blockquote>
+<p>分布式系统，易于向外扩展；</p>
+<p>在线低延迟，同时为发布和订阅提供高吞吐量；</p>
+<p>流进来的数据一般处理完后就消失了，也可以将消息存储到磁盘，因此可以处理1天甚至1周前内容，所以kafka不仅是一个消息中间件，还是一个存储系统。</p>
+</blockquote>
+<p>2、Kafka的架构</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001347205-1918052773.png" alt=""></p>
+<p>Kafka既然具备消息系统的基本功能，那么就必然会有组成消息系统的组件：</p>
+<p>Topic，Producer和Consumer。Kafka还有其特殊的Kafka Cluster组件。</p>
+<p><code>Topic主题：</code></p>
+<p>代表一种数据的类别或类型，工作、娱乐、生活有不同的Topic，生产者需要说明把说明数据分别放在那些Topic中，里面就是一个个小对象，并将数据数据推到Kafka，消费者获取数据是pull的过程。一组相同类型的消息数据流。这些消息在Kafka会被分区存放，并且有多个副本，以防数据丢失。每个分区的消息是顺序写入的，并且不可改写。</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001507002-1927984098.png" alt=""></p>
+<p><code>Producer（生产者）：把数据推到Kafka系统的任何对象。</code></p>
+<p><code>Kafka Cluster（Kafka集群）</code></p>
+<p>把推到Kafka系统的消息保存起来的一组服务器，也叫<code>Broker</code>。因为Kafka集群用到了Zookeeper作为底层支持框架，所以由一个选出的服务器作为Leader来处理所有消息的读和写的请求，其他服务器作为Follower接受Leader的广播同步备份数据，以备灾难恢复时用。</p>
+<p><code>Consumer（消费者）：从Kafka系统订阅消息的任何对象。</code></p>
+<p>消费者可以有多个，并且某些消费者还可以组成Consumer Group。多个Consumer Group之间组成消息广播的关系，所以各个Group可以拉相同的消息数据。在Consumer Group内部，各消费者之间对Consumer Group拉出来的消息数据是队列先进先出的关系，<code>某个消息数据只能给该Group的一个消费者使用，同一个Group中的实体是互斥的，对一个消息，这样是避免重复消费。</code>如果有多个group，每个group中只有一个实体，这就是队列的方式了，因为它是互斥的。如果不是一个实体，则是广播模式，如下图所示，广播只能广播给一个group中的一个消费实体。</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001541642-2097443983.png" alt=""></p>
+<p>【总结】</p>
+<blockquote>
+<p>kafka的数据传输是基于kernel（内核）级别的（传输速度接近0拷贝-ZeroCopy）、没有用户空间的参与。</p>
+</blockquote>
+<p>Linux本身是软件，软件启动时第一个启动进程叫init，在init进程启动后会进入用户空间；kafka是用java写的，是基于jvm虚拟机的。例如：在分布式系统中，机器A上的应用程序需要读取机器B上的Java服务数据，由于Java程序对应的JVM是用户空间级别而且数据在磁盘上，A上应用程序读取数据时会首先进入机器B上的内核空间再进入机器B的用户空间，读取用户空间的数据后，数据再经过B机器上的内核空间分发到网络中(之所以要再经过B的内核，因为要通过网络通信，不通过内核，哪里来的网络通信)，机器A网卡接收到传输过来的数据后再将数据写入A机器的内核空间，从而最终将数据传输给A的用户空间进行处理。如下图：网络本身是一种硬件，磁盘只是硬件的一种。</p>
+<p><img src="http://images2015.cnblogs.com/blog/860767/201604/860767-20160426001602189-27650640.png" alt=""></p>
+<p>正常情况下，外部系统从Java程序中读取数据，传输给内核空间并依赖网卡将数据写入到网络中，从而把数据传输出去。其实Java本身是内核的一层外衣，Java Socket编程，操作的各种数据都是在JVM的用户空间中进行的。而Kafka操作数据是放在内核空间的，通常内核空间处理数据的速度比用户空间快上万倍，因为没用用户态和内核态的切换，所以通过kafka可以实现高速读、写数据。只要磁盘空间足够大，可以无限量的存储数据，kafka的数据就是存储在磁盘中的，不是存在内核中的。而很多消息组件是把数据存内存中的。kafka用zookeeperg管理元数据，而且按顺序写数据，比随机写要快很多。又有副本！</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/06/Spark/UDFUDAF例子/" rel="next" title="Spark学习笔记——Spark SQL源码函数解读及UDF/UDAF例子">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——Spark SQL源码函数解读及UDF/UDAF例子
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/06/Spark/sparkstreaming1/"
+           data-title="Spark学习笔记——Spark Streaming学习整理" data-url="http://yoursite.com/2017/03/06/Spark/sparkstreaming1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-通过Spark-Streaming动手实战wordCount实例"><span class="nav-number">1.</span> <span class="nav-text">1.通过Spark Streaming动手实战wordCount实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-StreamingContext、DStream、Receiver深度剖析"><span class="nav-number">2.</span> <span class="nav-text">2.StreamingContext、DStream、Receiver深度剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、StreamingContext功能及源码剖析："><span class="nav-number">2.1.</span> <span class="nav-text">一、StreamingContext功能及源码剖析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、DStream功能及源码剖析："><span class="nav-number">2.2.</span> <span class="nav-text">二、DStream功能及源码剖析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、Receiver功能及源码剖析："><span class="nav-number">2.3.</span> <span class="nav-text">三、Receiver功能及源码剖析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、StreamingContext、DStream、Receiver结合流程分析："><span class="nav-number">2.4.</span> <span class="nav-text">四、StreamingContext、DStream、Receiver结合流程分析：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-基于HDFS的SparkStreaming案例实战"><span class="nav-number">3.</span> <span class="nav-text">3.基于HDFS的SparkStreaming案例实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Spark-Streaming-on-Kafka解析和安装实战"><span class="nav-number">4.</span> <span class="nav-text">4.Spark Streaming on Kafka解析和安装实战</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
