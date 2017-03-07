@@ -88,23 +88,20 @@
 
 
 <meta name="description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。
-12345678910111213141516171819202122232425262728293031323334objec">
+实现技术：使用trasform API直接基于RDD编程，进行join操作。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark学习笔记——Spark Streaming中transform,updateStateByKey,Window算子解析">
 <meta property="og:url" content="http://yoursite.com/2017/03/07/Spark/sparkstreaming算子 /index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。
-12345678910111213141516171819202122232425262728293031323334objec">
+实现技术：使用trasform API直接基于RDD编程，进行join操作。">
 <meta property="og:image" content="http://spark.apache.org/docs/1.6.0/img/streaming-dstream-window.png">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/cfMGqkQVh.LCsxLRuuv8gtDE6YSMjpP8Hux0NKnZBf4!/b/dCABAAAAAAAA&bo=JQSfAQAAAAADB50!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-07T14:00:56.229Z">
+<meta property="og:updated_time" content="2017-03-07T14:04:05.303Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark Streaming中transform,updateStateByKey,Window算子解析">
 <meta name="twitter:description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。
-12345678910111213141516171819202122232425262728293031323334objec">
+实现技术：使用trasform API直接基于RDD编程，进行join操作。">
 <meta name="twitter:image" content="http://spark.apache.org/docs/1.6.0/img/streaming-dstream-window.png">
 
 
@@ -364,6 +361,7 @@
       
         <h3 id="1-实现在线黑名单过滤"><a href="#1-实现在线黑名单过滤" class="headerlink" title="1.实现在线黑名单过滤"></a>1.实现在线黑名单过滤</h3><p>背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。</p>
 <p>实现技术：使用trasform API直接基于RDD编程，进行join操作。</p>
+<a id="more"></a>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">TransformOperator</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">    conf.setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    conf.setAppName(<span class="string">"TransformOperator"</span>)</div><div class="line">    conf.set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(conf, <span class="type">Durations</span>.seconds(<span class="number">5</span>))</div><div class="line">    <span class="comment">//黑名单数据准备，实际上黑名单一般都是动态的，</span></div><div class="line">    <span class="comment">// 例如在Redis或者数据库中，黑名单的生成往往有复杂的逻辑，</span></div><div class="line">    <span class="comment">// 具体情况算法不同，但是在Spark Streaming进行处理的时候</span></div><div class="line">    <span class="comment">// 每次都能访问完整的信息</span></div><div class="line">    <span class="keyword">val</span> blackList = <span class="type">Array</span>(<span class="type">Tuple2</span>(<span class="string">"tom"</span>, <span class="literal">true</span>))</div><div class="line">    <span class="keyword">val</span> blackRDD = ssc.sparkContext.parallelize(blackList)</div><div class="line">    <span class="keyword">val</span> adsClickLogDStream = ssc.socketTextStream(<span class="string">"node02"</span>, <span class="number">9999</span>)</div><div class="line">    <span class="keyword">val</span> userAdsClickLogDStream = adsClickLogDStream.map(x =&gt;</div><div class="line">      (x.split(<span class="string">" "</span>)(<span class="number">1</span>), x))</div><div class="line">    userAdsClickLogDStream.transform(userClickRDD =&gt; &#123;</div><div class="line">      <span class="keyword">val</span> joinedBlackListRDD = userClickRDD.leftOuterJoin(blackRDD)</div><div class="line">      <span class="keyword">val</span> validClicked = joinedBlackListRDD.filter(joinedItem =&gt; &#123;</div><div class="line">        <span class="keyword">if</span> (joinedItem._2._2.getOrElse(<span class="literal">false</span>)) &#123;</div><div class="line">          <span class="literal">false</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">          <span class="literal">true</span></div><div class="line">        &#125;</div><div class="line">      &#125;)</div><div class="line">      validClicked.map(validClicked =&gt; &#123;</div><div class="line">        validClicked._2._1</div><div class="line">      &#125;)</div><div class="line">    &#125;).print()</div><div class="line">    ssc.start()</div><div class="line">    ssc.awaitTermination()</div><div class="line">    ssc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><h3 id="2-统计广告点击流量，统计这一天的车流量。"><a href="#2-统计广告点击流量，统计这一天的车流量。" class="headerlink" title="2.统计广告点击流量，统计这一天的车流量。"></a>2.统计广告点击流量，统计这一天的车流量。</h3><p>UpdateStateByKey的主要功能:</p>
 <p>1、Spark Streaming中为每一个Key维护一份state状态，state类型可以是任意类型的的， 可以是一个自定义的对象，那么更新函数也可以是任意类型的。</p>
