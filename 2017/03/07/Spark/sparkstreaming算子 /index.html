@@ -88,20 +88,20 @@
 
 
 <meta name="description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。">
+实现技术：使用transform API直接基于RDD编程，进行join操作。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark学习笔记——Spark Streaming中transform,updateStateByKey,Window算子解析">
 <meta property="og:url" content="http://yoursite.com/2017/03/07/Spark/sparkstreaming算子 /index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。">
+实现技术：使用transform API直接基于RDD编程，进行join操作。">
 <meta property="og:image" content="http://spark.apache.org/docs/1.6.0/img/streaming-dstream-window.png">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/cfMGqkQVh.LCsxLRuuv8gtDE6YSMjpP8Hux0NKnZBf4!/b/dCABAAAAAAAA&bo=JQSfAQAAAAADB50!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-07T15:17:35.102Z">
+<meta property="og:updated_time" content="2017-03-07T15:19:54.333Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark Streaming中transform,updateStateByKey,Window算子解析">
 <meta name="twitter:description" content="1.实现在线黑名单过滤背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。
-实现技术：使用trasform API直接基于RDD编程，进行join操作。">
+实现技术：使用transform API直接基于RDD编程，进行join操作。">
 <meta name="twitter:image" content="http://spark.apache.org/docs/1.6.0/img/streaming-dstream-window.png">
 
 
@@ -202,7 +202,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -212,7 +212,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -289,7 +289,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-07T19:46:34+08:00">
                 2017-03-07
@@ -310,7 +310,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">in</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -360,7 +360,7 @@
 
       
         <h3 id="1-实现在线黑名单过滤"><a href="#1-实现在线黑名单过滤" class="headerlink" title="1.实现在线黑名单过滤"></a>1.实现在线黑名单过滤</h3><p>背景描述：在广告点击计费系统中，我们在线过滤黑名单的点击，进而保护广告商的利益，只进行有效的广告商利益或者在防刷屏评分（或者流量)系统，过滤掉无效的投票或者评分或者流量。</p>
-<p>实现技术：使用trasform API直接基于RDD编程，进行join操作。</p>
+<p>实现技术：使用transform API直接基于RDD编程，进行join操作。</p>
 <a id="more"></a>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">TransformOperator</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">    conf.setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    conf.setAppName(<span class="string">"TransformOperator"</span>)</div><div class="line">    conf.set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(conf, <span class="type">Durations</span>.seconds(<span class="number">5</span>))</div><div class="line">    <span class="comment">//黑名单数据准备，实际上黑名单一般都是动态的，</span></div><div class="line">    <span class="comment">// 例如在Redis或者数据库中，黑名单的生成往往有复杂的逻辑，</span></div><div class="line">    <span class="comment">// 具体情况算法不同，但是在Spark Streaming进行处理的时候</span></div><div class="line">    <span class="comment">// 每次都能访问完整的信息</span></div><div class="line">    <span class="keyword">val</span> blackList = <span class="type">Array</span>(<span class="type">Tuple2</span>(<span class="string">"tom"</span>, <span class="literal">true</span>))</div><div class="line">    <span class="keyword">val</span> blackRDD = ssc.sparkContext.parallelize(blackList)</div><div class="line">    <span class="keyword">val</span> adsClickLogDStream = ssc.socketTextStream(<span class="string">"node02"</span>, <span class="number">9999</span>)</div><div class="line">    <span class="keyword">val</span> userAdsClickLogDStream = adsClickLogDStream.map(x =&gt;</div><div class="line">      (x.split(<span class="string">" "</span>)(<span class="number">1</span>), x))</div><div class="line">    userAdsClickLogDStream.transform(userClickRDD =&gt; &#123;</div><div class="line">      <span class="keyword">val</span> joinedBlackListRDD = userClickRDD.leftOuterJoin(blackRDD)</div><div class="line">      <span class="keyword">val</span> validClicked = joinedBlackListRDD.filter(joinedItem =&gt; &#123;</div><div class="line">        <span class="keyword">if</span> (joinedItem._2._2.getOrElse(<span class="literal">false</span>)) &#123;</div><div class="line">          <span class="literal">false</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">          <span class="literal">true</span></div><div class="line">        &#125;</div><div class="line">      &#125;)</div><div class="line">      validClicked.map(validClicked =&gt; &#123;</div><div class="line">        validClicked._2._1</div><div class="line">      &#125;)</div><div class="line">    &#125;).print()</div><div class="line">    ssc.start()</div><div class="line">    ssc.awaitTermination()</div><div class="line">    ssc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><h3 id="2-统计广告点击流量，统计这一天的车流量。"><a href="#2-统计广告点击流量，统计这一天的车流量。" class="headerlink" title="2.统计广告点击流量，统计这一天的车流量。"></a>2.统计广告点击流量，统计这一天的车流量。</h3><p>UpdateStateByKey的主要功能:</p>
@@ -375,7 +375,7 @@
 <p><img src="http://spark.apache.org/docs/1.6.0/img/streaming-dstream-window.png" alt=""></p>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">WindowOperator</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">    conf.setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    conf.setAppName(<span class="string">"UpdateStateByKeyOperator"</span>)</div><div class="line">    conf.set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(conf, <span class="type">Durations</span>.seconds(<span class="number">5</span>))</div><div class="line">    ssc.checkpoint(<span class="string">"hdfs://node02:8020/sscheckpoint"</span>)</div><div class="line">    <span class="keyword">val</span> searchLogsDStream = ssc.socketTextStream(<span class="string">"node02"</span>, <span class="number">9999</span>)</div><div class="line">    <span class="keyword">val</span> searchWordsDStream = searchLogsDStream.map(_.split(<span class="string">"\t"</span>)(<span class="number">1</span>))</div><div class="line">    <span class="comment">// 将搜索词映射为(searchWord, 1)的tuple格式</span></div><div class="line">    <span class="keyword">val</span> searchWordPairDStream = searchLogsDStream.map(x =&gt; (x, <span class="number">1</span>))</div><div class="line">    <span class="keyword">val</span> searchWordCountsDStream = searchWordPairDStream.</div><div class="line">      reduceByKeyAndWindow((x: <span class="type">Int</span>, y: <span class="type">Int</span>) =&gt; (x + y),</div><div class="line">        <span class="comment">//每一时刻的值两两累加</span></div><div class="line">        <span class="type">Durations</span>.seconds(<span class="number">15</span>), <span class="type">Durations</span>.seconds(<span class="number">10</span>))</div><div class="line">    <span class="comment">//窗口计算量15，滑动窗口每隔10s滑动一次。</span></div><div class="line">    searchWordCountsDStream.print()</div><div class="line">    ssc.start()</div><div class="line">    ssc.awaitTermination()</div><div class="line">    ssc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre><p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/cfMGqkQVh.LCsxLRuuv8gtDE6YSMjpP8Hux0NKnZBf4!/b/dCABAAAAAAAA&amp;bo=JQSfAQAAAAADB50!&amp;rf=viewer_4" alt=""></p>
-<p>中间的时刻很多都被重复计算了，所有需要优化。见右图。</p>
+<p>中间时刻的值很多都被重复计算了，所以需要优化。见右图。</p>
 <p>【优化后的代码】</p>
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">WindowOperator</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</div><div class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>()</div><div class="line">    conf.setMaster(<span class="string">"local[2]"</span>)</div><div class="line">    conf.setAppName(<span class="string">"UpdateStateByKeyOperator"</span>)</div><div class="line">    conf.set(<span class="string">"spark.testing.memory"</span>, <span class="string">"2147480000"</span>)</div><div class="line">    <span class="keyword">val</span> ssc = <span class="keyword">new</span> <span class="type">StreamingContext</span>(conf, <span class="type">Durations</span>.seconds(<span class="number">5</span>))</div><div class="line">    ssc.checkpoint(<span class="string">"hdfs://node02:8020/sscheckpoint"</span>)</div><div class="line">    <span class="keyword">val</span> searchLogsDStream = ssc.socketTextStream(<span class="string">"node02"</span>, <span class="number">9999</span>)</div><div class="line">    <span class="keyword">val</span> searchWordsDStream = searchLogsDStream.map(_.split(<span class="string">"\t"</span>)(<span class="number">1</span>))</div><div class="line">    <span class="comment">// 将搜索词映射为(searchWord, 1)的tuple格式</span></div><div class="line">    <span class="keyword">val</span> searchWordPairDStream = searchLogsDStream.map(x =&gt; (x, <span class="number">1</span>))</div><div class="line">    <span class="keyword">val</span> searchWordCountsDStream = searchWordPairDStream.</div><div class="line">      reduceByKeyAndWindow((x, y) =&gt; &#123;</div><div class="line">        x + y</div><div class="line">      &#125;, (a, b) =&gt; &#123;</div><div class="line">        a - b</div><div class="line">      &#125;, <span class="type">Durations</span>.seconds(<span class="number">15</span>), <span class="type">Durations</span>.seconds(<span class="number">10</span>))</div><div class="line">    <span class="comment">//窗口计算量15，滑动窗口每隔10s滑动一次。</span></div><div class="line">    searchWordCountsDStream.print()</div><div class="line">    ssc.start()</div><div class="line">    ssc.awaitTermination()</div><div class="line">    ssc.stop()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 </code></pre>
@@ -475,10 +475,10 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
+            Inhaltsverzeichnis
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
+            Übersicht
           </li>
         </ul>
       
@@ -499,7 +499,7 @@
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">48</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -508,7 +508,7 @@
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">categories</span>
+                <span class="site-state-item-name">Kategorien</span>
               
             </div>
           
@@ -517,7 +517,7 @@
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">tags</span>
+                <span class="site-state-item-name">Tags</span>
               </a>
             </div>
           
@@ -583,7 +583,7 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
