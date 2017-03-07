@@ -95,7 +95,7 @@
 <meta property="og:description" content="SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/FJVeQlBKWYH.o0YuO46Fvj4XmeU5ZPEH2hNcM9s.ZRk!/b/dCABAAAAAAAA&bo=cwWAAgAAAAADB9Y!&rf=viewer_4">
 <meta property="og:image" content="http://img.blog.csdn.net/20160507224651648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
-<meta property="og:updated_time" content="2017-03-07T02:47:46.754Z">
+<meta property="og:updated_time" content="2017-03-07T07:13:57.387Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark Streaming基于kafka获取数据">
 <meta name="twitter:description" content="SparkStreaming基于kafka获取数据的方式，主要有俩种，即Receiver和Direct，基于Receiver的方式，是SparkStreaming给我们提供了kafka访问的高层api的封装，而基于Direct的方式，就是直接访问，在SparkSteaming中直接去操作kafka中的数据，不需要前面的高层api的封装。而Direct的方式，可以对kafka进行更好的控制！同时性能">
@@ -199,7 +199,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -209,7 +209,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -286,7 +286,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-06T23:50:50+08:00">
                 2017-03-06
@@ -307,7 +307,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">in</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -410,15 +410,12 @@ Time: 1488815425000 ms
 </blockquote>
 <font color="red"><b>receive模式和direct模式最大不同是消费偏移量管理者不同，一个是zookeeper,另一个是SparkStreaming(checkpoint)</b></font>
 
-
-
-
-
-
-
-
-
-
+<p><b>direct模式和receive模式对比：</b></p>
+<blockquote>
+<p>1.简化并行性：无需创建多个输入Kafka流并且结合它们。 使用directStream，Spark Streaming将创建与要消费的Kafkatopic中partition分区一样多的RDD分区，这将从Kafka并行读取数据。 因此，在Kafka和RDD分区之间存在一对一映射，这更容易理解和调整。</p>
+<p>2.效率：在第一种方法中实现零数据丢失需要将数据存储在预写日志中，该日志进一步复制数据。 这实际上是低效的，因为数据有效地被复制两次 - 一次是Kafka，另一次是写入提前日志。 第二种方法消除了问题，因为没有接收器(zookeeper)，因此不需要预写日志。 将元数据信息直接保存在kafka中，可以从Kafka恢复消息。</p>
+<p>3.Exactly-once语义：第一种方法使用Kafka的高级API在Zookeeper中存储消耗的偏移量。这是传统上消费Kafka数据的方式。虽然这种方法（与预写日志结合）可以确保零数据丢失（即至少一次语义），但是一些记录在一些故障下可能被消耗两次。这是因为Spark Streaming可靠接收的数据与Zookeeper跟踪的偏移之间存在不一致。因此，在第二种方法中，我们使用简单的Kafka API,不使用Zookeeper的。偏移由Spark Streaming在其检查点内跟踪。这消除了Spark Streaming和Zookeeper / Kafka之间的不一致，所以每个记录被Spark Streaming有效地精确接收一次，尽管失败了。为了实现输出结果的一次性语义，将数据保存到外部数据存储的输出操作必须是幂等的，或者是保存结果和偏移量的原子事务。</p>
+</blockquote>
 
       
     </div>
@@ -516,10 +513,10 @@ Time: 1488815425000 ms
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
+            Inhaltsverzeichnis
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
+            Übersicht
           </li>
         </ul>
       
@@ -540,7 +537,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">47</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -549,7 +546,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">categories</span>
+                <span class="site-state-item-name">Kategorien</span>
               
             </div>
           
@@ -558,7 +555,7 @@ Time: 1488815425000 ms
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">tags</span>
+                <span class="site-state-item-name">Tags</span>
               </a>
             </div>
           
@@ -624,7 +621,7 @@ Time: 1488815425000 ms
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
