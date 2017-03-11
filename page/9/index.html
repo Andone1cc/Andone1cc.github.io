@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="二叉树," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -87,16 +87,15 @@
 
 
 
-<meta name="description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="判断二叉树是否为完全二叉树">
-<meta property="og:url" content="http://yoursite.com/2016/11/15/数据结构/完全二叉树/index.html">
+<meta name="description" content="一个有梦想的CS小白">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Andone1cc">
+<meta property="og:url" content="http://yoursite.com/page/9/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
-<meta property="og:updated_time" content="2016-11-15T14:19:06.352Z">
+<meta property="og:description" content="一个有梦想的CS小白">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="判断二叉树是否为完全二叉树">
-<meta name="twitter:description" content="判断二叉树是否为完全二叉树若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。">
+<meta name="twitter:title" content="Andone1cc">
+<meta name="twitter:description" content="一个有梦想的CS小白">
 
 
 
@@ -124,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/11/15/数据结构/完全二叉树/"/>
+  <link rel="canonical" href="http://yoursite.com/page/9/"/>
 
 
 
 
 
-  <title> 判断二叉树是否为完全二叉树 | Andone1cc </title>
+  <title> Andone1cc </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -155,7 +154,9 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container one-collumn sidebar-position-left 
+   page-home 
+ ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -238,9 +239,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -249,7 +250,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/15/数据结构/完全二叉树/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/28/Tree1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="QDU-scc">
@@ -270,7 +271,10 @@
             
             
               
-                判断二叉树是否为完全二叉树
+                
+                <a class="post-title-link" href="/2016/10/28/Tree1/" itemprop="url">
+                  先序 中序 后序数组两两结合重构二叉树
+                </a>
               
             
           </h1>
@@ -285,8 +289,8 @@
               
                 <span class="post-meta-item-text">Posté le</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-15T22:15:32+08:00">
-                2016-11-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-28T20:30:12+08:00">
+                2016-10-28
               </time>
             
 
@@ -326,8 +330,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2016/11/15/数据结构/完全二叉树/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/15/数据结构/完全二叉树/" itemprop="commentCount"></span>
+                <a href="/2016/10/28/Tree1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/28/Tree1/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -353,125 +357,52 @@
       
 
       
-        <h3 id="判断二叉树是否为完全二叉树"><a href="#判断二叉树是否为完全二叉树" class="headerlink" title="判断二叉树是否为完全二叉树"></a>判断二叉树是否为完全二叉树</h3><p>若设二叉树的深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<a id="more"></a>
-<p>【分析】</p>
-<blockquote>
-<p>1.<code>按层遍历</code>二叉树，从每层的左边向右边依次遍历所有的节点。</p>
-<p>2.如果当前节点有右孩子，但没有左孩子，直接返回false</p>
-<p>3.如果当前节点并不是左右孩子都有，那之后的节点必须都为叶节点，否则返回false</p>
-<p>4.遍历过程中如果不返回false,遍历结束后返回true</p>
-</blockquote>
-<p>【AC代码】</p>
-<pre><code>`//判断一棵树是否为完全二叉树
-public class Solution {
-    public boolean isCBT(TreeNode head){
-        if(head==null){
-            return true;
-        }
-        Queue&lt;TreeNode&gt; queue=new LinkedList&lt;TreeNode&gt;();
-        boolean leaf=false;
-        TreeNode l=null;
-        TreeNode r=null;
-        queue.offer(head);
-        while(!queue.isEmpty()){
-            head=queue.poll();
-            l=head.left;
-            r=head.right;
-            if(leaf&amp;&amp;(l!=null||r!=null)||(l==null&amp;&amp;r!=null)){//如果之前某个节点是叶子节点了，之后的节点左右不全为空，则返回false
-                return false;
-            }
-            if(l!=null){
-                queue.offer(l);
-            }
-            if(r!=null){
-                queue.offer(r);
-            }else{
-                leaf=true;
-            }
-        }
-        return true;
-    }
-    public static void main(String[] args) {
-        Solution d=new Solution();
-        TreeNode head1=new TreeNode(1);
-        TreeNode head2=new TreeNode(2);
-        TreeNode head3=new TreeNode(3);
-        TreeNode head4=new TreeNode(4);
-        TreeNode head5=new TreeNode(5);
-        head1.left=head2;
-        head1.right=head3;
-        head2.left=head4;
-        head3.right=head5;
-        System.out.println(d.isCBT(head1)?&quot;该二叉树是完全二叉树&quot;:&quot;该二叉树不是完全二叉树&quot;);
-
-    }
-}`
-</code></pre>
+        
+          <p>【题目】</p>
+<p>已知一棵二叉树的所有节点值都不同，给定这棵二叉树的先序，中序和后序数组。请分别用三个函数实现任意两种数组结合重构原来的二叉树，并返回重构二叉树的头结点。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/10/28/Tree1/#more" rel="contents">
+              Lire la suite &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
 
     <div>
       
-        
-
-      
     </div>
 
     <div>
-      
-        
-
       
     </div>
 
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/二叉树/" rel="tag"># 二叉树</a>
-          
-        </div>
+
       
 
       
-        
-      
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2016/11/15/数据结构/平衡二叉树/" rel="next" title="判断二叉树是否为平衡二叉树">
-                <i class="fa fa-chevron-left"></i> 判断二叉树是否为平衡二叉树
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/11/15/数据结构/统计二叉树的节点数/" rel="prev" title="统计完全二叉树的节点数">
-                统计完全二叉树的节点数 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+  </nav>
+
 
           
           </div>
@@ -479,14 +410,6 @@ public class Solution {
 
 
           
-  <div class="comments" id="comments">
-    
-      <div class="ds-thread" data-thread-key="2016/11/15/数据结构/完全二叉树/"
-           data-title="判断二叉树是否为完全二叉树" data-url="http://yoursite.com/2016/11/15/数据结构/完全二叉树/">
-      </div>
-    
-  </div>
-
 
         </div>
         
@@ -506,17 +429,8 @@ public class Solution {
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table Des Matières
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            Ensemble
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -574,22 +488,6 @@ public class Solution {
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断二叉树是否为完全二叉树"><span class="nav-number">1.</span> <span class="nav-text">判断二叉树是否为完全二叉树</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -695,10 +593,6 @@ public class Solution {
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
 
   
 
