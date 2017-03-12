@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="栈和队列," />
+  <meta name="keywords" content="Spark学习总结," />
 
 
 
@@ -87,19 +87,16 @@
 
 
 
-<meta name="description" content="生成窗口最大值数组【题目】
-有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。">
+<meta name="description" content="数据本地化分布式计算系统的精粹在于移动计算而非移动数据，但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="双端队列--生成窗口最大值数组">
-<meta property="og:url" content="http://yoursite.com/2017/02/09/数据结构/窗口最大值数组/index.html">
+<meta property="og:title" content="Spark性能优化——数据本地化和并行度设置">
+<meta property="og:url" content="http://yoursite.com/2017/03/12/Spark/数据本地性/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="生成窗口最大值数组【题目】
-有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。">
-<meta property="og:updated_time" content="2017-02-09T16:04:34.794Z">
+<meta property="og:description" content="数据本地化分布式计算系统的精粹在于移动计算而非移动数据，但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。">
+<meta property="og:updated_time" content="2017-03-12T11:14:42.178Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="双端队列--生成窗口最大值数组">
-<meta name="twitter:description" content="生成窗口最大值数组【题目】
-有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。">
+<meta name="twitter:title" content="Spark性能优化——数据本地化和并行度设置">
+<meta name="twitter:description" content="数据本地化分布式计算系统的精粹在于移动计算而非移动数据，但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。">
 
 
 
@@ -127,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/02/09/数据结构/窗口最大值数组/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/03/12/Spark/数据本地性/"/>
 
 
 
 
 
-  <title> 双端队列--生成窗口最大值数组 | Andone1cc </title>
+  <title> Spark性能优化——数据本地化和并行度设置 | Andone1cc </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -252,7 +249,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/09/数据结构/窗口最大值数组/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/12/Spark/数据本地性/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="QDU-scc">
@@ -273,7 +270,7 @@
             
             
               
-                双端队列--生成窗口最大值数组
+                Spark性能优化——数据本地化和并行度设置
               
             
           </h1>
@@ -288,8 +285,8 @@
               
                 <span class="post-meta-item-text">Veröffentlicht am</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-09T23:47:46+08:00">
-                2017-02-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-12T18:39:56+08:00">
+                2017-03-12
               </time>
             
 
@@ -311,8 +308,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithm/" itemprop="url" rel="index">
-                    <span itemprop="name">Algorithm</span>
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
                   </a>
                 </span>
 
@@ -329,8 +326,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/09/数据结构/窗口最大值数组/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/09/数据结构/窗口最大值数组/" itemprop="commentCount"></span>
+                <a href="/2017/03/12/Spark/数据本地性/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/12/Spark/数据本地性/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -356,64 +353,57 @@
       
 
       
-        <h3 id="生成窗口最大值数组"><a href="#生成窗口最大值数组" class="headerlink" title="生成窗口最大值数组"></a>生成窗口最大值数组</h3><p>【题目】</p>
-<p>有一个整型数组arr和一个大小为w的窗口从数组的最左边滑到最右边，窗口每次想右边滑一个位置。</p>
+        <h3 id="数据本地化"><a href="#数据本地化" class="headerlink" title="数据本地化"></a>数据本地化</h3><p><code>分布式计算系统的精粹在于移动计算而非移动数据，</code>但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。</p>
 <a id="more"></a>
-<p>例如，数组为【4,3,5,4,3,3,6,7】,窗口大小为3时：</p>
-<p>[4,3,5],4,3,3,6,7        窗口中最大值为5</p>
-<p>4,[3,5,4],3,3,6,7        窗口中最大值为5</p>
-<p>4,3,[5,4,3],3,6,7        窗口中最大值为5</p>
-<p>4,3,5,[4,3,3],6,7        窗口中最大值为4</p>
-<p>4,3,5,4,[3,3,6],7        窗口中最大值为6</p>
-<p>4,3,5,4,3,[3,6,7]        窗口中最大值为7</p>
-<p>如果数组长度为n,窗口大小为w,则一共产生<code>n-w+1</code>个窗口的最大值。</p>
-<p>请实现一个函数：</p>
-<p>1.输入：整型数组arr，窗口大小为w</p>
-<p>2.输出：一个长度为n-w+1的数组res，res[i]表示每一种窗口状态下的最大值。</p>
-<p>以本题为例，结果应该返回{5,5,5,4,6,7}。</p>
-<p>【分析】</p>
-<p><code>时间复杂度为O(n).</code></p>
-<p>本题的关键在于利用<code>双端队列来实现窗口最大值的更新</code>。首先生成双端队列qmax,qmax中存放数组arr中的下标。</p>
-<p>假设遍历到arr[i],qmax的<code>放入规则</code>为：</p>
-<blockquote>
-<p>1.如果qmax为空，直接把下标i放进qmax，放入过程结束。</p>
-<p>2.如果qmax不为空，取出当前qmax队尾存放的下标，假设为j。</p>
-<p>1）.如果arr[j]&gt;arr[i],直接把下标i放进qmax的队尾，放入过程结束。</p>
-<p>2）.如果arr[j]&lt;=arr[i],把j从qmax中弹出，继续qmax的放入规则。</p>
-</blockquote>
-<p>假设遍历到arr[i],qmax的<code>弹出规则</code>为：</p>
-<p>如果qmax队头的下标等于i-w,说明当前qmax队头的下标已过期，弹出当前队头的下标即可。</p>
-<p>【AC代码】</p>
+<p><code>Spark中的数据本地化是由DAGScheduler和TaskScheduler。</code></p>
+<h3 id="Application任务执行流程"><a href="#Application任务执行流程" class="headerlink" title="Application任务执行流程"></a>Application任务执行流程</h3><p>在Spark Application提交后，Driver会根据action算子划分成一个个的job，然后对每一个job划分成一个个的stage，stage内部实际上是由一系列并行计算的task组成的，然后以TaskSet的形式提交给你TaskScheduler，TaskScheduler在进行分配之前都会计算出每一个task最优计算位置。Spark的task的分配算法优先将task发布到数据所在的节点上，从而达到数据最优计算位置。</p>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> rdd1=rdd1.cache</div><div class="line">rdd1.map.filter.count()</div></pre></td></tr></table></figure>
+</code></pre><p>Driver(TaskScheduler)在发送task之前，首先应该拿到rdd1缓存在哪一节点上(node1,node2)。<code>这一步就是由DAGScheduler负责拿到的</code>,TaskScheduler会根据这些节点来发送task。</p>
 <pre><code>`
-public class MaxWindow {
-public static int[] getMaxWindow(int[] arr, int w) {
-    if (arr == null || w &lt; 1 || arr.length &lt; w) {
-        return null;
-    }
-    LinkedList&lt;Integer&gt; qmax = new LinkedList&lt;Integer&gt;();
-    int index = 0;
-    int res[] = new int[arr.length - w + 1];
-    for (int i = 0; i &lt; arr.length; i++) {
-        while (!qmax.isEmpty() &amp;&amp; arr[qmax.peekLast()] &lt;= arr[i]) {
-            qmax.pollLast();
-        }
-        qmax.addLast(i);
-        if (qmax.peekFirst() == i - w) {
-            qmax.pollFirst();
-        }
-        if (i &gt;= w - 1) {
-            res[index++] = arr[qmax.peekFirst()];
-        }
-    }
-    return res;
-}
-public static void main(String[] args){
-    int arr[]={4,3,5,4,3,3,6,7};
-    System.out.println(Arrays.toString(getMaxWindow(arr, 3)));
-}
-}
+val rdd1=sc.textFile(&quot;hdfs://&quot;)
+rdd1.map.filter.count()
 `
-</code></pre>
+</code></pre><p>Driver(TaskScheduler)在发送task之前，首先应该拿到rdd1数据所在的位置（block的位置）。<code>这一步就是由TaskScheduler负责拿到的</code>,TaskScheduler会根据这些节点来发送task。</p>
+<h4 id="数据本地化级别"><a href="#数据本地化级别" class="headerlink" title="数据本地化级别"></a>数据本地化级别</h4><p><b>1.PROCESS_LOCAL进程本地化</b></p>
+<blockquote>
+<p>task要计算的数据在同一个Executor的进程中。</p>
+</blockquote>
+<p><b>2.NODE_LOCAL节点本地化</b></p>
+<blockquote>
+<p>task要计算的数据在同一台Worker的不同Executor进程中。</p>
+<p>task要计算的数据在同一台Worker的磁盘上。</p>
+</blockquote>
+<p>Spark计算的数据来源于HDFS,那么最好的数据本地化级别就是NODE_LOCAL。</p>
+<p><b>3.NODE_PREF</b></p>
+<blockquote>
+<p>比如说SparkSQL读取mysql中的数据。</p>
+</blockquote>
+<p><b>4.RACK_LOCAL机架本地化</b></p>
+<blockquote>
+<p>task计算的数据在不同Worker的Executor进程中，或磁盘上。</p>
+</blockquote>
+<p><b>5.ANY</b></p>
+<blockquote>
+<p>task计算的数据在不同机架的节点上。</p>
+</blockquote>
+<h4 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h4><p>Driver的TaskScheduler(TaskSetManager)负责发送task到Executor中执行。</p>
+<p>TaskScheduler在第一个发送task的时候，会根据数据所在的节点去发送task,这时候的数据本地化的级别是最高的。如果这个task在这个Executor里面等待了3s,重试发送了5次还是一次无法执行，那么TaskScheduler就会认为这个Executor的计算资源满了，TaskScheduler会降低一级数据本地化的级别重新发送task到其他的Executor中执行，如果还是无法执行，那么继续降低数据本地化的级别。</p>
+<h4 id="配置参数"><a href="#配置参数" class="headerlink" title="配置参数"></a>配置参数</h4><p>• spark.locality.wait</p>
+<p>• spark.locality.wait.process</p>
+<p>• spark.locality.wait.node</p>
+<p>• spark.locality.wait.rack</p>
+<p>new SparkConf.set(“spark.locality.wait”,”100”)</p>
+<h3 id="并行度设置"><a href="#并行度设置" class="headerlink" title="并行度设置"></a>并行度设置</h3><p>提高并行度的方案。(将数据分拆为多个task任务执行，充分利用集群资源)</p>
+<p><b>1.如果读取的数据在HDFS上，增加block数</b></p>
+<p><b>2.RDD.repartition重分区</b></p>
+<p><b>3.reduce等有shuffle阶段的算子后面有一个numpartition参数。</b></p>
+<pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> rdd2 = rdd1.reduceByKey(_+_,<span class="number">10</span>)  </div><div class="line"><span class="keyword">val</span> rdd3 = rdd2.map.filter.reduceByKey(_+_)</div></pre></td></tr></table></figure>
+</code></pre><p><b>4.val rdd3 = rdd1.join（rdd2）rdd3里面partiiton的数据量是由父RDD中最多的partition数量来决定了。</b></p>
+<p><b>5.spark.default.parallelism 默认没有值。</b></p>
+<p>如果设置了值 10（shuffle过程起作用）</p>
+<p>val rdd2=rdd1.reduceByKey(<em>+</em>)  rdd2的分区数就是10,rdd1的分区数不受参数的影响。</p>
+<p><b>6.SparkSQL通过spark.sql.shuffle.partitions修改并发数。</b></p>
+
       
     </div>
 
@@ -436,7 +426,7 @@ public static void main(String[] args){
       
         <div class="post-tags">
           
-            <a href="/tags/栈和队列/" rel="tag"># 栈和队列</a>
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
           
         </div>
       
@@ -449,8 +439,8 @@ public static void main(String[] args){
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/07/java基础/concurrentmap/" rel="next" title="java 8中对ConcurrentHashMap的改进">
-                <i class="fa fa-chevron-left"></i> java 8中对ConcurrentHashMap的改进
+              <a href="/2017/03/12/Spark/shuffle调优/" rel="next" title="Spark性能优化——shuffle调优">
+                <i class="fa fa-chevron-left"></i> Spark性能优化——shuffle调优
               </a>
             
           </div>
@@ -458,10 +448,6 @@ public static void main(String[] args){
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/03/02/Spark/广播变量与累加器/" rel="prev" title="Spark学习笔记——广播变量与累加器">
-                Spark学习笔记——广播变量与累加器 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -487,8 +473,8 @@ public static void main(String[] args){
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/02/09/数据结构/窗口最大值数组/"
-           data-title="双端队列--生成窗口最大值数组" data-url="http://yoursite.com/2017/02/09/数据结构/窗口最大值数组/">
+      <div class="ds-thread" data-thread-key="2017/03/12/Spark/数据本地性/"
+           data-title="Spark性能优化——数据本地化和并行度设置" data-url="http://yoursite.com/2017/03/12/Spark/数据本地性/">
       </div>
     
   </div>
@@ -590,7 +576,7 @@ public static void main(String[] args){
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成窗口最大值数组"><span class="nav-number">1.</span> <span class="nav-text">生成窗口最大值数组</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据本地化"><span class="nav-number">1.</span> <span class="nav-text">数据本地化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Application任务执行流程"><span class="nav-number">2.</span> <span class="nav-text">Application任务执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据本地化级别"><span class="nav-number">2.1.</span> <span class="nav-text">数据本地化级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行流程"><span class="nav-number">2.2.</span> <span class="nav-text">执行流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置参数"><span class="nav-number">2.3.</span> <span class="nav-text">配置参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行度设置"><span class="nav-number">3.</span> <span class="nav-text">并行度设置</span></a></li></ol></div>
             
 
           </div>
