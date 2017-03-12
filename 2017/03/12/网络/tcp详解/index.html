@@ -1,0 +1,753 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="计算机网络," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一节 中讲过，TCP 协议是面向有连接的协议，它具有丢包重发和流量控制的功能，这是它区别于 UDP 协议最大的特点。本文就主要讨论这两个功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP 协议详解">
+<meta property="og:url" content="http://yoursite.com/2017/03/12/网络/tcp详解/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="上一节 中讲过，TCP 协议是面向有连接的协议，它具有丢包重发和流量控制的功能，这是它区别于 UDP 协议最大的特点。本文就主要讨论这两个功能。">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-ac16ce758aa65805.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-ede6985be7bee329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-4a3c0615f2dbb2f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-59062a2b47a71189.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-3bb9a03c1b712fa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1171077-bff9c2754298154f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-03-12T15:21:39.545Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP 协议详解">
+<meta name="twitter:description" content="上一节 中讲过，TCP 协议是面向有连接的协议，它具有丢包重发和流量控制的功能，这是它区别于 UDP 协议最大的特点。本文就主要讨论这两个功能。">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1171077-ac16ce758aa65805.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/12/网络/tcp详解/"/>
+
+
+
+
+
+  <title> TCP 协议详解 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/12/网络/tcp详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                TCP 协议详解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-12T23:06:29+08:00">
+                2017-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络/" itemprop="url" rel="index">
+                    <span itemprop="name">网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/12/网络/tcp详解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/12/网络/tcp详解/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一节 中讲过，<code>TCP 协议是面向有连接的协议，它具有丢包重发和流量控制的功能，这是它区别于 UDP 协议最大的特点。</code>本文就主要讨论这两个功能。</p>
+<a id="more"></a>
+<h3 id="数据包重发"><a href="#数据包重发" class="headerlink" title="数据包重发"></a>数据包重发</h3><h4 id="数据发送"><a href="#数据发送" class="headerlink" title="数据发送"></a>数据发送</h4><p><code>丢包重发的前提是发送方能够知道接收方是否成功的接收了消息。</code>所以，在 TCP 协议中，接收端会给发送端返回一个通知，也叫作<code>确认应答（ACK）</code>，这表示接收方已经收到了数据包。</p>
+<p>根据上一节对 TCP 首部的分析得知，ACK 的值和下次发送数据包的序列号相等。因此 ACK 也可以理解为：“发送方，下次你从这个位置开始发送！”。下图表示了数据发送与确认应答的过程：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-ac16ce758aa65805.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>数据包和 ACK 应答都有可能丢失，在这种情况下，发送方如果在一段时间内没有收到 ACK，就会重发数据：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-ede6985be7bee329.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>即使网络连接正常，由于延迟的存在，<code>接收方也有可能收到重复的数据包</code>，因此接收方通过 TCP 首部中的 <code>SYN 判断这个数据包是否曾经接收过</code>。如果已经接收过，就会丢弃这个包。</p>
+<h4 id="重传超时时间-RTO"><a href="#重传超时时间-RTO" class="headerlink" title="重传超时时间(RTO)"></a>重传超时时间(RTO)</h4><p>如果发送方等待一段时间后，还是没有收到 ACK 确认，就会启动超时重传。这个等待的时间被称为<code>重传超时时间(RTO，Retransmission TimeOut)。</code>RTO 的值具体是多久呢？</p>
+<p>首先，RTO 的值不是固定的，它是一个动态变化的时间。<code>这个时间总是略大于连接往返时间（RTT，Round Trip Time）。</code>这个设定可以这样理解：“数据发送给对方，再返回到我这里，假设需要 10 秒，那我就等待 12秒，如果超过 12 秒，那估计就是回不来了。”</p>
+<p>RTO 有自己的估算公式，可以保证即使 RTT 波动较大，它的变化也不会太剧烈。感兴趣的读者可以自行查阅相关资料。</p>
+<h3 id="TCP-窗口"><a href="#TCP-窗口" class="headerlink" title="TCP 窗口"></a>TCP 窗口</h3><p>按照之前的理论，<code>在数据包发出后，直至 ACK 确认返回以前，发送端都无法发送数据，</code>而且包的往返时间越长，网络利用效率和通信性能就越低。前两张图片形象的解释了这一点。</p>
+<p>为了解决这个问题，TCP 使用了“窗口”这个概念。窗口具有大小，它表示无需等待确认应答就可以继续发送数据包的最大数量。比如窗口大小为 4 时，数据发送的示意图如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-4a3c0615f2dbb2f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><code>不等确认就连续发送若干个数据包会不会有问题呢？</code>我们首先来看数据包丢失问题。</p>
+<p>我们知道TCP首部中的ACK字段表示接收方已经收到数据的最后位置。因此，接收方成功接受到了1-1000字节的数据后，它会发送一个ACK=1001的确认包。假设1001-2000字节的数据包丢失，由于窗口长度比较大，发送方会继续发送2001-3000字节的数据包。接收端并不会返回这个数据包的确认，因为它最后收到的数据还是1-1000字节的数据。</p>
+<p>因此，接收端返回的数据包的ACK依然是1001。这表示：“喂，发数据的，别往后发了，你第 1001 字节开始的数据还没来呢”。可以想见，发送端以后每次发送数据包得到的确认中，ACK 的值都是 1001。<code>当连续收到三次确认之后，发送方会意识到：“对方还没有接收到数据，这个包需要重传”。</code></p>
+<blockquote>
+<p>因此，引入窗口的概念后，被发送的数据不能立刻丢弃，需要缓存起来以备将来需要重发。</p>
+</blockquote>
+<p>利用窗口发送数据的过程可以用下图表示：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-59062a2b47a71189.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><code>如果是数据包没有丢失，但是确认包丢失了呢？</code>这就是窗口最擅长处理的问题了。假设发送方收到的确认包中的ACK第一次是1001，第二次是4001。那么我们完全可以相信中间的两个包时成功被接收的。因为如果没有接收到到的包，接收包是不会增加ACK的。</p>
+<blockquote>
+<p>在这种情况下，如果不使用窗口，发送方就需要重传第二、三个数据包，但是有了窗口的概念后，发送方就省略了两次重传。因此使用窗口实际上可以理解为“空间换时间”。</p>
+</blockquote>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-3bb9a03c1b712fa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><h4 id="窗口大小"><a href="#窗口大小" class="headerlink" title="窗口大小"></a>窗口大小</h4><p>如果窗口过大，会导致接收方的缓存区数据溢出。这时候本该被接收的数据反而丢弃了，就会导致无意义的重传。因此，窗口大小是一个可以改变的值，它由接收端主机控制，附加在 TCP 首部的“窗口大小”字段中。</p>
+<h4 id="慢启动"><a href="#慢启动" class="headerlink" title="慢启动"></a>慢启动</h4><p>在连接建立的初期，如果窗口比较大，发送方可能会突然发送大量数据，导致网络瘫痪。因此，<code>在通信一开始时，TCP 会通过慢启动算法得出窗口的大小，对发送数据量进行控制。</code></p>
+<p><code>流量控制是由发送方和接收方共同控制的。</code>刚刚我们介绍了接收方会把自己能够承受的最大窗口长度写在TCP首部中，实际上在发送方这里，也存在流量控制，它叫<code>拥塞窗口</code>。TCP 协议中的窗口是指发送方窗口和接收方窗口的较小值。</p>
+<p>【慢启动过程如下：】</p>
+<p>1.通信开始时，发送方的拥塞窗口大小为 1。每收到一个 ACK 确认后，拥塞窗口翻倍。</p>
+<p>2.由于指数级增长非常快，很快地，就会出现确认包超时。</p>
+<p>3.此时设置一个“慢启动阈值”，它的值是当前拥塞窗口大小的一半。</p>
+<p>4.同时将拥塞窗口大小设置为 1，重新进入慢启动过程。</p>
+<p>5.由于现在“慢启动阈值”已经存在，当拥塞窗口大小达到阈值时，不再翻倍，而是线性增加。</p>
+<p>6.随着窗口大小不断增加，可能收到三次重复确认应答，进入“快速重发”阶段。</p>
+<p>7.这时候，TCP 将“慢启动阈值”设置为当前拥塞窗口大小的一半，再将拥塞窗口大小设置成阈值大小（也有说加 3）。</p>
+<p>8.拥塞窗口又会线性增加，直至下一次出现三次重复确认应答或超时。</p>
+<p>以上过程可以用下图概括：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1171077-bff9c2754298154f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/12/网络/tcp与udp/" rel="next" title="TCP 与 UDP 协议简介">
+                <i class="fa fa-chevron-left"></i> TCP 与 UDP 协议简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/12/网络/tcp详解/"
+           data-title="TCP 协议详解" data-url="http://yoursite.com/2017/03/12/网络/tcp详解/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">Kategorien</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据包重发"><span class="nav-number">1.</span> <span class="nav-text">数据包重发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据发送"><span class="nav-number">1.1.</span> <span class="nav-text">数据发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重传超时时间-RTO"><span class="nav-number">1.2.</span> <span class="nav-text">重传超时时间(RTO)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-窗口"><span class="nav-number">2.</span> <span class="nav-text">TCP 窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流量控制"><span class="nav-number">3.</span> <span class="nav-text">流量控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口大小"><span class="nav-number">3.1.</span> <span class="nav-text">窗口大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#慢启动"><span class="nav-number">3.2.</span> <span class="nav-text">慢启动</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
