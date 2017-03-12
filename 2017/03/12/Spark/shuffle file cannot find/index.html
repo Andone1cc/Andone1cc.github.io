@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Spark学习总结," />
 
 
 
@@ -87,15 +87,25 @@
 
 
 
-<meta name="description" content="一个有梦想的CS小白">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Andone1cc">
-<meta property="og:url" content="http://yoursite.com/tags/框架/index.html">
+<meta name="description" content="shuffle file cannot find错误描述：shuffle file cannot find
+【原因】
+
+1.map task所运行的executor挂掉了，executor里面的blockManager就挂掉了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark故障排除——shuffle file cannot find">
+<meta property="og:url" content="http://yoursite.com/2017/03/12/Spark/shuffle file cannot find/index.html">
 <meta property="og:site_name" content="Andone1cc">
-<meta property="og:description" content="一个有梦想的CS小白">
+<meta property="og:description" content="shuffle file cannot find错误描述：shuffle file cannot find
+【原因】
+
+1.map task所运行的executor挂掉了，executor里面的blockManager就挂掉了。">
+<meta property="og:updated_time" content="2017-03-12T11:31:30.527Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Andone1cc">
-<meta name="twitter:description" content="一个有梦想的CS小白">
+<meta name="twitter:title" content="Spark故障排除——shuffle file cannot find">
+<meta name="twitter:description" content="shuffle file cannot find错误描述：shuffle file cannot find
+【原因】
+
+1.map task所运行的executor挂掉了，executor里面的blockManager就挂掉了。">
 
 
 
@@ -123,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/框架/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/03/12/Spark/shuffle file cannot find/"/>
 
 
 
 
 
-  <title> Tag: 框架 | Andone1cc </title>
+  <title> Spark故障排除——shuffle file cannot find | Andone1cc </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -154,7 +164,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -238,74 +248,200 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        框架
-        <small>Tag</small>
-      </h2>
-    </div>
-
+  <div id="posts" class="posts-expand">
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/12/13/java高级/hibernate和mybatis总结/" itemprop="url">
-              
-                <span itemprop="name">Hibernate和MyBatis学习总结</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-12-13T10:23:30+08:00"
-              content="2016-12-13" >
-          12-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/12/07/java高级/struts2和springmvc总结/" itemprop="url">
-              
-                <span itemprop="name">struts2和springmvc学习总结</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-12-07T19:48:16+08:00"
-              content="2016-12-07" >
-          12-07
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-  </div>
 
   
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/12/Spark/shuffle file cannot find/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark故障排除——shuffle file cannot find
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posté le</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-12T19:17:10+08:00">
+                2017-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/12/Spark/shuffle file cannot find/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/12/Spark/shuffle file cannot find/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="shuffle-file-cannot-find"><a href="#shuffle-file-cannot-find" class="headerlink" title="shuffle file cannot find"></a>shuffle file cannot find</h3><p>错误描述：shuffle file cannot find</p>
+<p>【原因】</p>
+<blockquote>
+<p>1.map task所运行的executor挂掉了，executor里面的blockManager就挂掉了。</p>
+</blockquote>
+<a id="more"></a>
+<p><b>executor什么情况会挂掉?</b></p>
+<p>1.堆内内存不足 OOM,设置参数–executor-memory 6G</p>
+<p>2.堆外内存不足 OOM。默认每一个Executor 会申请堆外内存大小是Executor-memory的10%。</p>
+<p>设置参数，如果是spark on yarn <code>--conf spark.yarn.executor.memoryOverhead=2048</code> 单位是M。如果是spark standalone <code>--conf spark.executor.memoryOverhead=2048</code></p>
+<p><code>Spark底层shuffle的传输方式是使用netty传输</code>，netty在进行网络传输的过程会申请堆外<br>内存（netty是零拷贝），所以使用了<code>堆外内存</code>。</p>
+<blockquote>
+<p>2.executor没有挂掉</p>
+</blockquote>
+<p>blockManager之间的建立连接失败(比如map task 所运行的executor正在GC) 设置参数<code>--conf spark.core.connection.ack.wait.timeout=60。</code></p>
+<p>建立连接成功，在拉取数据的时候出现了问题(比如map task 所运行的executor正在GC)</p>
+<blockquote>
+<p>3.reduce task在向Driver里面的MapOutputTracker获取shuffle file位置的时候出现了问题。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/12/Spark/数据本地性/" rel="next" title="Spark性能优化——数据本地化和并行度设置">
+                <i class="fa fa-chevron-left"></i> Spark性能优化——数据本地化和并行度设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
           
           </div>
@@ -313,6 +449,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/12/Spark/shuffle file cannot find/"
+           data-title="Spark故障排除——shuffle file cannot find" data-url="http://yoursite.com/2017/03/12/Spark/shuffle file cannot find/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -332,8 +476,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table Des Matières
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Ensemble
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -391,6 +544,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#shuffle-file-cannot-find"><span class="nav-number">1.</span> <span class="nav-text">shuffle file cannot find</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -496,6 +665,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
