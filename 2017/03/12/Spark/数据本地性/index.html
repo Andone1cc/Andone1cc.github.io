@@ -93,7 +93,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/03/12/Spark/数据本地性/index.html">
 <meta property="og:site_name" content="Andone1cc">
 <meta property="og:description" content="数据本地化分布式计算系统的精粹在于移动计算而非移动数据，但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。">
-<meta property="og:updated_time" content="2017-03-12T11:14:42.178Z">
+<meta property="og:updated_time" content="2017-03-13T01:16:52.028Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark性能优化——数据本地化和并行度设置">
 <meta name="twitter:description" content="数据本地化分布式计算系统的精粹在于移动计算而非移动数据，但是在实际的计算过程中，总存在着移动数据的情况，除非是在集群的所有节点上都保存数据的副本。移动数据，将数据从一个节点移动到另一个节点进行计算，不但消耗了网络IO，也消耗了磁盘IO，降低了整个计算的效率。">
@@ -400,7 +400,7 @@ rdd1.map.filter.count()
 <pre><code><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> rdd2 = rdd1.reduceByKey(_+_,<span class="number">10</span>)  </div><div class="line"><span class="keyword">val</span> rdd3 = rdd2.map.filter.reduceByKey(_+_)</div></pre></td></tr></table></figure>
 </code></pre><p><b>4.val rdd3 = rdd1.join（rdd2）rdd3里面partiiton的数据量是由父RDD中最多的partition数量来决定了。</b></p>
 <p><b>5.spark.default.parallelism 默认没有值。</b></p>
-<p>如果设置了值 10（shuffle过程起作用）</p>
+<p>如果设置了值 10（shuffle过程起作用,sc.parallelize()起作用）</p>
 <p>val rdd2=rdd1.reduceByKey(<em>+</em>)  rdd2的分区数就是10,rdd1的分区数不受参数的影响。</p>
 <p><b>6.SparkSQL通过spark.sql.shuffle.partitions修改并发数。</b></p>
 
