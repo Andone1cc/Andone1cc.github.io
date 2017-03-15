@@ -108,7 +108,7 @@ DataFrame负责复杂的数据挖掘">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/PpqI22tn0AWZwFkTN*zMQDIHlo0V9RXY7yFQlkMM.A4!/b/dCABAAAAAAAA&bo=iwJRAAAAAAADAP0!&rf=viewer_4">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WIDQ97Ju5gFfKFBOkjVztgkqExyLMkkMR7QJaih31jE!/b/dCABAAAAAAAA&bo=EQLPAAAAAAAFAP8!&rf=viewer_4">
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JgD41m6ojhYROR*O4VPPT3y1XzlWqzrS08b010KCD8I!/b/dB8BAAAAAAAA&bo=.gHOAAAAAAAFABY!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-15T16:16:00.689Z">
+<meta property="og:updated_time" content="2017-03-15T16:17:21.319Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark SQL与SparkStreaming总结">
 <meta name="twitter:description" content="一、SparkSQLSparkSQL：通过交互式的sql语句在海量数据中查询。
@@ -470,8 +470,8 @@ DataFrame负责复杂的数据挖掘">
 <h4 id="4-SparkStreaming和kafka整合"><a href="#4-SparkStreaming和kafka整合" class="headerlink" title="4.SparkStreaming和kafka整合"></a>4.SparkStreaming和kafka整合</h4><p><a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming2/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming2/#more</a></p>
 <p>Receive模式执行流程：</p>
 <p>1.接收数据(SparkStreaming作为消费者，如果订阅了一个topic,那么topic一有数据就会主动推送给SparkSreaming)</p>
-<p>2.Executor将接收来的数据备份到其他Executor中（Executor中执行的job作为一个receiver,里面的task一直在接收kafka推送来的数据，然后将接收来的数据进行持久化，默认的持久化级别是MEMORY_DISK_SER_2）</p>
-<p>3.Executor备份完成之后，向Driver中的ReceiverTracker汇报数据存储在哪一些的Executor中（Driver{ReceiverTracker,DAGScheduler,TaskScheduler}）</p>
+<p>2.Executor将接收来的数据备份到其他Executor中（Executor中执行的job作为一个<code>receiver</code>,里面的task一直在接收kafka推送来的数据，然后将接收来的数据进行持久化，默认的持久化级别是MEMORY_DISK_SER_2）</p>
+<p>3.Executor备份完成之后，向Driver中的<code>ReceiverTracker</code>汇报数据存储在哪一些的Executor中（Driver{ReceiverTracker,DAGScheduler,TaskScheduler}）</p>
 <p>4.在zookeeper中更新消费偏移量</p>
 <p>5.Driver负责分发task到数据所在的Executor中执行（达到移动计算，而不是移动数据）</p>
 <p><font color="red">注意：</font>每一步都是阻塞的，上一步完成之后才能进行下一步。</p>
