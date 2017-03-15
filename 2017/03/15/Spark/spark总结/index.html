@@ -1,0 +1,895 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="spark比mapreduce快的原因？
+
+1.spark是基于内存迭代计算的。（需要手动cache）
+2.DAG优化,切割job,划分stage,stage由一组并行计算的task组成的,每一个task称为pipeline。实现1+1+1+1=4的计算模式,得益于spark中transformation算子是懒执行。
+3.spark worker上的Executor的线程池中的线程可以复用。ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——SparkCore总结">
+<meta property="og:url" content="http://yoursite.com/2017/03/15/Spark/spark总结/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="spark比mapreduce快的原因？
+
+1.spark是基于内存迭代计算的。（需要手动cache）
+2.DAG优化,切割job,划分stage,stage由一组并行计算的task组成的,每一个task称为pipeline。实现1+1+1+1=4的计算模式,得益于spark中transformation算子是懒执行。
+3.spark worker上的Executor的线程池中的线程可以复用。ma">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WAbx9KSnuqM7fesjRSYixsICzktp77Sb2Xrn2PhDM.Q!/b/dG4BAAAAAAAA&bo=dAd.AgAAAAADBy0!&rf=viewer_4">
+<meta property="og:updated_time" content="2017-03-15T10:25:20.689Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——SparkCore总结">
+<meta name="twitter:description" content="spark比mapreduce快的原因？
+
+1.spark是基于内存迭代计算的。（需要手动cache）
+2.DAG优化,切割job,划分stage,stage由一组并行计算的task组成的,每一个task称为pipeline。实现1+1+1+1=4的计算模式,得益于spark中transformation算子是懒执行。
+3.spark worker上的Executor的线程池中的线程可以复用。ma">
+<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WAbx9KSnuqM7fesjRSYixsICzktp77Sb2Xrn2PhDM.Q!/b/dG4BAAAAAAAA&bo=dAd.AgAAAAADBy0!&rf=viewer_4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/15/Spark/spark总结/"/>
+
+
+
+
+
+  <title> Spark学习笔记——SparkCore总结 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/15/Spark/spark总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——SparkCore总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-15T09:54:45+08:00">
+                2017-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/15/Spark/spark总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/15/Spark/spark总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>spark比mapreduce快的原因？</p>
+<blockquote>
+<p>1.spark是基于内存迭代计算的。（需要手动cache）</p>
+<p>2.DAG优化,切割job,划分stage,stage由一组并行计算的task组成的,每一个task称为pipeline。实现1+1+1+1=4的计算模式,得益于spark中transformation算子是懒执行。</p>
+<p>3.spark worker上的Executor的线程池中的线程可以复用。mapreduce中maptask,reducetask是一个基于jvm的进程不能复用。</p>
+<p>4.spark是粗粒度的资源申请,mapreduce是细粒度的资源申请。</p>
+</blockquote>
+<a id="more"></a>
+<h4 id="1-基石RDD"><a href="#1-基石RDD" class="headerlink" title="1.基石RDD"></a>1.基石RDD</h4><p>spark的核心就是RDD(弹性分布式数据集),一种通用的数据抽象。 </p>
+<p>RDD是一个不可修改的、分布的对象集合。每个RDD由多个分区组成,每个分区可以同时在集群中的不同节点上计算。</p>
+<p><b>RDD的创建</b></p>
+<p>(1)基于hdfs上的文件：val rdd=sc.textFile(“hdfs文件系统中文件路径”)</p>
+<p>(2)基于集合或者Array数组：val listRDD=sc.parallelize(List(“hadoop”,”spark”,”yarn”))</p>
+<p><b>RDD的五大特性</b></p>
+<blockquote>
+<p>（1） a list of partitions ：RDD由一系列的partition组成（如果数据源在HDFS上，默认partition的数量与block(split)的个数一致）</p>
+<p>（2）a function for computing each split：在每个分片上都有一个函数去迭代/执行/计算它； </p>
+<p>（3）a list of dependencies on others RDDs：RDD之间有一系列的依赖关系。</p>
+<p>（4）optionally,a Partitioner for key-value RDDs：对于key-value的RDD可指定一个partitioner，告诉它如何分片。可以得出一个结论：<code>shuffle类(比如聚合类)的算子必须作用在KV格式的RDD上。</code></p>
+<p>（5） optionally,a list of preferred location(s) to compute each split on :RDD提供了数据的最佳计算位置,可以更好地实现数据本地化。</p>
+</blockquote>
+<p>(5)中一个partition可能返回多个计算位置。因为hdfs中默认有3个副本,或者spark cache到内存是可通过storageLevel设置多个副本。</p>
+<p><b>transformation和action类算子</b></p>
+<p>两种函数的主要区别是,transfromation接收RDD并返回RDD,而action接收RDD但是返回非RDD(基本数据类型或集合)。transformation采用<code>惰性调用机制</code>,每个RDD记录父RDD转换的方法,这种调用链表称之为血缘(lineage);而action调用会触发job的执行,直接计算。采用惰性调用，通过血缘连接的RDD操作可以管道化(pipeline),管道化的操作可以直接在单节点完成,<code>避免多次转换操作之间数据同步的等待。</code> </p>
+<blockquote>
+<p>transformation类算子：map、flatmap、mapPartitions、mapPartitionsWithIndex、sample、filter、join、cogroup、groupByKey、reduceByKey、sortByKey、repartition、coalesce、repartitionAndSortWithinPartitions、distinct。</p>
+<p>action类算子：foreach、collect、count、take、reduce、save、countByKey。</p>
+</blockquote>
+<p>【案例】WordCount:</p>
+<pre><code>flatmap(_.split(&quot; &quot;))-&gt;map(_,1)-&gt;reduceByKey(_+_)
+</code></pre><p><b>RDD的持久化</b></p>
+<p>当持久化一个RDD时，每个节点会将本节点计算的数据块存储到内存，在该数据上的其他action操作将直接使用内存中的数据。这样会让以后的action操作计算速度加快（通常运行速度会加速10倍）。</p>
+<p>RDD可以使用<code>persist()方法或cache()</code>方法进行持久化。数据将会在第一次action操作时进行计算，并在各个节点的内存中缓存。Spark的缓存具有容错机制，<code>如果一个缓存的RDD的某个分区丢失了，Spark将按照原来的计算过程，自动重新计算并进行缓存。</code></p>
+<blockquote>
+<p>cache=persist(StorageLevel.MEMORY_ONLY);</p>
+</blockquote>
+<p>cache和persist都为懒执行,所以需要触发Action类的算子才会将RDD的结果持久化到内存。</p>
+<p>持久化级别的选择顺序:MEMORY_ONLY-&gt;MEMORY_ONLY_SER-&gt;MEMORY_AND_DISK_SER。不建议使用DISK_ONLY(不如重新计算)。</p>
+<p>为了RDD中持久化的数据更加<code>安全</code>,使用<code>checkpoint</code>进行持久化。在每个Action类算子执行后,RDD中有个方法叫<code>doCheckPoint()</code>,这个方法会从后往前回溯,检测到哪个RDD调用了checkpoint之后,就对这个RDD做一个标记(markedfor),做完标记之后会另外启动一个新的job,进行计算并将结果写入到HDFS中。</p>
+<p>【优化】：重新启动的这个job会重新计算被标记的RDD,这个RDD就被计算了两次,最好在调用checkpoint之前进行cache。这样的话重新启动的这个job只需将内存中的数据写到HDFS中(省去了计算的过程)。</p>
+<p>checkpoint的job执行完成后,会将这个<code>RDD的依赖关系切断</code>,统一改名为checkpointRDD。</p>
+<h4 id="2-资源调度与任务调度"><a href="#2-资源调度与任务调度" class="headerlink" title="2.资源调度与任务调度"></a>2.资源调度与任务调度</h4><blockquote>
+<p>standalone client 流程描述。</p>
+</blockquote>
+<p><b>资源调度</b></p>
+<p>我们的代码会先在Driver这个进程(我们写的spark程序,打成jar包,用spark-submit来提交,jar包中的一个main类,通过jvm的命令启动起来,这个<code>jvm进程就是我们所讲的Driver进程</code>)中执行一遍。Driver这个进程中有SparkContext这个对象,代码从main函数开始执行(local模式和cluster模式)<br>。<code>new SparkConf()</code>设置我们spark运行时的环境参数(还可以通过spark-submit –加上参数来设置),<code>new SparkContext()</code>创建DAGScheduler和TaskScheduler,TaskScheduler另启动一个线程将Application的信息(使用多少资源)注册到master中(是放到master中的ArrayBuffer数据结构中，当ArrayBuffer中有信息之后，master会调用自己的schedule()方法,schedule会为当前的Application申请资源,此时master会找一些空闲的worker节点,在worker上启动<code>Executor进程</code>,Executor启动完成之后会方向注册给TaskSchedluer)。<code>现在Application有了资源，开始进行任务的调度。</code></p>
+<blockquote>
+<p>集群启动后，worker会向master汇报资源情况。实际上是将worker的资源写入到master的hashset数据机构中。</p>
+</blockquote>
+<p><b>任务调度</b></p>
+<p>1.action类的算子触发job的执行，调用了SparkContext的runJob()方法.跟进源码发现底层调用的是DAGScheduler的runJob()方法。</p>
+<blockquote>
+<p>DAGScheduler会将我们的job按照宽窄依赖划分为一个个stage,每个stage中有一组并行计算的task,每一个task都可以看做是一个”pipeline”,,这个管道里面数据是一条一条被计算的，每经过一个RDD会经过一次处理，RDD是一个抽象的概念里面存储的是一些<code>计算的逻辑</code>，每一条数据计算完成之后会在<code>shuffle write</code>过程中将数据落地写入到我们的磁盘中。</p>
+</blockquote>
+<p>2.stage划分完之后会以<code>TaskSet</code>的形式提交给我们的TaskScheduler。</p>
+<blockquote>
+<p>源码中TaskScheduler.submit.tasks(new TaskSet())只是一个调用方法的过程而已。我们口述说是发送到TaskScheduler。TaskScheduler接收到TaskSet之后会进行遍历，每遍历一条调用<code>launchTask()</code>方法,launchTask()根据<code>数据本地化的算法发送task到指定的Executor中执行。</code>task在发送到Executor之前首先进行序列化,Executor中有ThreadPool,ThreadPool中有很多线程，在这里面来具体执行我们的task。</p>
+</blockquote>
+<p>3.Executor接收到了task,TaskScheduler和Executor之间有通信。</p>
+<blockquote>
+<p>Executor有一个邮箱（<code>消息循环体CoresExecutorGraintedBackend</code>）。Executor接收到task后首先将task反序列化，反序列化后将这个task变为<code>taskRunner（new taskRunner）</code>，并不是TaskScheduler直接向Executor发送了一个线程,这个线程是在Executor中变成的。然后这个线程就可以在Executor中的ThreadPool中执行了。</p>
+</blockquote>
+<p>4.task分为maptask 和 reducetask</p>
+<blockquote>
+<p>maptask 是一个管道，管道的计算结果会在shuffle write阶段数据落地，数据落地会根据我们的分区策略写入到不同的磁盘小文件中，注意相同的key一定写入到相同的磁盘小文件中。mapd端执行完成后，会向Driver中的DAGScheduler对象里面的<code>MapOutputTracker</code>发送了一个map task的执行状态(成功还是失败还有每一个小文件的地址)。然后reduce task开始执行，reduce端的输入数据就是map端的输出数据。</p>
+</blockquote>
+<p>5.reduce端如何拿到map端的输出数据呢？</p>
+<blockquote>
+<p>reduce task会先向MapOutPutTracker请求这一批磁盘小文件的地址,拿到地址后,由reduce task所在的Executor里面的<code>BlockManager</code>向map task所在的Exectutor建立连接。连接是由<code>ConnectionManager</code>负责的，然后由<code>BlockTransformService</code>去拉取数据，拉取到的数据作为reduce task的输入数据。如果使用到了广播变量，reduce task 或者map task 会先向它所在的Executor中的BlockManager要广播变量，没有的话，本地的BlockManager会去连接Driver中的BlockManagerMaster,连接完成之后由BlockTransformService将广播变量拉取过来。Executor中有了广播变量了，task就可以正常执行了。</p>
+</blockquote>
+<p>【细节一：提交时的容错能力】</p>
+<p>TaskScheduler提交task如果发生了失败，默认会重试三次，如果依然失败，那么则认为这个task就失败了，这时会进行stage重试，DAGScheduler会重新发送TaskSet给TaskScheduler，默认会重试四次，如果四次后依然失败，则认为job失败。因此一个task默认情况下重试3*4=12次</p>
+<p>如果task失败是由于<code>shuffle file not find</code>造成的，那么TaskScheduler是不负责重试的，直接进行stage重试。</p>
+<p>【细节二：重试机制的问题】</p>
+<p>前提：Task的逻辑是将处理的数据结果放入到数据库中</p>
+<p>如果一个Task提交到百分之七十五，然后失败了，这时候会重试，那么有执行了一次task,这时候就会有脏数据的产生。</p>
+<blockquote>
+<p>如何去解决？</p>
+</blockquote>
+<p>1.关闭重试机制。<br>2.在数据库中设置主键，这时候如果重复提交，那么会失败，也就避免了脏数据的产生。</p>
+<p><b>Driver与Executor的通信</b></p>
+<blockquote>
+<p>1.发送task</p>
+<p>2.接收task的执行状态</p>
+<p>3.接收task的计算结果</p>
+<p>4.使用广播变量</p>
+</blockquote>
+<p><b>粗粒度的资源申请与细粒度的资源申请</b></p>
+<p><code>粗粒度的资源调度spark</code>：在application执行之前，先将所有的资源申请完毕。申请完成后，才会进行任务的调度。直到最后一个task执行完成后才会释放这部分资源。</p>
+<p>优点：每一个task在执行之前并不需要自己去申请资源。task线程启动快。worker和master的心跳就不需要告诉实时的资源情况。资源复用。</p>
+<p>缺点：直到最后一个task执行完成后才会释放资源，造成集群资源不能充分利用。</p>
+<p><code>细粒度的资源调度MR</code>:在application执行之前，并没有先去申请资源，直接进行任务的调度。每一个task在执行之前自己去申请资源，资源申请到了才会执行task，task执行完就释放资源。</p>
+<p>优点：每一个task执行完毕就会释放资源，集群资源能够充分利用。</p>
+<p>缺点：task执行前需要自己申请资源，导致task启动慢</p>
+<hr>
+<blockquote>
+<p>任务调度层级：一个wordcount程序可以看做一个<code>Application</code>,一个Application中有多少个action类的算子就有多少个<code>job</code>。一个job根据宽窄依赖划分为一个个<code>stage</code>。一个stage中由一组并行计算的<code>task</code>组成。spark中对数据的存储读取都是由<code>BlockManager</code>来完成的。</p>
+<p>资源调度层级： 资源调度的主节点<code>Master</code>，Master下有一堆<code>Worker</code>，集群启动时Worker将自己的资源情况主动汇报给Master。集群启动后，Master就掌握了整个集群的资源情况。提交一个任务后，在Worker上启动<code>Executor</code>,Executor进程下有一个线程池<code>ThreadPool</code>。task到线程中执行。</p>
+</blockquote>
+<h4 id="3-standalone与yarn运行模式"><a href="#3-standalone与yarn运行模式" class="headerlink" title="3.standalone与yarn运行模式"></a>3.standalone与yarn运行模式</h4><p><b>spark on standalone运行模式</b></p>
+<p>流程描述见第二条总结资源调度与任务调度。</p>
+<p>【client模式】</p>
+<p>优点：可以看到task的执行状态，适合测试。</p>
+<p>缺点：引起网卡流量激增的问题。</p>
+<p>【cluster模式】</p>
+<p>Driver在集群中任意一台Worker上。</p>
+<p><b>spark on yarn</b></p>
+<p>【client模式】</p>
+<p>1.本地启动一个Driver进程，发送请求到<code>Resourcemanager</code>启动<code>ApplicationMaster</code>。</p>
+<p>2.收到请求后，随机选择一台<code>NodeManager</code>启动<code>Container</code>进而启动ApplicationMaster。</p>
+<p>3.ApplicationMaster向ResourceManager申请一批Container(资源)以运行程序。<code>这里的ApplicationMaster有launchExecutor的功能和申请资源的功能，并没有作业调度的功能。</code></p>
+<p>4.ApplicationMaster连接其他的NodeManger启动Container并且启动Executor。</p>
+<p>5.Executor注册给Driver,Driver负责作业的调度和管理。</p>
+<p>6.执行到某个action就触发一个JOB。DAGScheduler会划分JOB为一个个Stage。TaskScheduler会划分Stage为一个个Task。Task发送到Executor执行。</p>
+<p><code>Yarn-client用于测试，因为Driver端运行在本地，程序在集群中运行的Log可以在本地查看到，方便进行测试。</code></p>
+<p>缺点是：因为Driver会与yarn集群中的Executor进行大量的通信，会造成客户机网卡流量的大量增加，可能会被公司的SA运维人员警告。</p>
+<p>【cluster模式】</p>
+<p>1.spark-submit脚本提交spark application到ResourceManager，请求启动ApplicationMaster。</p>
+<p>2.收到请求后在某个NodeManager分配container,启动ApplicationMaster。(相当于Driver)</p>
+<p>3.ApplicationMaster发送请求到ResourceManager申请一批Container,用于启动Executor。</p>
+<p>4.ApplicationMaster连接NodeManager来启动Executor。这里的NodeManager相当于Spark standalone模式下的Worker节点。</p>
+<p>5.Executor反向注册给Driver。</p>
+<p>6.执行到某个action就触发一个JOB。DAGScheduler会划分JOB为一个个Stage。TaskScheduler会划分Stage为一个个Task。Task发送到Executor执行。</p>
+<p><code>Yarn-cluster主要用于生产环境中，因为Driver运行在Yarn集群中某一台nodeManager中，每次提交任务的Driver所在的机器都是随机的，不会产生某一台机器网卡流量激增的现象</code>。</p>
+<p>缺点是：调试不方便，本地用Spark-Submit提交后看不到log，只能通过yarn application-logs applicationId这种命令来查看log。</p>
+<h4 id="4-stage的划分-宽窄依赖"><a href="#4-stage的划分-宽窄依赖" class="headerlink" title="4.stage的划分-宽窄依赖"></a>4.stage的划分-宽窄依赖</h4><p>stage是由一组并行计算的task组成。一个task称为”pipeline”。计算模式是1+1+1+1=4。</p>
+<p>下面通过一个案例来看是一个pipeline的计算模式。</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FilterOperator</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		SparkConf conf = <span class="keyword">new</span> SparkConf().setAppName(<span class="string">"LineCount"</span>)</div><div class="line">						.setMaster(<span class="string">"local"</span>);</div><div class="line">		JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</div><div class="line"></div><div class="line">		List&lt;Integer&gt; numbers = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);</div><div class="line">		JavaRDD&lt;Integer&gt; numberRDD = sc.parallelize(numbers);</div><div class="line"></div><div class="line">		JavaRDD&lt;Integer&gt; results = numberRDD.filter(<span class="keyword">new</span> Function</div><div class="line">			&lt;Integer, Boolean&gt;() &#123;</div><div class="line">					<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">					<span class="meta">@Override</span></div><div class="line">					<span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(Integer number)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">						System.out.println(<span class="string">"filter result:"</span>+number);</div><div class="line">						<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">					&#125;</div><div class="line">				&#125;).map(<span class="keyword">new</span> Function&lt;Integer, Integer&gt;() &#123;</div><div class="line">					<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">					</div><div class="line">					<span class="meta">@Override</span></div><div class="line">					<span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">(Integer v1)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">						System.out.println(<span class="string">"map result:"</span>+v1);</div><div class="line">						<span class="keyword">return</span> v1;</div><div class="line">					&#125;</div><div class="line">				&#125;);</div><div class="line">		</div><div class="line">		results.foreach(<span class="keyword">new</span> VoidFunction&lt;Integer&gt;() &#123;</div><div class="line">			<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line"></div><div class="line">			<span class="meta">@Override</span></div><div class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Integer result)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">				System.out.println(result);</div><div class="line">			&#125;</div><div class="line">		&#125;);</div><div class="line">		sc.close();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>输出结果：</p>
+<pre><code>`
+filter result:1
+map result:1
+1
+filter result:2
+map result:2
+2
+filter result:3
+map result:3
+3
+filter result:4
+map result:4
+4
+filter result:5
+map result:5
+5
+`
+</code></pre><blockquote>
+<p>如果是MR的计算模式就会是filter的结果一起全部打印出来，map的结果一起全部打印出来。</p>
+</blockquote>
+<p>【宽窄依赖】</p>
+<p>窄依赖：父RDD与子RDD,partition之间的关系是一对一或多对一的关系。</p>
+<blockquote>
+<p>map,filter,union</p>
+</blockquote>
+<p>宽依赖：父RDD与子RDD,partition之间的关系是一对多的关系。</p>
+<blockquote>
+<p>groupByKey</p>
+</blockquote>
+<p>join算子有可能是宽依赖也有可能是窄依赖，预分区后的两个RDD之间进行join是窄依赖。</p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WAbx9KSnuqM7fesjRSYixsICzktp77Sb2Xrn2PhDM.Q!/b/dG4BAAAAAAAA&amp;bo=dAd.AgAAAAADBy0!&amp;rf=viewer_4" alt=""></p>
+<h4 id="5-shuffle过程"><a href="#5-shuffle过程" class="headerlink" title="5.shuffle过程"></a>5.shuffle过程</h4><p>详见之前的总结。</p>
+<p><a href="https://andone1cc.github.io/2017/03/02/Spark/spark%20shuffle/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/02/Spark/spark%20shuffle/#more</a></p>
+<p><b>HashShuffle普通机制的缺点：</b></p>
+<blockquote>
+<p>1.操作文件对象过多，引起gc oom问题。</p>
+<p>2.大量低效耗时的IO操作(写对象)</p>
+<p>3.reduce拉取磁盘小文件。频繁的建立连接，网络IO</p>
+</blockquote>
+<p>BlockManager组件</p>
+<p><a href="https://andone1cc.github.io/2017/03/02/Spark/blockmanager/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/02/Spark/blockmanager/#more</a></p>
+<p>spark(Master配置高可用)</p>
+<p><a href="https://andone1cc.github.io/2017/03/02/Spark/spark%E9%AB%98%E5%8F%AF%E7%94%A8/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/02/Spark/spark%E9%AB%98%E5%8F%AF%E7%94%A8/#more</a></p>
+<h4 id="6-二次排序、TopN、分组取TopN案例"><a href="#6-二次排序、TopN、分组取TopN案例" class="headerlink" title="6.二次排序、TopN、分组取TopN案例"></a>6.二次排序、TopN、分组取TopN案例</h4><p>二次排序注意自定义的类需要实现<code>Comparable和Serializable接口</code>。</p>
+<p>分组取TopN:groupByKey，如果数据量过大，不建议使用list集合，一般自定义一个定长数组。</p>
+<p><a href="https://andone1cc.github.io/2017/03/04/Spark/%E4%BA%8C%E6%AC%A1%E6%8E%92%E5%BA%8Ftopn/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/04/Spark/%E4%BA%8C%E6%AC%A1%E6%8E%92%E5%BA%8Ftopn/#more</a></p>
+<h4 id="7-PV、UV、hotChannel案例"><a href="#7-PV、UV、hotChannel案例" class="headerlink" title="7.PV、UV、hotChannel案例"></a>7.PV、UV、hotChannel案例</h4><p><a href="https://andone1cc.github.io/2017/03/04/Spark/pv,uv,hotchannel/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/04/Spark/pv,uv,hotchannel/#more</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/12/网络/tcp详解/" rel="next" title="TCP 协议详解">
+                <i class="fa fa-chevron-left"></i> TCP 协议详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/15/Spark/spark总结/"
+           data-title="Spark学习笔记——SparkCore总结" data-url="http://yoursite.com/2017/03/15/Spark/spark总结/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">57</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">Kategorien</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-基石RDD"><span class="nav-number">1.</span> <span class="nav-text">1.基石RDD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-资源调度与任务调度"><span class="nav-number">2.</span> <span class="nav-text">2.资源调度与任务调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-standalone与yarn运行模式"><span class="nav-number">3.</span> <span class="nav-text">3.standalone与yarn运行模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-stage的划分-宽窄依赖"><span class="nav-number">4.</span> <span class="nav-text">4.stage的划分-宽窄依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-shuffle过程"><span class="nav-number">5.</span> <span class="nav-text">5.shuffle过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-二次排序、TopN、分组取TopN案例"><span class="nav-number">6.</span> <span class="nav-text">6.二次排序、TopN、分组取TopN案例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-PV、UV、hotChannel案例"><span class="nav-number">7.</span> <span class="nav-text">7.PV、UV、hotChannel案例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
