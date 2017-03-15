@@ -1,0 +1,767 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1.yarn-client模式引起网卡流量激增问题一个Driver和Executor中的task频繁进行通信，通信消息特别多，通信的频率特别高，运行完一个stage，接着运行下一个stage，又是频繁的通信。
+【解决方案】：yarn-cluster模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——Spark-troubleshooting">
+<meta property="og:url" content="http://yoursite.com/2017/03/16/Spark/trouble/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="1.yarn-client模式引起网卡流量激增问题一个Driver和Executor中的task频繁进行通信，通信消息特别多，通信的频率特别高，运行完一个stage，接着运行下一个stage，又是频繁的通信。
+【解决方案】：yarn-cluster模式">
+<meta property="og:updated_time" content="2017-03-15T16:47:42.967Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——Spark-troubleshooting">
+<meta name="twitter:description" content="1.yarn-client模式引起网卡流量激增问题一个Driver和Executor中的task频繁进行通信，通信消息特别多，通信的频率特别高，运行完一个stage，接着运行下一个stage，又是频繁的通信。
+【解决方案】：yarn-cluster模式">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/16/Spark/trouble/"/>
+
+
+
+
+
+  <title> Spark学习笔记——Spark-troubleshooting | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/16/Spark/trouble/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——Spark-troubleshooting
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-16T00:26:43+08:00">
+                2017-03-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">in</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/16/Spark/trouble/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/16/Spark/trouble/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-yarn-client模式引起网卡流量激增问题"><a href="#1-yarn-client模式引起网卡流量激增问题" class="headerlink" title="1.yarn-client模式引起网卡流量激增问题"></a>1.yarn-client模式引起网卡流量激增问题</h3><p>一个Driver和Executor中的task频繁进行通信，通信消息特别多，通信的频率特别高，运行完一个stage，接着运行下一个stage，又是频繁的通信。</p>
+<p>【解决方案】：yarn-cluster模式</p>
+<a id="more"></a>
+<p>yarn-client模式，通常我们就只会使用在测试环境中，你写好了某个spark作业，打了一个jar包，在某台测试机器上，用yarn-client模式去提交一下。因为测试的行为是偶尔为之的，不会长时间连续提交大量的spark作业去测试。还有一点好处，yarn-client模式提交，可以在本地机器观察到详细全面的log。通过查看log，<code>可以去解决线上报错的故障（troubleshooting）</code>、对性能进行观察并进行性能调优。</p>
+<p>实际上线了以后，在生产环境中，都得用yarn-cluster模式，去提交你的spark作业。</p>
+<p>yarn-cluster模式，就跟你的本地机器引起的网卡流量激增的问题，就没有关系了。也就是说，就算有问题，也应该是yarn运维团队和基础运维团队之间的事情了。他们去考虑Yarn集群里面每台机器是虚拟机还是物理机呢？网卡流量激增后会不会对其他东西产生影响呢？如果网络流量激增，要不要给Yarn集群增加一些网络带宽等等这些东西。那就是他们俩个团队的事情了，和你就没有关系了。</p>
+<h3 id="2-yarn-cluster-会报JVM栈内存溢出问题"><a href="#2-yarn-cluster-会报JVM栈内存溢出问题" class="headerlink" title="2.yarn-cluster 会报JVM栈内存溢出问题"></a>2.yarn-cluster 会报JVM栈内存溢出问题</h3><p><b>问题描述一：</b></p>
+<pre><code>yarn-client   PermGen 128M
+yarn-cluster PermGen  82M
+</code></pre><p>有的时候，运行一些包含了spark sql的spark作业，可能会碰到yarn-client模式下，可以正常提交运行；yarn-cluster模式下，可能是无法提交运行的，会报出JVM的PermGen（永久代）的内存溢出OOM。PermGen（永久代）–&gt;JVM里面的一个区域，就是会放Class里面一些字符串常量这些东西的。</p>
+<p>yarn-client模式下，driver是运行在本地机器上的，spark使用的JVM的PermGen的配置，是本地的spark-class文件（spark客户端是默认有配置的），JVM的永久代的大小是128M，这个是没有问题的；但是呢，在yarn-cluster模式下，driver是运行在yarn集群的某个节点上的，使用的是没有经过配置的默认设置（PermGen永久代大小），82M。</p>
+<p>spark-sql，它的内部是要进行很复杂的SQL的语义解析、语法树的转换等等，特别复杂，<br>在这种复杂的情况下，如果说你的sql本身特别复杂的话，很可能会比较导致性能的消耗，内存的消耗。<br>可能对PermGen永久代的占用会比较大。</p>
+<p>所以，此时，如果对永久代的占用需求，超过了82M的话，但是呢又在128M以内；就会出现如上所述的问题，yarn-client模式下，默认是128M，这个还能运行；如果在yarn-cluster模式下，默认是82M，就有问题了。会报出PermGen Out of Memory error log。</p>
+<p>【解决方案】：    spark-submit提交任务的脚本中，加入以下配置即可：</p>
+<pre><code>--conf spark.driver.extraJavaOptions=&quot;-XX:PermSize=128M -XX:MaxPermSize=256M&quot;
+</code></pre><p><b>问题描述二：</b></p>
+<p>spark sql，sql，要注意，一个问题JVM Stack Memory Overflow，栈内存溢出。 sql，有大量的or语句。比如where keywords=’’ or keywords=’’ or keywords=’’当达到or语句，有成百上千的时候，此时可能就会出现一个driver端的jvm stack overflow，JVM栈内存溢出的问题。</p>
+<p>JVM栈内存溢出，<code>基本上就是由于调用的方法层级过多</code>，因为产生了大量的，非常深的，超出了JVM栈深度限制的，递归方法。我们的猜测，spark sql，有大量or语句的时候，spark sql内部源码中，在解析sql，比如转换成语法树，或者进行执行计划的生成的时候，对or的处理是递归。or特别多的话，就会发生大量的递归。</p>
+<p>【解决方案】：这种时候，<code>建议不要搞那么复杂的spark sql语句</code>。采用替代方案：将一条sql语句，拆解成多条sql语句来执行。每条sql语句，就只有100个or子句以内；一条一条SQL语句来执行。根据生产环境经验的测试，一条sql语句，100个or子句以内，是还可以的。通常情况下，不会报那个栈内存溢出。</p>
+<h3 id="3-序列化导致的报错"><a href="#3-序列化导致的报错" class="headerlink" title="3.序列化导致的报错"></a>3.序列化导致的报错</h3><p>问题描述：</p>
+<p>用client模式去提交spark作业，观察本地打印出来的log。如果出现了类似于Serializable、Serialize等等字眼，报错的log，那么恭喜大家，就碰到了序列化问题导致的报错。</p>
+<p>【解决方案】：  </p>
+<p>1、你的算子函数里面，如果使用到了外部的自定义类型的变量（executor中使用到了外部变量），那么此时，就要求你的自定义类型，必须是可序列化的。</p>
+<p>2、如果要将自定义的类型，作为RDD的元素类型，那么自定义的类型也必须是可以序列化的。</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">JavaPairRDD&lt;Integer, Teacher&gt; teacherRDD</div><div class="line">JavaPairRDD&lt;Integer, Student&gt; studentRDD</div><div class="line">studentRDD.join(teacherRDD)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Teacher</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"> </div><div class="line">&#125;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"> 	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</code></pre><p>用到序列化的地方：</p>
+<blockquote>
+<p>1、executor中使用到了Driver端的变量（自定义对象）</p>
+<p>2、RDD<person> Person</person></p>
+<p>3、RDD持久化的时候    _SER</p>
+</blockquote>
+<h3 id="4-算子函数返回NULL导致问题"><a href="#4-算子函数返回NULL导致问题" class="headerlink" title="4.算子函数返回NULL导致问题"></a>4.算子函数返回NULL导致问题</h3><p>问题描述：</p>
+<p>在算子函数中，返回null，有些算子函数里面，是需要我们有一个返回值的。但是，有时候，我们可能对某些值，就是不想有什么返回值。<code>如果直接返回NULL的话，会报错的！！！</code></p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> actionRDD.mapToPair(<span class="keyword">new</span> PairFunction&lt;Row, String, Row&gt;() &#123;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">			</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> Tuple2&lt;String, Row&gt; <span class="title">call</span><span class="params">(Row row)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;String, Row&gt;(<span class="string">"-666"</span>, RowFactory.createRow(<span class="string">"-999"</span>));  </div><div class="line">		 <span class="keyword">return</span> <span class="keyword">null</span></div><div class="line">	&#125;		</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+</code></pre><p>【解决方案】：</p>
+<p>1、在返回的时候，返回一些特殊的值，不要返回null，比如“-999”</p>
+<p>2、在通过算子获取到了一个RDD之后，可以对这个RDD执行filter操作，进行数据过滤。filter内，可以对数据进行判定，如果是-999，那么就返回false，给过滤掉就可以了。</p>
+<p>3、在filter之后，可以使用coalesce算子压缩一下RDD的partition的数量，让各个partition的数据比较紧凑一些。也能提升一些性能。</p>
+<h3 id="5-YARN队列资源不足导致的Application直接失败"><a href="#5-YARN队列资源不足导致的Application直接失败" class="headerlink" title="5.YARN队列资源不足导致的Application直接失败"></a>5.YARN队列资源不足导致的Application直接失败</h3><p>问题描述：</p>
+<p>如果说，你是基于yarn来提交spark。比如yarn-cluster或者yarn-client。你可以指定提交到哪个yarn队列上的，每个队列都是可以有自己的资源的。比如在一个生产环境中，给spark用的yarn资源队列的情况：500G内存，200个cpu core。比如说，某个spark application，在spark-submit里面你自己配了，executor，80个；每个executor，4G内存；每个executor，2个cpu core。你的spark作业每次运行，大概要消耗掉320G内存，以及160个cpu core。乍看起来，咱们的队列资源，是足够的，500G内存，200个cpu core。</p>
+<p>首先，第一点，你的spark作业实际运行起来以后，耗费掉的资源量，可能是比你在spark-submit里面配置的，以及你预期的，是要大一些的。400G内存，190个cpu core。那么这个时候，的确，咱们的队列资源还是有一些剩余的。但是问题是，如果你同时又提交了一个spark作业上去，一模一样的。那就可能会出问题。第二个spark作业，又要申请320G内存+160个cpu core。结果，发现队列资源不足。。。。</p>
+<p>此时，可能会出现两种情况：（备注，具体出现哪种情况，跟你的YARN、Hadoop的版本，你们公司的一些运维参数，以及配置、硬件、资源肯能都有关系）</p>
+<blockquote>
+<p>1、YARN，发现资源不足时，你的spark作业，并没有等待在那里，等待资源的分配，而是直接打印一行fail的log，直接就fail掉了。</p>
+<p>2、YARN，发现资源不足，你的spark作业，就等待在那里。一直等待之前的spark作业执行完，等待有资源分配给自己来执行。</p>
+</blockquote>
+<p>【解决方案】</p>
+<p>1、在你的J2EE（我们这个项目里面，spark作业的运行，之前说过了，J2EE平台触发的，执行spark-submit脚本），限制，<code>同时只能提交一个spark作业到yarn上去执行</code>，确保一个spark作业的资源肯定是有的。</p>
+<p>2、你应该采用一些<code>简单的调度区分</code>的方式，比如说，你有的spark作业可能是要长时间运行的，比如运行30分钟；有的spark作业，可能是短时间运行的，可能就运行2分钟。此时，都提交到一个队列上去，肯定不合适。很可能出现30分钟的作业卡住后面一大堆2分钟的作业。分队列，可以申请（跟你们的YARN、Hadoop运维的同学申请）。你自己给自己搞两个调度队列。<code>每个队列的根据你要执行的作业的情况来设置</code>。在你的J2EE程序里面，要判断，如果是长时间运行的作业，就干脆都提交到某一个固定的队列里面去；如果是短时间运行的作业，就统一提交到另外一个队列里面去。这样，避免了长时间运行的作业，阻塞了短时间运行的作业。   </p>
+<p>3、你的队列里面，无论何时，只会有一个作业在里面运行。那么此时，就应该用我们之前讲过的性能调优的手段，去将每个队列能承载的最大的资源，分配给你的每一个spark作业，比如80个executor；6G的内存；3个cpu core。尽量让你的spark作业每一次运行，都达到最满的资源使用率，最快的速度，最好的性能；并行度，240个cpu core，720个task。</p>
+<p>4、在J2EE中，通过<code>线程池的方式</code>（一个线程池对应一个资源队列），来实现上述我们说的方案。在J2EE平台里面，怎么控制你的资源队列同时只能跑一个作业？？？可以用线程池来控制，创建线程池容量只有1的这么一个线程池，每一次提交一个作业，就会到这个线程池里面去，它空闲的时候就会有一个作业去跑，后面如果再有一个作业要跑的话，也扔到这个线程池里面，当然它的容量只有1，后面的这些作业线程要去执行，要去启动spark作业的线程，它就会在那里<code>排队</code>，这个线程池自动的给你实现了这个排队机制，不同的作业要放到不同的资源队列里面去运行，那就很简单嘛！不同的作业放到不同的线程池！你可以搞多个线程池，每个线程池就对应着一个资源队列！</p>
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">1</span>);</div><div class="line">threadPool.submit(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">			</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</code></pre><font color="red">spark如何提交到指定的资源队列中？</font>
+
+<blockquote>
+<p>spark.yarn.queue    </p>
+<p>default    </p>
+<p>The name of the YARN queue to which the application is submitted.</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/15/Spark/sparksql 总结/" rel="next" title="Spark学习笔记——Spark SQL与SparkStreaming总结">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——Spark SQL与SparkStreaming总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/16/Spark/trouble/"
+           data-title="Spark学习笔记——Spark-troubleshooting" data-url="http://yoursite.com/2017/03/16/Spark/trouble/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">Kategorien</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-yarn-client模式引起网卡流量激增问题"><span class="nav-number">1.</span> <span class="nav-text">1.yarn-client模式引起网卡流量激增问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-yarn-cluster-会报JVM栈内存溢出问题"><span class="nav-number">2.</span> <span class="nav-text">2.yarn-cluster 会报JVM栈内存溢出问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-序列化导致的报错"><span class="nav-number">3.</span> <span class="nav-text">3.序列化导致的报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-算子函数返回NULL导致问题"><span class="nav-number">4.</span> <span class="nav-text">4.算子函数返回NULL导致问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-YARN队列资源不足导致的Application直接失败"><span class="nav-number">5.</span> <span class="nav-text">5.YARN队列资源不足导致的Application直接失败</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
