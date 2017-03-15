@@ -108,7 +108,7 @@ DataFrame负责复杂的数据挖掘">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/PpqI22tn0AWZwFkTN*zMQDIHlo0V9RXY7yFQlkMM.A4!/b/dCABAAAAAAAA&bo=iwJRAAAAAAADAP0!&rf=viewer_4">
 <meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WIDQ97Ju5gFfKFBOkjVztgkqExyLMkkMR7QJaih31jE!/b/dCABAAAAAAAA&bo=EQLPAAAAAAAFAP8!&rf=viewer_4">
 <meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JgD41m6ojhYROR*O4VPPT3y1XzlWqzrS08b010KCD8I!/b/dB8BAAAAAAAA&bo=.gHOAAAAAAAFABY!&rf=viewer_4">
-<meta property="og:updated_time" content="2017-03-15T16:11:30.811Z">
+<meta property="og:updated_time" content="2017-03-15T16:16:00.689Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习笔记——Spark SQL与SparkStreaming总结">
 <meta name="twitter:description" content="一、SparkSQLSparkSQL：通过交互式的sql语句在海量数据中查询。
@@ -217,7 +217,7 @@ DataFrame负责复杂的数据挖掘">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -227,7 +227,7 @@ DataFrame负责复杂的数据挖掘">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -304,7 +304,7 @@ DataFrame负责复杂的数据挖掘">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-15T19:05:24+08:00">
                 2017-03-15
@@ -325,7 +325,7 @@ DataFrame负责复杂的数据挖掘">
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">In</span>
+                <span class="post-meta-item-text">in</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -394,7 +394,7 @@ DataFrame负责复杂的数据挖掘">
 <p><b>（1）通过反射和自定义类</b></p>
 <p>自定义的类必须是public，自定义的类必须实现Serializable接口，RDD转成DF（RDD<row>）row中列的顺序会改变，DF的列名就是自定义类中字段名。</row></p>
 <p><b>（2）动态创建Schema</b></p>
-<p>schema如果很长可以存储到外部。RDD<string>-&gt;RDD<row>-&gt;schame</row></string></p>
+<p>schema如果很长可以存储到外部。RDD<string>-&gt;RDD<row>-&gt;schema</row></string></p>
 <p><b>（3）通过Json格式的RDD创建</b></p>
 <p><a href="https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more</a></p>
 <h4 id="2-SparkSQL连接mysql"><a href="#2-SparkSQL连接mysql" class="headerlink" title="2.SparkSQL连接mysql"></a>2.SparkSQL连接mysql</h4><p><code>SparkSQL可以通过JDBC从传统关系型数据库中读写数据</code>，读取数据后直接生成的是DataFrame，然后再加上借助于Spark内核的丰富的API来进行各种操作。</p>
@@ -486,11 +486,26 @@ DataFrame负责复杂的数据挖掘">
 </blockquote>
 <h4 id="6-动态改变广播变量的值"><a href="#6-动态改变广播变量的值" class="headerlink" title="6.动态改变广播变量的值"></a>6.动态改变广播变量的值</h4><p>transform算子中，将DStream里面的RDD抽取出来。</p>
 <h4 id="7-transform-updateStateByKey-Window算子案例"><a href="#7-transform-updateStateByKey-Window算子案例" class="headerlink" title="7.transform,updateStateByKey,Window算子案例"></a>7.transform,updateStateByKey,Window算子案例</h4><p><a href="https://andone1cc.github.io/2017/03/07/Spark/sparkstreaming%E7%AE%97%E5%AD%90%20/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/07/Spark/sparkstreaming%E7%AE%97%E5%AD%90%20/#more</a></p>
-<h3 id="3-spark优化"><a href="#3-spark优化" class="headerlink" title="3.spark优化"></a>3.spark优化</h3><p>数据本地化和并行度设置：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more</a></p>
-<p>shuffle调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more</a></p>
-<p>数据倾斜调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more</a></p>
-<p>资源调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more</a></p>
-<p>代码调优：<a href="https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more</a></p>
+<h3 id="三-spark优化"><a href="#三-spark优化" class="headerlink" title="三.spark优化"></a>三.spark优化</h3><blockquote>
+<p>数据本地化和并行度设置：</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more</a></p>
+<blockquote>
+<p>shuffle调优：</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more</a></p>
+<blockquote>
+<p>数据倾斜调优：</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more</a></p>
+<blockquote>
+<p>资源调优：</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more</a></p>
+<blockquote>
+<p>代码调优：</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more</a></p>
 
       
     </div>
@@ -588,10 +603,10 @@ DataFrame负责复杂的数据挖掘">
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
+            Inhaltsverzeichnis
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
+            Übersicht
           </li>
         </ul>
       
@@ -612,7 +627,7 @@ DataFrame负责复杂的数据挖掘">
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">58</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -621,7 +636,7 @@ DataFrame负责复杂的数据挖掘">
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">7</span>
-                <span class="site-state-item-name">categories</span>
+                <span class="site-state-item-name">Kategorien</span>
               
             </div>
           
@@ -630,7 +645,7 @@ DataFrame负责复杂的数据挖掘">
             <div class="site-state-item site-state-tags">
               <a href="/tags">
                 <span class="site-state-item-count">13</span>
-                <span class="site-state-item-name">tags</span>
+                <span class="site-state-item-name">Tags</span>
               </a>
             </div>
           
@@ -664,7 +679,7 @@ DataFrame负责复杂的数据挖掘">
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、SparkSQL"><span class="nav-number">1.</span> <span class="nav-text">一、SparkSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-创建DataFrame"><span class="nav-number">1.1.</span> <span class="nav-text">1.创建DataFrame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-SparkSQL连接mysql"><span class="nav-number">1.2.</span> <span class="nav-text">2.SparkSQL连接mysql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-SparkSQL读取JSON和parquet文件"><span class="nav-number">1.3.</span> <span class="nav-text">3.SparkSQL读取JSON和parquet文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Spark-on-Hive-Hive作为存储的角色"><span class="nav-number">1.4.</span> <span class="nav-text">4.Spark on Hive Hive作为存储的角色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-窗口函数、UDF、UDAF"><span class="nav-number">1.5.</span> <span class="nav-text">5.窗口函数、UDF、UDAF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、SparkStreaming"><span class="nav-number">2.</span> <span class="nav-text">二、SparkStreaming</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-socket模拟数据"><span class="nav-number">2.1.</span> <span class="nav-text">1.socket模拟数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-监控HDFS中的数据"><span class="nav-number">2.2.</span> <span class="nav-text">2.监控HDFS中的数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-kafka"><span class="nav-number">2.3.</span> <span class="nav-text">3.kafka</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-SparkStreaming和kafka整合"><span class="nav-number">2.4.</span> <span class="nav-text">4.SparkStreaming和kafka整合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Driver的高可用"><span class="nav-number">2.5.</span> <span class="nav-text">5.Driver的高可用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-动态改变广播变量的值"><span class="nav-number">2.6.</span> <span class="nav-text">6.动态改变广播变量的值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-transform-updateStateByKey-Window算子案例"><span class="nav-number">2.7.</span> <span class="nav-text">7.transform,updateStateByKey,Window算子案例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-spark优化"><span class="nav-number">3.</span> <span class="nav-text">3.spark优化</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、SparkSQL"><span class="nav-number">1.</span> <span class="nav-text">一、SparkSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-创建DataFrame"><span class="nav-number">1.1.</span> <span class="nav-text">1.创建DataFrame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-SparkSQL连接mysql"><span class="nav-number">1.2.</span> <span class="nav-text">2.SparkSQL连接mysql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-SparkSQL读取JSON和parquet文件"><span class="nav-number">1.3.</span> <span class="nav-text">3.SparkSQL读取JSON和parquet文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Spark-on-Hive-Hive作为存储的角色"><span class="nav-number">1.4.</span> <span class="nav-text">4.Spark on Hive Hive作为存储的角色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-窗口函数、UDF、UDAF"><span class="nav-number">1.5.</span> <span class="nav-text">5.窗口函数、UDF、UDAF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、SparkStreaming"><span class="nav-number">2.</span> <span class="nav-text">二、SparkStreaming</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-socket模拟数据"><span class="nav-number">2.1.</span> <span class="nav-text">1.socket模拟数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-监控HDFS中的数据"><span class="nav-number">2.2.</span> <span class="nav-text">2.监控HDFS中的数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-kafka"><span class="nav-number">2.3.</span> <span class="nav-text">3.kafka</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-SparkStreaming和kafka整合"><span class="nav-number">2.4.</span> <span class="nav-text">4.SparkStreaming和kafka整合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Driver的高可用"><span class="nav-number">2.5.</span> <span class="nav-text">5.Driver的高可用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-动态改变广播变量的值"><span class="nav-number">2.6.</span> <span class="nav-text">6.动态改变广播变量的值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-transform-updateStateByKey-Window算子案例"><span class="nav-number">2.7.</span> <span class="nav-text">7.transform,updateStateByKey,Window算子案例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三-spark优化"><span class="nav-number">3.</span> <span class="nav-text">三.spark优化</span></a></li></ol></div>
             
 
           </div>
@@ -696,7 +711,7 @@ DataFrame负责复杂的数据挖掘">
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
