@@ -1,0 +1,843 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Spark学习总结," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、SparkSQLSparkSQL：通过交互式的sql语句在海量数据中查询。
+Hive只是进行数据多维度查询。SparkSQL可以进行机器学习、图计算。Hive+SparkSQL+DataFrame是目前至少在中国所有的大数据项目至少90%无法逃脱该技术组合。
+
+Hive负责廉价的数据仓库存储
+SparkSQL负责高速计算
+DataFrame负责复杂的数据挖掘">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习笔记——Spark SQL与SparkStreaming总结">
+<meta property="og:url" content="http://yoursite.com/2017/03/15/Spark/sparksql 总结/index.html">
+<meta property="og:site_name" content="Andone1cc">
+<meta property="og:description" content="一、SparkSQLSparkSQL：通过交互式的sql语句在海量数据中查询。
+Hive只是进行数据多维度查询。SparkSQL可以进行机器学习、图计算。Hive+SparkSQL+DataFrame是目前至少在中国所有的大数据项目至少90%无法逃脱该技术组合。
+
+Hive负责廉价的数据仓库存储
+SparkSQL负责高速计算
+DataFrame负责复杂的数据挖掘">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/kewbTnB6rgCJul0NURudUibJuBrsfeZPx350gzLc3q0!/b/dG4BAAAAAAAA&bo=mwJKAQAAAAADB*A!&rf=viewer_4">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/ld4.SbOfL1VVkhNRGjmiyVIcOgl.k3u94NnMqB68wks!/b/dG4BAAAAAAAA&bo=KgSAAgAAAAADB44!&rf=viewer_4">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/PpqI22tn0AWZwFkTN*zMQDIHlo0V9RXY7yFQlkMM.A4!/b/dCABAAAAAAAA&bo=iwJRAAAAAAADAP0!&rf=viewer_4">
+<meta property="og:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WIDQ97Ju5gFfKFBOkjVztgkqExyLMkkMR7QJaih31jE!/b/dCABAAAAAAAA&bo=EQLPAAAAAAAFAP8!&rf=viewer_4">
+<meta property="og:image" content="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JgD41m6ojhYROR*O4VPPT3y1XzlWqzrS08b010KCD8I!/b/dB8BAAAAAAAA&bo=.gHOAAAAAAAFABY!&rf=viewer_4">
+<meta property="og:updated_time" content="2017-03-15T16:11:30.811Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark学习笔记——Spark SQL与SparkStreaming总结">
+<meta name="twitter:description" content="一、SparkSQLSparkSQL：通过交互式的sql语句在海量数据中查询。
+Hive只是进行数据多维度查询。SparkSQL可以进行机器学习、图计算。Hive+SparkSQL+DataFrame是目前至少在中国所有的大数据项目至少90%无法逃脱该技术组合。
+
+Hive负责廉价的数据仓库存储
+SparkSQL负责高速计算
+DataFrame负责复杂的数据挖掘">
+<meta name="twitter:image" content="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/kewbTnB6rgCJul0NURudUibJuBrsfeZPx350gzLc3q0!/b/dG4BAAAAAAAA&bo=mwJKAQAAAAADB*A!&rf=viewer_4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/15/Spark/sparksql 总结/"/>
+
+
+
+
+
+  <title> Spark学习笔记——Spark SQL与SparkStreaming总结 | Andone1cc </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Andone1cc</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个有梦想的CS小白</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/15/Spark/sparksql 总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="QDU-scc">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Andone1cc">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spark学习笔记——Spark SQL与SparkStreaming总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-15T19:05:24+08:00">
+                2017-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spark/" itemprop="url" rel="index">
+                    <span itemprop="name">Spark</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/15/Spark/sparksql 总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/15/Spark/sparksql 总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、SparkSQL"><a href="#一、SparkSQL" class="headerlink" title="一、SparkSQL"></a>一、SparkSQL</h3><p>SparkSQL：<code>通过交互式的sql语句在海量数据中查询。</code></p>
+<p>Hive只是进行数据多维度查询。SparkSQL可以进行机器学习、图计算。Hive+SparkSQL+DataFrame是目前至少在中国所有的大数据项目至少90%无法逃脱该技术组合。</p>
+<blockquote>
+<p>Hive负责廉价的数据仓库存储</p>
+<p>SparkSQL负责高速计算</p>
+<p>DataFrame负责复杂的数据挖掘</p>
+</blockquote>
+<a id="more"></a>
+<h4 id="1-创建DataFrame"><a href="#1-创建DataFrame" class="headerlink" title="1.创建DataFrame"></a>1.创建DataFrame</h4><p>可以简单认为Spark中的DaraFrame是一个分布式的Table。</p>
+<p>Hive包含元数据和数据本身，DataFrame也包含元数据和数据本身。</p>
+<blockquote>
+<p>DataFrame的底层是一个个的RDD</p>
+<p>只不过DataFrame底层RDD的泛型是Row</p>
+<p>DataFrame = RDD</p>
+</blockquote>
+<font color="red">可以通过三种方式将RDD转化为DataFrame。</font>
+
+<p><b>（1）通过反射和自定义类</b></p>
+<p>自定义的类必须是public，自定义的类必须实现Serializable接口，RDD转成DF（RDD<row>）row中列的顺序会改变，DF的列名就是自定义类中字段名。</row></p>
+<p><b>（2）动态创建Schema</b></p>
+<p>schema如果很长可以存储到外部。RDD<string>-&gt;RDD<row>-&gt;schame</row></string></p>
+<p><b>（3）通过Json格式的RDD创建</b></p>
+<p><a href="https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more</a></p>
+<h4 id="2-SparkSQL连接mysql"><a href="#2-SparkSQL连接mysql" class="headerlink" title="2.SparkSQL连接mysql"></a>2.SparkSQL连接mysql</h4><p><code>SparkSQL可以通过JDBC从传统关系型数据库中读写数据</code>，读取数据后直接生成的是DataFrame，然后再加上借助于Spark内核的丰富的API来进行各种操作。</p>
+<blockquote>
+<p>url、driver、user、password、dbtable。</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/05/Spark/sparksql/#more中的第二条。" target="_blank" rel="external">https://andone1cc.github.io/2017/03/05/Spark/sparksql/#more中的第二条。</a></p>
+<h4 id="3-SparkSQL读取JSON和parquet文件"><a href="#3-SparkSQL读取JSON和parquet文件" class="headerlink" title="3.SparkSQL读取JSON和parquet文件"></a>3.SparkSQL读取JSON和parquet文件</h4><p><a href="https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more中的第3条。" target="_blank" rel="external">https://andone1cc.github.io/2017/03/04/Spark/sparksql%E4%B8%8Edataframe/#more中的第3条。</a></p>
+<blockquote>
+<p>parquet自动推测分区。</p>
+</blockquote>
+<h4 id="4-Spark-on-Hive-Hive作为存储的角色"><a href="#4-Spark-on-Hive-Hive作为存储的角色" class="headerlink" title="4.Spark on Hive Hive作为存储的角色"></a>4.Spark on Hive Hive作为存储的角色</h4><p>在Spark安装目录下面的conf下面添加一个hive-site.xml。</p>
+<p>hive的metaStore服务启动   hive –service metaStore</p>
+<p>SQLContext是HiveContext的父类。<code>开窗函数</code>是HiveContext独有的。</p>
+<p>Spark SQL操作Hive数据源-&gt;详见<a href="https://andone1cc.github.io/2017/03/05/Spark/sparksql/#more的第三条" target="_blank" rel="external">https://andone1cc.github.io/2017/03/05/Spark/sparksql/#more的第三条</a></p>
+<font color="red">SparkSQL操作Hive和Hive on Spark一样吗？</font>
+
+<blockquote>
+<p>不一样。SparkSQL操作Hive只是把Hive当作数据仓库的来源，而计算引擎就是SparkSQL本身。Hive on Spark 是Hive的子项目，Hive on Spark的核心是把Hive的执行引擎换成Spark。众所周知，目前Hive的计算引擎是Mapreduce，因为性能低下等问题，所以Hive的官方就想替换这个引擎。</p>
+</blockquote>
+<p>SparkSQL操作Hive上的数据叫Spark on Hive，而Hive on Spark依旧是以Hive为核心，只是<code>把计算引擎由MapReduce替换为Spark。</code></p>
+<h4 id="5-窗口函数、UDF、UDAF"><a href="#5-窗口函数、UDF、UDAF" class="headerlink" title="5.窗口函数、UDF、UDAF"></a>5.窗口函数、UDF、UDAF</h4><p>详见<a href="https://andone1cc.github.io/2017/03/06/Spark/UDFUDAF%E4%BE%8B%E5%AD%90/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/UDFUDAF%E4%BE%8B%E5%AD%90/#more</a></p>
+<h3 id="二、SparkStreaming"><a href="#二、SparkStreaming" class="headerlink" title="二、SparkStreaming"></a>二、SparkStreaming</h3><p>SparkStreaming是一个流式处理框架，处理的模式是微批处理（微批有多大？通过时间来设置这个批有多大[For example：Batch Interval 5s]）</p>
+<p>SparkStreaming基于<code>DStream</code>(Discretized Streams:离散的数据流)来进行编程，处理的是一个流，这个流什么时候切成一个rdd–&gt;根据batchinterval来决定何时切割成一个RDD。</p>
+<p><b>SparkStreaming 架构图</b></p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/kewbTnB6rgCJul0NURudUibJuBrsfeZPx350gzLc3q0!/b/dG4BAAAAAAAA&amp;bo=mwJKAQAAAAADB*A!&amp;rf=viewer_4" alt=""></p>
+<p><b>SparkStreaming 执行流程</b></p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/ld4.SbOfL1VVkhNRGjmiyVIcOgl.k3u94NnMqB68wks!/b/dG4BAAAAAAAA&amp;bo=KgSAAgAAAAADB44!&amp;rf=viewer_4" alt=""></p>
+<p>从图上可以看到，Batch Interval的间隔是5s，也就是说每经过5s，SparkStreaming会将这5s内的信息封装成一个DStream,然后提交到Spark集群进行计算。</p>
+<p>第一个 DStream 里面是 0-5s 的数据，在第6s的时候会触发 DStream 的job执行，这时会另启动一个线程执行这个job(假设这个job只需要3s)，同时在6-10s期间继续接受数据，在第11s的时候会触发 DStream 的job的执行，这时会另启动一个线程执行这个job(假设这个job只需要3s)，同时在11-15s期间继续接受数据。</p>
+<font color="red">如果这个job执行的时间大于5s会有什么问题？</font>
+
+<p>数据在5s内处理不完，又启动一个job，导致数据越积越多，从而导致 <code>SparkStreaming down</code></p>
+<h4 id="1-socket模拟数据"><a href="#1-socket模拟数据" class="headerlink" title="1.socket模拟数据"></a>1.socket模拟数据</h4><blockquote>
+<p>nc -lk 9999</p>
+<p>SparkStreaming socketTextStream监控9999端口。</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第一条" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第一条</a></p>
+<h4 id="2-监控HDFS中的数据"><a href="#2-监控HDFS中的数据" class="headerlink" title="2.监控HDFS中的数据"></a>2.监控HDFS中的数据</h4><blockquote>
+<p>在SparkStreaming启动之后，文件夹里面的文件有改变才会监控到，文件夹下面的某一个文件内容改变了，不会被监控到。</p>
+</blockquote>
+<p><a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第三条" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第三条</a></p>
+<h4 id="3-kafka"><a href="#3-kafka" class="headerlink" title="3.kafka"></a>3.kafka</h4><p>Apache Kafka是一个高吞吐的集<code>发布与订阅</code>与一体的分布式消息系统。</p>
+<p>流式处理的数据源是kafka，批处理的数据源是hive，也就是hdfs；</p>
+<p>topic:一个kafka集群中可以划分n多的topic,一个topic可以分成多个partition（这个是为了做并行的）, 每个partition内部消息强有序，其中的每个消息都有一个序号叫offset，一个partition对应一个<code>broker</code>,一个broker可以管多个partition，这个partition可以很简单想象为一个文件，当数据发过来的时候它就往这个partition上面append，追加就行，kafka和很多消息系统不一样，很多消息系统是消费完了我就把它删掉，而kafka是根据时间策略删除，而不是消费完就删除，在kafka里面没有一个消费完这么个概念，只有过期这样一个概念。</p>
+<p>生产者自己决定往哪个partition写消息（轮循的负载均衡或者是基于hash的partition策略）。</p>
+<p>消费者可以订阅某一个topic,这个topic一旦有数据，会将数据推送给消费者。</p>
+<p><b>leader的均衡机制</b></p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/PpqI22tn0AWZwFkTN*zMQDIHlo0V9RXY7yFQlkMM.A4!/b/dCABAAAAAAAA&amp;bo=iwJRAAAAAAADAP0!&amp;rf=viewer_4" alt=""></p>
+<pre><code>&gt;Topic:kfk     ---&gt;topic的名字。
+
+&gt;PartitionCount:3     ---&gt;一个topic中partition的数量，在脚本中指定
+
+&gt;ReplicationFactor:3    ---&gt;每个partition有3个备份
+
+&gt;Configs                   
+&gt;Replicas:1,2,0        ---&gt;Replicas备份在哪些节点上      
+&gt; Isr:0,1,2    ---&gt;Isr要去哪些节点检查备份
+</code></pre><hr>
+<p>Kafka中一个topic有多个partition，kfk有0,1,2共三个partition，每个partition都有对应的leader来进行管理，对于leader1来说它来管理partition0，当leader1挂掉之后，因为partition0配置了副本数（在broker0,broker2还存在partition0的副本），那么此时会在broker0,broker2上选出一台当做leader继续管理partition0（比如说选取了broker2当做partition0的leader），这时候如果我们配置了leader均衡机制，重新恢复了broker1，那么partition0的leader就会从broker2转移到broker1，减轻了broker2的读取压力，实现了负载均衡。当然如果不开启leader均衡机制的话，重新恢复broker1，那么partition0的leader仍就是broker2。</p>
+<p><b>为什么Kafka的吞吐量高？</b></p>
+<p><img src="http://a1.qpic.cn/psb?/V12DoSDy3E1yI8/WIDQ97Ju5gFfKFBOkjVztgkqExyLMkkMR7QJaih31jE!/b/dCABAAAAAAAA&amp;bo=EQLPAAAAAAAFAP8!&amp;rf=viewer_4" alt=""></p>
+<p><img src="http://a3.qpic.cn/psb?/V12DoSDy3E1yI8/JgD41m6ojhYROR*O4VPPT3y1XzlWqzrS08b010KCD8I!/b/dB8BAAAAAAAA&amp;bo=.gHOAAAAAAAFABY!&amp;rf=viewer_4" alt=""></p>
+<p>零拷贝”是指计算机操作的过程中，CPU不需要为数据在内存之间的拷贝消耗资源。而它通常是指计算机在网络上发送文件时，不需要将文件内容拷贝到用户空间（User Space）而直接在内核空间（Kernel Space）中传输到网络的方式。</p>
+<p>Zero Copy的模式中，避免了数据在用户空间和内存空间之间的拷贝，从而提高了系统的整体性能。Linux中的sendfile()以及Java NIO中的FileChannel.transferTo()方法都实现了零拷贝的功能，而在<code>Netty</code>中也通过在FileRegion中包装了NIO的FileChannel.transferTo()方法实现了零拷贝。</p>
+<p><b>kafka的leader的均衡机制在哪里配置？</b></p>
+<blockquote>
+<p>vi server.properties</p>
+<p>添加如下一句话  auto.leader.rebalance.enable=true</p>
+</blockquote>
+<p>kafka依赖于zookeeper。zookeeper中保存partition的meta以及消费者的offset。</p>
+<p><a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第四条" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more的第四条</a></p>
+<h4 id="4-SparkStreaming和kafka整合"><a href="#4-SparkStreaming和kafka整合" class="headerlink" title="4.SparkStreaming和kafka整合"></a>4.SparkStreaming和kafka整合</h4><p><a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming2/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming2/#more</a></p>
+<p>Receive模式执行流程：</p>
+<p>1.接收数据(SparkStreaming作为消费者，如果订阅了一个topic,那么topic一有数据就会主动推送给SparkSreaming)</p>
+<p>2.Executor将接收来的数据备份到其他Executor中（Executor中执行的job作为一个receiver,里面的task一直在接收kafka推送来的数据，然后将接收来的数据进行持久化，默认的持久化级别是MEMORY_DISK_SER_2）</p>
+<p>3.Executor备份完成之后，向Driver中的ReceiverTracker汇报数据存储在哪一些的Executor中（Driver{ReceiverTracker,DAGScheduler,TaskScheduler}）</p>
+<p>4.在zookeeper中更新消费偏移量</p>
+<p>5.Driver负责分发task到数据所在的Executor中执行（达到移动计算，而不是移动数据）</p>
+<p><font color="red">注意：</font>每一步都是阻塞的，上一步完成之后才能进行下一步。</p>
+<h4 id="5-Driver的高可用"><a href="#5-Driver的高可用" class="headerlink" title="5.Driver的高可用"></a>5.Driver的高可用</h4><p>1.代码套路</p>
+<p>2.必须是cluster模式，必须设置–supervise。监控作用，一个坏了另一个自动启动。</p>
+<p>代码套路<a href="https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more详见第三条的getOrCreate方法。" target="_blank" rel="external">https://andone1cc.github.io/2017/03/06/Spark/sparkstreaming1/#more详见第三条的getOrCreate方法。</a></p>
+<p><b>Driver中存放的信息</b></p>
+<blockquote>
+<p>1.SparkConf运行时环境变量</p>
+<p>2.batch jobs job的执行进度，batch的执行进度</p>
+<p>3.DStream的业务逻辑</p>
+</blockquote>
+<h4 id="6-动态改变广播变量的值"><a href="#6-动态改变广播变量的值" class="headerlink" title="6.动态改变广播变量的值"></a>6.动态改变广播变量的值</h4><p>transform算子中，将DStream里面的RDD抽取出来。</p>
+<h4 id="7-transform-updateStateByKey-Window算子案例"><a href="#7-transform-updateStateByKey-Window算子案例" class="headerlink" title="7.transform,updateStateByKey,Window算子案例"></a>7.transform,updateStateByKey,Window算子案例</h4><p><a href="https://andone1cc.github.io/2017/03/07/Spark/sparkstreaming%E7%AE%97%E5%AD%90%20/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/07/Spark/sparkstreaming%E7%AE%97%E5%AD%90%20/#more</a></p>
+<h3 id="3-spark优化"><a href="#3-spark优化" class="headerlink" title="3.spark优化"></a>3.spark优化</h3><p>数据本地化和并行度设置：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E6%9C%AC%E5%9C%B0%E6%80%A7/#more</a></p>
+<p>shuffle调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/shuffle%E8%B0%83%E4%BC%98/#more</a></p>
+<p>数据倾斜调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E8%B0%83%E4%BC%98/#more</a></p>
+<p>资源调优：<a href="https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/12/Spark/%E8%B5%84%E6%BA%90%E8%B0%83%E4%BC%98/#more</a></p>
+<p>代码调优：<a href="https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more" target="_blank" rel="external">https://andone1cc.github.io/2017/03/11/Spark/%E5%BC%80%E5%8F%91(%E4%BB%A3%E7%A0%81)%E8%B0%83%E4%BC%98/#more</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark学习总结/" rel="tag"># Spark学习总结</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/15/Spark/spark总结/" rel="next" title="Spark学习笔记——SparkCore总结">
+                <i class="fa fa-chevron-left"></i> Spark学习笔记——SparkCore总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/15/Spark/sparksql 总结/"
+           data-title="Spark学习笔记——Spark SQL与SparkStreaming总结" data-url="http://yoursite.com/2017/03/15/Spark/sparksql 总结/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="QDU-scc" />
+          <p class="site-author-name" itemprop="name">QDU-scc</p>
+           
+              <p class="site-description motion-element" itemprop="description">一个有梦想的CS小白</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、SparkSQL"><span class="nav-number">1.</span> <span class="nav-text">一、SparkSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-创建DataFrame"><span class="nav-number">1.1.</span> <span class="nav-text">1.创建DataFrame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-SparkSQL连接mysql"><span class="nav-number">1.2.</span> <span class="nav-text">2.SparkSQL连接mysql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-SparkSQL读取JSON和parquet文件"><span class="nav-number">1.3.</span> <span class="nav-text">3.SparkSQL读取JSON和parquet文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Spark-on-Hive-Hive作为存储的角色"><span class="nav-number">1.4.</span> <span class="nav-text">4.Spark on Hive Hive作为存储的角色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-窗口函数、UDF、UDAF"><span class="nav-number">1.5.</span> <span class="nav-text">5.窗口函数、UDF、UDAF</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、SparkStreaming"><span class="nav-number">2.</span> <span class="nav-text">二、SparkStreaming</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-socket模拟数据"><span class="nav-number">2.1.</span> <span class="nav-text">1.socket模拟数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-监控HDFS中的数据"><span class="nav-number">2.2.</span> <span class="nav-text">2.监控HDFS中的数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-kafka"><span class="nav-number">2.3.</span> <span class="nav-text">3.kafka</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-SparkStreaming和kafka整合"><span class="nav-number">2.4.</span> <span class="nav-text">4.SparkStreaming和kafka整合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Driver的高可用"><span class="nav-number">2.5.</span> <span class="nav-text">5.Driver的高可用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-动态改变广播变量的值"><span class="nav-number">2.6.</span> <span class="nav-text">6.动态改变广播变量的值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-transform-updateStateByKey-Window算子案例"><span class="nav-number">2.7.</span> <span class="nav-text">7.transform,updateStateByKey,Window算子案例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-spark优化"><span class="nav-number">3.</span> <span class="nav-text">3.spark优化</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">QDU-scc</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"andone1cc"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
